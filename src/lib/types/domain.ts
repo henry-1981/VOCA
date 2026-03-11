@@ -3,6 +3,7 @@ export type FamilyId = string;
 export type ChildId = string;
 export type DayId = string;
 export type WordId = string;
+export type DayKind = "learning" | "checkpoint_test";
 
 export type QuestionDirection = "en_to_ko" | "ko_to_en";
 
@@ -41,11 +42,38 @@ export type WordEntry = {
 
 export type DayContent = {
   id: DayId;
+  kind?: DayKind;
   dayNumber?: number;
   title: string;
   topic?: string;
   bookId: string;
   words: WordEntry[];
+};
+
+export type CheckpointQuestionType =
+  | "word_search"
+  | "fill_blank"
+  | "choice"
+  | "translation";
+
+export type CheckpointQuestion = {
+  section: string;
+  questionId: number;
+  type: CheckpointQuestionType;
+  prompt: string;
+  choices: string[];
+  answer: string;
+};
+
+export type CheckpointDayContent = {
+  id: DayId;
+  kind: "checkpoint_test";
+  dayNumber: number;
+  title: string;
+  topic: string;
+  bookId: string;
+  sections: string[];
+  questions: CheckpointQuestion[];
 };
 
 export type ChildProgress = {
