@@ -1,0 +1,9 @@
+.worktrees/
+.codex/
+.omx/
+.agents/
+.next/
+node_modules/
+dist/
+coverage/
+.DS_Store
