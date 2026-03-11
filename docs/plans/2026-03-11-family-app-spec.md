@@ -99,6 +99,20 @@ For each child, the app should store:
 - The app does not need to generate dynamic daily content as the primary model
 - A Day is a meaningful learning unit
 
+### Day Types
+
+- Not every Day has the same role
+- There are at least two Day types:
+  - `learning`
+  - `checkpoint_test`
+- Current observed cadence is:
+  - 4 learning Days
+  - then 1 checkpoint test Day
+- Confirmed examples:
+  - `Day 05`
+  - `Day 10`
+  should be treated as checkpoint test Days
+
 ### Default Day Flow
 
 - By default, the next recommended Day is the next uncompleted Day
@@ -141,14 +155,18 @@ All four are major destinations, but `Today` is the clearest primary action.
 
 ### Sequence
 
-- `Learn -> Test`
+- `learning Day`: `Learn -> Test`
+- `checkpoint test Day`: direct `Test`
 
 ### Day Completion Rule
 
 A Day is complete when:
 
-- Learn is completed
-- Test is completed
+- for a `learning` Day:
+  - Learn is completed
+  - Test is completed
+- for a `checkpoint test` Day:
+  - Test is completed
 
 Completion is not blocked by score thresholds.
 
@@ -163,8 +181,11 @@ Completion is not blocked by score thresholds.
 
 ### Dynamic Emphasis
 
-- On first entry, `Learn` is the main action
-- After Learn is completed, `Test` becomes the main action on the same screen
+- On a `learning` Day:
+  - `Learn` is the main action first
+  - after Learn is completed, `Test` becomes the main action
+- On a `checkpoint test` Day:
+  - `Test` is the main action immediately
 
 ## Learn Experience
 

@@ -17,6 +17,9 @@
 - Each iPad is bound to one child profile during setup and normally opens that child directly.
 - The parent/operator can manually prepare Day data outside the child UI.
 - `1 Day = 20 words`.
+- current content cadence indicates:
+  - 4 learning Days
+  - then 1 checkpoint test Day
 - Day data input is fixed to two practical methods for now:
   - manual Day DB generation with assistant help
   - GPT-refined OCR text from phone photos, then assistant conversion into app seed data
@@ -29,6 +32,9 @@
 - Initial word playback uses browser / OS TTS.
 - Existing Bridge VOCA MP3 assets can be explored later as an enhancement or fallback, but they are not required to ship the first family version.
 - Learn completion means the child has seen all 20 words in the Day at least once.
+- Day content must support at least two kinds:
+  - `learning`
+  - `checkpoint_test`
 - Firestore is the source of truth for live app content and progress.
 - Local JSON files exist only as an import/staging format for Day seeds.
 
@@ -43,9 +49,9 @@ Execute in this order even if later task numbers remain grouped by feature area:
 5. device binding and app bootstrap
 6. textbook Day ingestion pipeline
 7. academy hub
-8. Today flow
+8. Today flow with Day-kind branching
 9. Learn
-10. Test
+10. Test + checkpoint test mode
 11. Review
 12. History
 13. Character
@@ -424,6 +430,21 @@ The normalized output should become a Day JSON seed like:
 }
 ```
 
+Also support checkpoint test Days with a separate structured seed format, for example:
+
+```json
+{
+  "id": "day-005",
+  "kind": "checkpoint_test",
+  "dayNumber": 5,
+  "title": "Day 05 Test",
+  "topic": "Day 01-04 Review",
+  "bookId": "bridge-voca-basic",
+  "sections": ["A", "B", "D", "E", "F", "G"],
+  "questions": []
+}
+```
+
 **Step 4: Run it to verify it passes**
 
 Run: `npm test -- --run src/lib/content/day-schema.test.ts`
@@ -516,8 +537,8 @@ Expected: FAIL
 **Step 3: Implement the staged Today logic**
 
 - show day status pipeline
-- emphasize `Learn` before completion
-- shift emphasis to `Test` after Learn completes
+- if the Day kind is `learning`, emphasize `Learn` before completion and then shift to `Test`
+- if the Day kind is `checkpoint_test`, skip Learn and emphasize `Test` immediately
 
 **Step 4: Run it to verify it passes**
 
@@ -616,6 +637,7 @@ Expected: FAIL
 - short answer feedback only
 - generate distractors from same-Day vocabulary first
 - for `KO -> EN`, prevent near-duplicate or trivially identical wrong choices
+- add a separate checkpoint-test rendering path for stored section/question data
 
 **Step 4: Run them to verify they pass**
 
