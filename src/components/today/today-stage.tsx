@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { buildChildHref } from "@/lib/navigation/child-href";
 import type { DayKind } from "@/lib/types/domain";
 
 type TodayStageProps = {
+  childId?: string;
   dayId: string;
   dayKind: DayKind;
   dayTitle: string;
@@ -9,6 +11,7 @@ type TodayStageProps = {
 };
 
 export function TodayStage({
+  childId,
   dayId,
   dayKind,
   dayTitle,
@@ -43,14 +46,22 @@ export function TodayStage({
           <>
             <Link
               className={`rounded-[1.75rem] px-6 py-6 text-left ${learnPrimary ? "bg-violet-700 text-white" : "bg-violet-100 text-violet-950"}`}
-              href={`/today/learn?day=${dayId}`}
+              href={buildChildHref({
+                pathname: "/today/learn",
+                childId,
+                params: { day: dayId }
+              })}
             >
               <p className="text-sm font-semibold">LEARN</p>
               <p className="mt-2 text-2xl font-black">오늘 단어 익히기 시작</p>
             </Link>
             <Link
               className={`rounded-[1.75rem] px-6 py-6 text-left ${learnPrimary ? "bg-slate-100 text-slate-500" : "bg-slate-950 text-white"}`}
-              href={`/test?day=${dayId}`}
+              href={buildChildHref({
+                pathname: "/test",
+                childId,
+                params: { day: dayId }
+              })}
             >
               <p className="text-sm font-semibold">TEST</p>
               <p className="mt-2 text-2xl font-black">
@@ -61,7 +72,11 @@ export function TodayStage({
         ) : (
           <Link
             className="rounded-[1.75rem] bg-slate-950 px-6 py-6 text-left text-white"
-            href={`/test?day=${dayId}`}
+            href={buildChildHref({
+              pathname: "/test",
+              childId,
+              params: { day: dayId }
+            })}
           >
             <p className="text-sm font-semibold">CHECKPOINT TEST</p>
             <p className="mt-2 text-2xl font-black">종합 테스트 시작</p>

@@ -13,6 +13,7 @@ export default async function ReviewPage({ searchParams }: ReviewPageProps) {
 
   return (
     <ReviewScreen
+      childId={dashboard.childId}
       childName={dashboard.childName}
       batchSize={dashboard.reviewBatchSize}
       title="오늘의 복습"

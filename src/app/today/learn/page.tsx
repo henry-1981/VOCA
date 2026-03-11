@@ -1,8 +1,10 @@
 import { LearnCard } from "@/components/learn/learn-card";
 import { resolveDay } from "@/lib/content/resolve-day";
+import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 
 type LearnPageProps = {
   searchParams?: Promise<{
+    child?: string;
     day?: string;
     index?: string;
   }>;
@@ -10,7 +12,8 @@ type LearnPageProps = {
 
 export default async function LearnPage({ searchParams }: LearnPageProps) {
   const params = (await searchParams) ?? {};
-  const resolved = resolveDay(params.day);
+  const dashboard = await resolveChildDashboard(params.child);
+  const resolved = resolveDay(params.day ?? dashboard.currentDayId);
 
   if (resolved.kind !== "learning") {
     return null;

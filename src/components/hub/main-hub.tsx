@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { buildChildHref } from "@/lib/navigation/child-href";
 
 type MainHubProps = {
+  childId: string;
+  currentDayId: string;
   childName: string;
   level: number;
   streak: number;
@@ -9,6 +12,8 @@ type MainHubProps = {
 };
 
 export function MainHub({
+  childId,
+  currentDayId,
   childName,
   level,
   streak,
@@ -37,7 +42,11 @@ export function MainHub({
           <div className="mx-auto flex max-w-4xl flex-col items-center gap-5">
             <Link
               className="w-full max-w-md rounded-[1.75rem] border border-amber-200/30 bg-[linear-gradient(180deg,_rgba(255,214,111,0.95),_rgba(212,157,34,0.95))] px-6 py-6 text-center text-slate-950 shadow-[0_20px_50px_rgba(255,193,7,0.25)]"
-              href={`/today?day=${currentDayTitle.includes("05") ? "day-005" : "day-001"}`}
+              href={buildChildHref({
+                pathname: "/today",
+                childId,
+                params: { day: currentDayId }
+              })}
             >
               <p className="text-sm font-bold uppercase tracking-[0.2em]">Today</p>
               <p className="mt-2 text-3xl font-black">{currentDayTitle}</p>
@@ -46,14 +55,14 @@ export function MainHub({
             <div className="grid w-full max-w-3xl gap-4 md:grid-cols-2">
               <Link
                 className="rounded-[1.5rem] border border-white/10 bg-white/10 px-6 py-5 backdrop-blur"
-                href="/review"
+                href={buildChildHref({ pathname: "/review", childId })}
               >
                 <p className="text-sm font-semibold text-white/70">Review</p>
                 <p className="mt-2 text-2xl font-black">누적 오답 복습</p>
               </Link>
               <Link
                 className="rounded-[1.5rem] border border-white/10 bg-white/10 px-6 py-5 backdrop-blur"
-                href="/history"
+                href={buildChildHref({ pathname: "/history", childId })}
               >
                 <p className="text-sm font-semibold text-white/70">History</p>
                 <p className="mt-2 text-2xl font-black">최근 Day 기록</p>
@@ -68,7 +77,7 @@ export function MainHub({
 
             <Link
               className="w-full max-w-sm rounded-[1.5rem] border border-white/10 bg-white/10 px-6 py-5 text-center backdrop-blur"
-              href="/character"
+              href={buildChildHref({ pathname: "/character", childId })}
             >
               <p className="text-sm font-semibold text-white/70">Character</p>
               <p className="mt-2 text-2xl font-black">XP / Level / 성장</p>

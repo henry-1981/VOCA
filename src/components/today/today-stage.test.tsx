@@ -6,6 +6,7 @@ describe("TodayStage", () => {
   it("shows Learn as primary for a learning day before learn completion", () => {
     render(
       <TodayStage
+        childId="다온"
         dayId="day-001"
         dayKind="learning"
         dayTitle="Day 01"
@@ -21,6 +22,7 @@ describe("TodayStage", () => {
   it("shows Test as primary immediately for a checkpoint day", () => {
     render(
       <TodayStage
+        childId="다온"
         dayId="day-005"
         dayKind="checkpoint_test"
         dayTitle="Day 05 Test"

@@ -113,6 +113,8 @@ export function BootstrapLanding() {
 
     return (
       <MainHub
+        childId={dashboard.childId}
+        currentDayId={dashboard.currentDayId}
         childName={dashboard.childName}
         level={dashboard.level}
         streak={dashboard.streak}
@@ -125,6 +127,8 @@ export function BootstrapLanding() {
   const dashboard = getMockChildDashboard(state.binding.childId);
   return (
     <MainHub
+      childId={dashboard.childId}
+      currentDayId={dashboard.currentDayId}
       childName={dashboard.childName}
       level={dashboard.level}
       streak={dashboard.streak}
