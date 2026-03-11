@@ -47,9 +47,8 @@ describe("LearnCard", () => {
       />
     );
 
-    expect(screen.getByRole("link", { name: /이제 테스트 시작/i })).toHaveAttribute(
-      "href",
-      "/test?child=%EB%8B%A4%EC%98%A8&day=day-001"
-    );
+    expect(
+      screen.getByRole("button", { name: /이제 테스트 시작/i })
+    ).toBeInTheDocument();
   });
 });

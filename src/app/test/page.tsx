@@ -19,6 +19,8 @@ export default async function TestPage({ searchParams }: TestPageProps) {
   if (resolved.kind === "checkpoint_test") {
     return (
       <CheckpointTestScreen
+        childId={dashboard.childId}
+        dayId={resolved.day.id}
         dayTitle={resolved.day.title}
         questions={resolved.day.questions}
       />
@@ -26,9 +28,11 @@ export default async function TestPage({ searchParams }: TestPageProps) {
   }
 
   return (
-      <LearningTestScreen
-        dayTitle={resolved.day.title}
-        questions={generateLearningTestQuestions(resolved.day.words)}
-      />
-    );
+    <LearningTestScreen
+      childId={dashboard.childId}
+      dayId={resolved.day.id}
+      dayTitle={resolved.day.title}
+      questions={generateLearningTestQuestions(resolved.day.words)}
+    />
+  );
 }

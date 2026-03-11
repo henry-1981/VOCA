@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import type { WordEntry } from "@/lib/types/domain";
 
@@ -72,16 +73,23 @@ export function LearnCard({
 
         <footer className="grid gap-3 md:grid-cols-2">
           {isLastWord ? (
-            <Link
+            <button
               className="big-button bg-slate-950 text-white"
-              href={buildChildHref({
-                pathname: "/test",
-                childId,
-                params: { day: dayId }
-              })}
+              onClick={() => {
+                if (childId && dayId) {
+                  setMockDayStage(childId, dayId, "learn_completed");
+                }
+
+                window.location.href = buildChildHref({
+                  pathname: "/test",
+                  childId,
+                  params: { day: dayId }
+                });
+              }}
+              type="button"
             >
               이제 테스트 시작
-            </Link>
+            </button>
           ) : (
             <Link
               className="big-button bg-slate-950 text-white"

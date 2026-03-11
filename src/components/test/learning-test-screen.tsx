@@ -1,14 +1,21 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { setMockDayStage } from "@/lib/mock/day-stage";
+import { buildChildHref } from "@/lib/navigation/child-href";
 import type { LearningTestQuestion } from "@/lib/test/generate-learning-test";
 
 type LearningTestScreenProps = {
+  childId?: string;
+  dayId?: string;
   dayTitle: string;
   questions: LearningTestQuestion[];
 };
 
 export function LearningTestScreen({
+  childId,
+  dayId,
   dayTitle,
   questions
 }: LearningTestScreenProps) {
@@ -43,6 +50,9 @@ export function LearningTestScreen({
 
     window.setTimeout(() => {
       if (currentIndex === questions.length - 1) {
+        if (childId && dayId) {
+          setMockDayStage(childId, dayId, "test_completed");
+        }
         setCompleted(true);
         return;
       }
@@ -55,11 +65,24 @@ export function LearningTestScreen({
   if (completed) {
     return (
       <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#e9f3ff,_#fff_50%,_#fff3dc)] px-6 py-8">
-        <div className="mx-auto max-w-2xl rounded-[2rem] bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
+        <div className="mx-auto flex max-w-2xl flex-col gap-4 rounded-[2rem] bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
           <p className="text-sm font-semibold text-slate-500">{dayTitle}</p>
           <h1 className="mt-2 text-4xl font-black text-slate-950">
             {score} / {questions.length}
           </h1>
+          <Link
+            className="big-button bg-slate-950 text-white"
+            href={buildChildHref({
+              pathname: "/today",
+              childId,
+              params: {
+                day: dayId,
+                stage: "test_completed"
+              }
+            })}
+          >
+            Today로 돌아가기
+          </Link>
         </div>
       </main>
     );
