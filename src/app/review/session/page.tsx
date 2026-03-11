@@ -17,7 +17,10 @@ export default async function ReviewSessionPage({
   const params = (await searchParams) ?? {};
   const dashboard = await resolveChildDashboard(params.child);
   const reviewWordsFromRepository = await getChildDashboardRepository().getReviewWords(
-    dashboard.childId,
+    {
+      familyId: "mock-family",
+      childId: dashboard.childId
+    },
     dashboard.reviewBatchSize
   );
   const days = getBridgeVocaBasicDays();

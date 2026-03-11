@@ -20,7 +20,10 @@ export default async function HistoryDetailPage({
   const query = (await searchParams) ?? {};
   const dashboard = await resolveChildDashboard(query.child);
   const entry = await getChildDashboardRepository().getHistoryEntry(
-    dashboard.childId,
+    {
+      familyId: "mock-family",
+      childId: dashboard.childId
+    },
     dayId
   );
 
