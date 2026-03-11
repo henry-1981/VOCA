@@ -1,8 +1,15 @@
 import { ReviewScreen } from "@/components/review/review-screen";
-import { getMockChildDashboard } from "@/lib/mock/child-dashboard";
+import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 
-export default function ReviewPage() {
-  const dashboard = getMockChildDashboard("다온");
+type ReviewPageProps = {
+  searchParams?: Promise<{
+    child?: string;
+  }>;
+};
+
+export default async function ReviewPage({ searchParams }: ReviewPageProps) {
+  const params = (await searchParams) ?? {};
+  const dashboard = await resolveChildDashboard(params.child);
 
   return (
     <ReviewScreen

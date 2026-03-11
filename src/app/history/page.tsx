@@ -1,8 +1,15 @@
 import { HistoryScreen } from "@/components/history/history-screen";
-import { getMockChildDashboard } from "@/lib/mock/child-dashboard";
+import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 
-export default function HistoryPage() {
-  const dashboard = getMockChildDashboard("다온");
+type HistoryPageProps = {
+  searchParams?: Promise<{
+    child?: string;
+  }>;
+};
+
+export default async function HistoryPage({ searchParams }: HistoryPageProps) {
+  const params = (await searchParams) ?? {};
+  const dashboard = await resolveChildDashboard(params.child);
 
   return (
     <HistoryScreen childName={dashboard.childName} entries={dashboard.historyEntries} />

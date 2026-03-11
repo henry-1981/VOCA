@@ -1,8 +1,17 @@
 import { CharacterScreen } from "@/components/character/character-screen";
-import { getMockChildDashboard } from "@/lib/mock/child-dashboard";
+import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 
-export default function CharacterPage() {
-  const dashboard = getMockChildDashboard("다온");
+type CharacterPageProps = {
+  searchParams?: Promise<{
+    child?: string;
+  }>;
+};
+
+export default async function CharacterPage({
+  searchParams
+}: CharacterPageProps) {
+  const params = (await searchParams) ?? {};
+  const dashboard = await resolveChildDashboard(params.child);
 
   return (
     <CharacterScreen
