@@ -41,8 +41,29 @@ describe("CheckpointTestScreen", () => {
       />
     );
 
+    expect(screen.getByText(/영어 단어를 직접 입력하세요/i)).toBeInTheDocument();
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "music" } });
     expect(screen.getByDisplayValue("music")).toBeInTheDocument();
+  });
+
+  it("shows type-specific helper text for translation questions", () => {
+    render(
+      <CheckpointTestScreen
+        dayTitle="Day 05 Test"
+        questions={[
+          {
+            section: "E",
+            questionId: 1,
+            type: "translation",
+            prompt: "history → ?",
+            choices: [],
+            answer: "역사"
+          }
+        ]}
+      />
+    );
+
+    expect(screen.getByText(/뜻을 번역해서 입력하세요/i)).toBeInTheDocument();
   });
 
   it("shows a return CTA after checkpoint completion", () => {

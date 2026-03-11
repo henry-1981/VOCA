@@ -16,6 +16,23 @@ function normalizeAnswer(value: string) {
   return value.trim().toLowerCase();
 }
 
+function getHelperText(question: CheckpointQuestion) {
+  switch (question.type) {
+    case "word_search":
+      return "영어 단어를 직접 입력하세요.";
+    case "translation":
+      return "뜻을 번역해서 입력하세요.";
+    case "fill_blank":
+      return question.choices.length > 0
+        ? "빈칸에 들어갈 말을 고르세요."
+        : "빈칸에 들어갈 말을 직접 입력하세요.";
+    case "choice":
+      return "알맞은 표현을 고르세요.";
+    default:
+      return "";
+  }
+}
+
 export function CheckpointTestScreen({
   childId,
   dayId,
@@ -83,6 +100,7 @@ export function CheckpointTestScreen({
         <section className="rounded-[1.75rem] bg-slate-950 p-6 text-white">
           <p className="text-sm font-semibold text-slate-300">{question.section}</p>
           <h1 className="mt-3 text-3xl font-black">{question.prompt}</h1>
+          <p className="mt-3 text-sm text-slate-300">{getHelperText(question)}</p>
         </section>
 
         {question.choices.length > 0 ? (
