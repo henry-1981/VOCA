@@ -117,8 +117,8 @@ export function BootstrapLanding() {
           registry checked: {state.registryChecked ? "yes" : "skipped"}
         </p>
         <div className="flex flex-col gap-3 md:flex-row">
-          <Link className="big-button bg-slate-950 text-white" href="/test">
-            현재 MVP 테스트 열기
+          <Link className="big-button bg-slate-950 text-white" href="/today">
+            Today 열기
           </Link>
           <Link className="big-button bg-white text-slate-950 ring-1 ring-slate-200" href="/provision">
             Provision 보기
