@@ -18,4 +18,10 @@ describe("generateLearningTestQuestions", () => {
     expect(questions.some((question) => question.direction === "ko_to_en")).toBe(true);
     expect(questions.every((question) => question.choices.length === 4)).toBe(true);
   });
+
+  it("keeps the english word as audio text for every question", () => {
+    const questions = generateLearningTestQuestions(mockWords, 5);
+
+    expect(questions.every((question) => question.audioText.length > 0)).toBe(true);
+  });
 });

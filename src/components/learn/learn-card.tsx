@@ -1,17 +1,29 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { buildChildHref } from "@/lib/navigation/child-href";
 import type { WordEntry } from "@/lib/types/domain";
 
 type LearnCardProps = {
+  childId?: string;
+  dayId?: string;
   currentIndex: number;
   total: number;
   topic?: string;
   word: WordEntry;
 };
 
-export function LearnCard({ currentIndex, total, topic, word }: LearnCardProps) {
+export function LearnCard({
+  childId,
+  dayId,
+  currentIndex,
+  total,
+  topic,
+  word
+}: LearnCardProps) {
   const [played, setPlayed] = useState(false);
+  const isLastWord = currentIndex >= total;
 
   function play() {
     setPlayed(true);
@@ -57,6 +69,45 @@ export function LearnCard({ currentIndex, total, topic, word }: LearnCardProps) 
             {played ? "다시 들을 수 있어요." : word.exampleSentence ?? "예문은 나중에 추가할 수 있습니다."}
           </p>
         </section>
+
+        <footer className="grid gap-3 md:grid-cols-2">
+          {isLastWord ? (
+            <Link
+              className="big-button bg-slate-950 text-white"
+              href={buildChildHref({
+                pathname: "/test",
+                childId,
+                params: { day: dayId }
+              })}
+            >
+              이제 테스트 시작
+            </Link>
+          ) : (
+            <Link
+              className="big-button bg-slate-950 text-white"
+              href={buildChildHref({
+                pathname: "/today/learn",
+                childId,
+                params: {
+                  day: dayId,
+                  index: currentIndex
+                }
+              })}
+            >
+              다음 단어
+            </Link>
+          )}
+          <Link
+            className="big-button bg-white text-slate-950 ring-1 ring-slate-200"
+            href={buildChildHref({
+              pathname: "/today",
+              childId,
+              params: { day: dayId }
+            })}
+          >
+            Today로 돌아가기
+          </Link>
+        </footer>
       </div>
     </main>
   );

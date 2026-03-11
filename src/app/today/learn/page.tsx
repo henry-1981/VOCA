@@ -24,6 +24,8 @@ export default async function LearnPage({ searchParams }: LearnPageProps) {
 
   return (
     <LearnCard
+      childId={dashboard.childId}
+      dayId={resolved.day.id}
       currentIndex={index + 1}
       total={resolved.day.words.length}
       topic={resolved.day.topic}

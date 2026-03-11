@@ -1,9 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { buildChildHref } from "@/lib/navigation/child-href";
 import type { CheckpointQuestion } from "@/lib/types/domain";
 
 type CheckpointTestScreenProps = {
+  childId?: string;
+  dayId?: string;
   dayTitle: string;
   questions: CheckpointQuestion[];
 };
@@ -13,6 +17,8 @@ function normalizeAnswer(value: string) {
 }
 
 export function CheckpointTestScreen({
+  childId,
+  dayId,
   dayTitle,
   questions
 }: CheckpointTestScreenProps) {
@@ -46,6 +52,19 @@ export function CheckpointTestScreen({
           <h1 className="text-4xl font-black text-slate-950">
             {score} / {questions.length}
           </h1>
+          <Link
+            className="big-button bg-slate-950 text-white"
+            href={buildChildHref({
+              pathname: "/today",
+              childId,
+              params: {
+                day: dayId,
+                stage: "test_completed"
+              }
+            })}
+          >
+            Today로 돌아가기
+          </Link>
         </div>
       </main>
     );

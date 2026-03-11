@@ -44,4 +44,31 @@ describe("CheckpointTestScreen", () => {
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "music" } });
     expect(screen.getByDisplayValue("music")).toBeInTheDocument();
   });
+
+  it("shows a return CTA after checkpoint completion", () => {
+    render(
+      <CheckpointTestScreen
+        childId="다온"
+        dayId="day-005"
+        dayTitle="Day 05 Test"
+        questions={[
+          {
+            section: "D",
+            questionId: 1,
+            type: "choice",
+            prompt: "How much (tea / candy) do you need?",
+            choices: ["tea", "candy"],
+            answer: "tea"
+          }
+        ]}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "tea" }));
+
+    expect(screen.getByRole("link", { name: /today로 돌아가기/i })).toHaveAttribute(
+      "href",
+      "/today?child=%EB%8B%A4%EC%98%A8&day=day-005&stage=test_completed"
+    );
+  });
 });
