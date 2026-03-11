@@ -12,6 +12,12 @@ import {
   type ChildDashboardState,
   type HistoryEntry
 } from "@/lib/mock/child-dashboard";
+import type {
+  ChildProfileDoc,
+  ChildProgressDoc,
+  DayHistoryDoc,
+  ReviewQueueDoc
+} from "@/lib/types/firestore";
 
 export type ChildSelector = {
   familyId: FamilyId;
@@ -22,6 +28,64 @@ export interface ChildDashboardRepository {
   getDashboard(selector: ChildSelector): Promise<ChildDashboardState>;
   getHistoryEntry(selector: ChildSelector, dayId: string): Promise<HistoryEntry | null>;
   getReviewWords(selector: ChildSelector, limit: number): Promise<string[]>;
+}
+
+function formatDayTitle(dayId: string | null | undefined) {
+  if (!dayId) {
+    return "Day 01";
+  }
+
+  const match = dayId.match(/^day-(\d+)$/i);
+
+  if (!match) {
+    return dayId;
+  }
+
+  return `Day ${match[1]}`;
+}
+
+function formatDate(iso: string | null | undefined) {
+  if (!iso) {
+    return "0000.00.00";
+  }
+
+  return iso.slice(0, 10).replaceAll("-", ".");
+}
+
+export function toHistoryEntry(doc: DayHistoryDoc): HistoryEntry {
+  return {
+    dayId: doc.dayId,
+    title: formatDayTitle(doc.dayId),
+    date: formatDate(doc.completedAt),
+    score: doc.score,
+    total: doc.totalQuestions,
+    wrongWordCount: doc.wrongWordIds.length,
+    wrongWords: doc.wrongWordIds
+  };
+}
+
+export function toDashboardState(
+  child: ChildProfileDoc,
+  progress: ChildProgressDoc,
+  historyDocs: DayHistoryDoc[],
+  reviewDocs: ReviewQueueDoc[]
+): ChildDashboardState {
+  const historyEntries = historyDocs.map(toHistoryEntry);
+
+  return {
+    childId: child.id,
+    childName: child.name,
+    currentDayId: child.currentDayId ?? progress.currentDayId ?? "day-001",
+    currentDayTitle: formatDayTitle(child.currentDayId ?? progress.currentDayId),
+    level: progress.level,
+    xp: progress.xp,
+    xpGoal: Math.max(progress.xp + 200, 300),
+    streak: progress.streak,
+    historyEntries,
+    reviewBatchSize: 10,
+    reviewWords: reviewDocs.map((doc) => doc.wordId),
+    reviewBonusXp: 50
+  };
 }
 
 class MockChildDashboardRepository implements ChildDashboardRepository {
@@ -73,38 +137,10 @@ class FirestoreChildDashboardRepository implements ChildDashboardRepository {
       return getMockChildDashboard(childId);
     }
 
-    const historyEntries = historySnapshot.docs.map((doc) => {
-      const entry = doc.data();
-      return {
-        dayId: entry.dayId,
-        title: entry.dayId.replace("day-", "Day "),
-        date: entry.completedAt.slice(0, 10).replaceAll("-", "."),
-        score: entry.score,
-        total: entry.totalQuestions,
-        wrongWordCount: entry.wrongWordIds.length,
-        wrongWords: entry.wrongWordIds
-      } satisfies HistoryEntry;
-    });
+    const historyDocs = historySnapshot.docs.map((doc) => doc.data());
+    const reviewDocs = reviewSnapshot.docs.map((doc) => doc.data());
 
-    const reviewWords = reviewSnapshot.docs.map((doc) => doc.data().wordId);
-
-    return {
-      childId,
-      childName: childData.name,
-      currentDayId: childData.currentDayId ?? progressData.currentDayId ?? "day-001",
-      currentDayTitle:
-        childData.currentDayId?.replace("day-", "Day ") ??
-        progressData.currentDayId?.replace("day-", "Day ") ??
-        "Day 01",
-      level: progressData.level,
-      xp: progressData.xp,
-      xpGoal: Math.max(progressData.xp + 200, 300),
-      streak: progressData.streak,
-      historyEntries,
-      reviewBatchSize: 10,
-      reviewWords,
-      reviewBonusXp: 50
-    };
+    return toDashboardState(childData, progressData, historyDocs, reviewDocs);
   }
 
   async getHistoryEntry(
