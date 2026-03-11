@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { DayHistoryDetailScreen } from "@/components/history/day-history-detail-screen";
+import { getChildDashboardRepository } from "@/lib/data/child-dashboard-repository";
 import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 
 type HistoryDetailPageProps = {
@@ -18,7 +19,10 @@ export default async function HistoryDetailPage({
   const { dayId } = await params;
   const query = (await searchParams) ?? {};
   const dashboard = await resolveChildDashboard(query.child);
-  const entry = dashboard.historyEntries.find((item) => item.dayId === dayId);
+  const entry = await getChildDashboardRepository().getHistoryEntry(
+    dashboard.childId,
+    dayId
+  );
 
   if (!entry) {
     notFound();
