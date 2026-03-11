@@ -19,6 +19,11 @@ export type AppBootstrapState =
       reason: string;
     }
   | {
+      status: "preview_ready";
+      binding: NonNullable<ReturnType<typeof loadDeviceBinding>>;
+      reason: string;
+    }
+  | {
       status: "stale_binding";
       binding: NonNullable<ReturnType<typeof loadDeviceBinding>>;
       reason: string;
@@ -41,9 +46,9 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
 
   if (!hasFirebaseEnv()) {
     return {
-      status: "unavailable",
+      status: "preview_ready",
       binding,
-      reason: "Firebase environment is missing"
+      reason: "Firebase environment is missing. Preview mode uses local mock state."
     };
   }
 

@@ -7,6 +7,8 @@ import {
   type AppBootstrapState
 } from "@/lib/bootstrap/load-app-context";
 import { clearDeviceBinding } from "@/lib/device/device-binding";
+import { getMockChildDashboard } from "@/lib/mock/child-dashboard";
+import { MainHub } from "@/components/hub/main-hub";
 
 const initialState: AppBootstrapState = {
   status: "loading",
@@ -106,25 +108,28 @@ export function BootstrapLanding() {
     );
   }
 
+  if (state.status === "preview_ready") {
+    const dashboard = getMockChildDashboard(state.binding.childId);
+
+    return (
+      <MainHub
+        childName={dashboard.childName}
+        level={dashboard.level}
+        streak={dashboard.streak}
+        currentDayTitle={dashboard.currentDayTitle}
+        previewMode
+      />
+    );
+  }
+
+  const dashboard = getMockChildDashboard(state.binding.childId);
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fff3c8,_#fff_50%,_#e2edff)] px-6 py-10">
-      <div className="mx-auto flex max-w-2xl flex-col gap-4 rounded-[2rem] bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
-        <p className="text-sm font-semibold text-slate-500">Bootstrap ready</p>
-        <h1 className="text-4xl font-black text-slate-950">
-          {state.binding.childId} 프로필로 진입 준비가 끝났습니다
-        </h1>
-        <p className="text-slate-600">
-          registry checked: {state.registryChecked ? "yes" : "skipped"}
-        </p>
-        <div className="flex flex-col gap-3 md:flex-row">
-          <Link className="big-button bg-slate-950 text-white" href="/today">
-            Today 열기
-          </Link>
-          <Link className="big-button bg-white text-slate-950 ring-1 ring-slate-200" href="/provision">
-            Provision 보기
-          </Link>
-        </div>
-      </div>
-    </main>
+    <MainHub
+      childName={dashboard.childName}
+      level={dashboard.level}
+      streak={dashboard.streak}
+      currentDayTitle={dashboard.currentDayTitle}
+      previewMode={false}
+    />
   );
 }
