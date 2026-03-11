@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getMissingFirebaseEnvKeys, hasFirebaseEnv } from "@/lib/firebase/client";
 import { signInWithGoogleRedirect } from "@/lib/firebase/auth";
 
 type FamilyProvisionFormProps = {
@@ -13,6 +14,8 @@ export function FamilyProvisionForm({
   const [familyName, setFamilyName] = useState("BrideVOCA Family");
   const [childAName, setChildAName] = useState("다온");
   const [childBName, setChildBName] = useState("지온");
+  const firebaseReady = hasFirebaseEnv();
+  const missingKeys = getMissingFirebaseEnvKeys();
 
   return (
     <section className="mx-auto flex max-w-xl flex-col gap-4 rounded-[2rem] bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
@@ -55,9 +58,28 @@ export function FamilyProvisionForm({
         현재 기기 기본 ID: {defaultDeviceId}
       </p>
 
+      {!firebaseReady ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
+          <p className="font-semibold">Firebase env가 아직 없습니다</p>
+          <p className="mt-2">실제 Google 로그인과 Firestore round-trip 검증은 아직 진행할 수 없습니다.</p>
+          <ul className="mt-3 list-disc pl-5">
+            {missingKeys.map((key) => (
+              <li key={key}>{key}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <button
-        className="big-button border-0 bg-slate-950 text-white"
-        onClick={() => void signInWithGoogleRedirect()}
+        className="big-button border-0 bg-slate-950 text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+        disabled={!firebaseReady}
+        onClick={() => {
+          if (!firebaseReady) {
+            return;
+          }
+
+          void signInWithGoogleRedirect();
+        }}
         type="button"
       >
         Google로 시작

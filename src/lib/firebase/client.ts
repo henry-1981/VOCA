@@ -11,14 +11,18 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
+export function getMissingFirebaseEnvKeys() {
+  return Object.entries(firebaseConfig)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+}
+
 export function hasFirebaseEnv() {
-  return Object.values(firebaseConfig).every(Boolean);
+  return getMissingFirebaseEnvKeys().length === 0;
 }
 
 function assertFirebaseEnv() {
-  const missing = Object.entries(firebaseConfig)
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
+  const missing = getMissingFirebaseEnvKeys();
 
   if (missing.length > 0) {
     throw new Error(`Missing Firebase env vars: ${missing.join(", ")}`);
