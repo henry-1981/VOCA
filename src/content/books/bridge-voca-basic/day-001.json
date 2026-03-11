@@ -1,0 +1,29 @@
+{
+  "id": "day-001",
+  "dayNumber": 1,
+  "title": "Day 01",
+  "topic": "사람",
+  "bookId": "bridge-voca-basic",
+  "words": [
+    { "id": "adult", "order": 1, "english": "adult", "pronunciation": "ədʌlt", "partOfSpeech": "noun", "meaning": "어른 성인", "exampleSentence": "The animation is also funny for adults.", "exampleKo": "그 애니메이션은 어른들에게도 재미있다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "age", "order": 2, "english": "age", "pronunciation": "eɪdʒ", "partOfSpeech": "noun", "meaning": "나이 연령", "exampleSentence": "He looks older than his age.", "exampleKo": "그는 그의 나이보다 더 늙어 보인다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "baby", "order": 3, "english": "baby", "pronunciation": "beɪbi", "partOfSpeech": "noun", "meaning": "아기", "exampleSentence": "The baby is eating a banana.", "exampleKo": "그 아기는 바나나를 먹고 있다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "boy", "order": 4, "english": "boy", "pronunciation": "bɔɪ", "partOfSpeech": "noun", "meaning": "소년 남자 아이", "exampleSentence": "The boy likes to go to school.", "exampleKo": "그 소년은 학교에 가는 것을 좋아한다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "child", "order": 5, "english": "child", "pronunciation": "tʃaɪld", "partOfSpeech": "noun", "meaning": "어린이", "exampleSentence": "The child spilled the water on the floor.", "exampleKo": "그 어린이는 바닥에 물을 엎질렀다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "childhood", "order": 6, "english": "childhood", "pronunciation": "tʃaɪldhʊd", "partOfSpeech": "noun", "meaning": "어린 시절", "exampleSentence": "I had many friends in my childhood.", "exampleKo": "나는 어린 시절에 친구들이 많았다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "elderly", "order": 7, "english": "elderly", "pronunciation": "eldərli", "partOfSpeech": "adj", "meaning": "연세가 드신", "exampleSentence": "Be polite to the elderly.", "exampleKo": "연세 드신 분들에게 예의 바르게 행동해라.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "generation", "order": 8, "english": "generation", "pronunciation": "dʒenəreɪʃən", "partOfSpeech": "noun", "meaning": "세대", "exampleSentence": "Jeans are popular with every generation.", "exampleKo": "청바지는 모든 세대에게 인기가 있다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "gentleman", "order": 9, "english": "gentleman", "pronunciation": "dʒentlmən", "partOfSpeech": "noun", "meaning": "신사", "exampleSentence": "The gentleman is buying some coffee.", "exampleKo": "그 신사는 커피를 사고 있다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "girl", "order": 10, "english": "girl", "pronunciation": "gɜːrl", "partOfSpeech": "noun", "meaning": "소녀 여자 아이", "exampleSentence": "The girl can write the English alphabet.", "exampleKo": "그 소녀는 영어 알파벳을 쓸 수 있다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "guest", "order": 11, "english": "guest", "pronunciation": "gest", "partOfSpeech": "noun", "meaning": "손님 투숙객", "exampleSentence": "What time did the guest arrive?", "exampleKo": "그 손님은 몇 시에 도착했니?", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "guy", "order": 12, "english": "guy", "pronunciation": "gaɪ", "partOfSpeech": "noun", "meaning": "남자 녀석", "exampleSentence": "What a tall guy he is!", "exampleKo": "그는 매우 키가 큰 남자이구나.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "hero", "order": 13, "english": "hero", "pronunciation": "hɪərou", "partOfSpeech": "noun", "meaning": "영웅", "exampleSentence": "The movie is about a true hero.", "exampleKo": "그 영화는 진정한 영웅에 관한 것이다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "kid", "order": 14, "english": "kid", "pronunciation": "kɪd", "partOfSpeech": "noun", "meaning": "아이", "exampleSentence": "Kids have to go to bed early.", "exampleKo": "아이들은 일찍 잠자리에 들어야 한다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "lady", "order": 15, "english": "lady", "pronunciation": "leɪdi", "partOfSpeech": "noun", "meaning": "숙녀 여성", "exampleSentence": "A lady walked into the restaurant.", "exampleKo": "한 숙녀가 식당으로 걸어 들어갔다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "man", "order": 16, "english": "man", "pronunciation": "mæn", "partOfSpeech": "noun", "meaning": "성인 남자 사람", "exampleSentence": "The young man is standing behind the tree.", "exampleKo": "그 젊은 남자는 나무 뒤에 서 있다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "people", "order": 17, "english": "people", "pronunciation": "piːpl", "partOfSpeech": "noun", "meaning": "사람들", "exampleSentence": "There are a lot of people in the mall.", "exampleKo": "쇼핑몰 안에 사람들이 많이 있다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "person", "order": 18, "english": "person", "pronunciation": "pɜːrsən", "partOfSpeech": "noun", "meaning": "사람 개인", "exampleSentence": "Mike is a warm and friendly person.", "exampleKo": "Mike는 따뜻하고 친절한 사람이다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "teenager", "order": 19, "english": "teenager", "pronunciation": "tiːneɪdʒər", "partOfSpeech": "noun", "meaning": "십 대", "exampleSentence": "The teenager studied very hard.", "exampleKo": "그 십 대는 매우 열심히 공부했다.", "audioMode": "tts", "illustrationMode": "optional" },
+    { "id": "woman", "order": 20, "english": "woman", "pronunciation": "wʊmən", "partOfSpeech": "noun", "meaning": "성인 여자", "exampleSentence": "I talked with the woman on the phone.", "exampleKo": "나는 전화로 그 여자와 이야기했다.", "audioMode": "tts", "illustrationMode": "optional" }
+  ]
+}
