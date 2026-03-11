@@ -30,7 +30,7 @@ export function ReviewScreen({
           <p className="mt-2 text-sm text-slate-600">
             누적 오답에서 오늘의 차분한 복습 세션을 시작할 수 있습니다.
           </p>
-          <Link className="big-button mt-6 bg-slate-950 text-white" href="/test?day=day-005">
+          <Link className="big-button mt-6 bg-slate-950 text-white" href="/review/session">
             복습 시작
           </Link>
         </section>

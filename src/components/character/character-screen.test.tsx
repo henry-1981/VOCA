@@ -16,7 +16,7 @@ describe("CharacterScreen", () => {
     );
 
     expect(screen.getAllByText(/Level 07/i)).toHaveLength(2);
-    expect(screen.getByText(/연속 학습 12일/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/연속 학습 12일/i)).toHaveLength(2);
     expect(screen.getByText(/Day 05 Test/i)).toBeInTheDocument();
   });
 });

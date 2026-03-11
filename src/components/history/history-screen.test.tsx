@@ -8,8 +8,8 @@ describe("HistoryScreen", () => {
       <HistoryScreen
         childName="다온"
         entries={[
-          { dayId: "day-005", title: "Day 05 Test", date: "2026.03.12", score: 17, total: 20, wrongWordCount: 3 },
-          { dayId: "day-004", title: "Day 04", date: "2026.03.11", score: 18, total: 20, wrongWordCount: 2 }
+          { dayId: "day-005", title: "Day 05 Test", date: "2026.03.12", score: 17, total: 20, wrongWordCount: 3, wrongWords: ["adult", "camera", "magic"] },
+          { dayId: "day-004", title: "Day 04", date: "2026.03.11", score: 18, total: 20, wrongWordCount: 2, wrongWords: ["milk", "juice"] }
         ]}
       />
     );

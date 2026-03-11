@@ -36,6 +36,12 @@ export function HistoryScreen({ childName, entries }: HistoryScreenProps) {
                 </p>
               </div>
               <p className="mt-4 text-base text-slate-700">틀린 단어 {entry.wrongWordCount}개</p>
+              <Link
+                className="mt-4 inline-flex text-sm font-semibold text-slate-600"
+                href={`/history/${entry.dayId}`}
+              >
+                상세 보기
+              </Link>
             </article>
           ))}
         </section>

@@ -7,6 +7,7 @@ export type HistoryEntry = {
   score: number;
   total: number;
   wrongWordCount: number;
+  wrongWords: string[];
 };
 
 export type ChildDashboardState = {
@@ -20,6 +21,8 @@ export type ChildDashboardState = {
   streak: number;
   historyEntries: HistoryEntry[];
   reviewBatchSize: number;
+  reviewWords: string[];
+  reviewBonusXp: number;
 };
 
 const dashboards: Record<string, ChildDashboardState> = {
@@ -33,11 +36,13 @@ const dashboards: Record<string, ChildDashboardState> = {
     xpGoal: 1500,
     streak: 12,
     historyEntries: [
-      { dayId: "day-005", title: "Day 05 Test", date: "2026.03.12", score: 17, total: 20, wrongWordCount: 3 },
-      { dayId: "day-004", title: "Day 04", date: "2026.03.11", score: 18, total: 20, wrongWordCount: 2 },
-      { dayId: "day-003", title: "Day 03", date: "2026.03.10", score: 16, total: 20, wrongWordCount: 4 }
+      { dayId: "day-005", title: "Day 05 Test", date: "2026.03.12", score: 17, total: 20, wrongWordCount: 3, wrongWords: ["adult", "camera", "magic"] },
+      { dayId: "day-004", title: "Day 04", date: "2026.03.11", score: 18, total: 20, wrongWordCount: 2, wrongWords: ["milk", "juice"] },
+      { dayId: "day-003", title: "Day 03", date: "2026.03.10", score: 16, total: 20, wrongWordCount: 4, wrongWords: ["camera", "magic", "surf", "relax"] }
     ],
-    reviewBatchSize: 10
+    reviewBatchSize: 10,
+    reviewWords: ["adult", "camera", "magic", "history", "art", "milk", "juice", "surf", "relax", "generation"],
+    reviewBonusXp: 50
   },
   "지온": {
     childId: "지온",
@@ -49,10 +54,12 @@ const dashboards: Record<string, ChildDashboardState> = {
     xpGoal: 900,
     streak: 5,
     historyEntries: [
-      { dayId: "day-002", title: "Day 02", date: "2026.03.12", score: 15, total: 20, wrongWordCount: 5 },
-      { dayId: "day-001", title: "Day 01", date: "2026.03.11", score: 18, total: 20, wrongWordCount: 2 }
+      { dayId: "day-002", title: "Day 02", date: "2026.03.12", score: 15, total: 20, wrongWordCount: 5, wrongWords: ["math", "history", "ruler", "music", "science"] },
+      { dayId: "day-001", title: "Day 01", date: "2026.03.11", score: 18, total: 20, wrongWordCount: 2, wrongWords: ["hero", "person"] }
     ],
-    reviewBatchSize: 10
+    reviewBatchSize: 10,
+    reviewWords: ["math", "history", "ruler", "music", "science", "hero", "person"],
+    reviewBonusXp: 40
   }
 };
 
@@ -67,6 +74,8 @@ export function getMockChildDashboard(childId: string): ChildDashboardState {
     xpGoal: 300,
     streak: 1,
     historyEntries: [],
-    reviewBatchSize: 10
+    reviewBatchSize: 10,
+    reviewWords: [],
+    reviewBonusXp: 30
   };
 }
