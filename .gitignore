@@ -8,5 +8,6 @@ dist/
 coverage/
 .env.local
 public/audio/generated/
+public/audio/tts/compare/
 *.tsbuildinfo
 .DS_Store
