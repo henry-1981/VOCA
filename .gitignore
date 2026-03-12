@@ -7,5 +7,6 @@ node_modules/
 dist/
 coverage/
 .env.local
+public/audio/generated/
 *.tsbuildinfo
 .DS_Store
