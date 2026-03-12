@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { getOrCreateDeviceId } from "@/lib/device/device-binding";
 import { getMissingFirebaseEnvKeys, hasFirebaseEnv } from "@/lib/firebase/client";
 import { signInWithGoogleRedirect } from "@/lib/firebase/auth";
+import { saveProvisioningDraft } from "@/lib/firebase/provisioning-draft";
 
 type FamilyProvisionFormProps = {
   defaultDeviceId?: string;
@@ -14,6 +16,7 @@ export function FamilyProvisionForm({
   const [familyName, setFamilyName] = useState("BrideVOCA Family");
   const [childAName, setChildAName] = useState("다온");
   const [childBName, setChildBName] = useState("지온");
+  const [selectedChildIndex, setSelectedChildIndex] = useState<0 | 1>(0);
   const firebaseReady = hasFirebaseEnv();
   const missingKeys = getMissingFirebaseEnvKeys();
 
@@ -54,6 +57,30 @@ export function FamilyProvisionForm({
         </label>
       </div>
 
+      <fieldset className="grid gap-2">
+        <legend className="text-sm font-semibold text-slate-700">
+          이 iPad는 누구의 기기인가요?
+        </legend>
+        <label className="flex items-center gap-3">
+          <input
+            checked={selectedChildIndex === 0}
+            name="selected-child"
+            onChange={() => setSelectedChildIndex(0)}
+            type="radio"
+          />
+          <span>{childAName}</span>
+        </label>
+        <label className="flex items-center gap-3">
+          <input
+            checked={selectedChildIndex === 1}
+            name="selected-child"
+            onChange={() => setSelectedChildIndex(1)}
+            type="radio"
+          />
+          <span>{childBName}</span>
+        </label>
+      </fieldset>
+
       <p className="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
         현재 기기 기본 ID: {defaultDeviceId}
       </p>
@@ -78,6 +105,12 @@ export function FamilyProvisionForm({
             return;
           }
 
+          saveProvisioningDraft({
+            familyName,
+            children: [childAName, childBName],
+            selectedChildIndex,
+            deviceId: getOrCreateDeviceId() || defaultDeviceId
+          });
           void signInWithGoogleRedirect();
         }}
         type="button"
