@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { selectEnglishVoiceName } from "@/lib/audio/select-english-voice";
+import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import type { LearningTestQuestion } from "@/lib/test/generate-learning-test";
@@ -27,23 +27,11 @@ export function LearningTestScreen({
   const question = questions[currentIndex];
 
   function playAudio() {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(question.audioText);
-    const voices = window.speechSynthesis.getVoices();
-    const selectedName = selectEnglishVoiceName(voices);
-    utterance.lang = "en-US";
-    utterance.rate = 0.9;
-    if (selectedName) {
-      const selectedVoice = voices.find((voice) => voice.name === selectedName);
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-    }
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+    playWordAudio({
+      text: question.audioText,
+      audioMode: question.audioMode,
+      audioUrl: question.audioUrl
+    });
   }
 
   function choose(choice: string) {

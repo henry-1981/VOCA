@@ -6,6 +6,8 @@ export type LearningTestQuestion = {
   prompt: string;
   answer: string;
   audioText: string;
+  audioMode: "tts" | "mp3";
+  audioUrl?: string;
   choices: string[];
 };
 
@@ -40,6 +42,8 @@ export function generateLearningTestQuestions(
       prompt,
       answer: correct,
       audioText: word.english,
+      audioMode: word.audioMode,
+      audioUrl: word.audioUrl,
       choices: shuffle([correct, ...shuffle(pool).slice(0, 3)])
     };
   });
