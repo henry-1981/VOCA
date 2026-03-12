@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   clearDeviceBinding,
   getOrCreateDeviceId,
@@ -26,10 +26,18 @@ type AuthSummary = {
 
 export function TestLabPanel() {
   const [authSummary, setAuthSummary] = useState<AuthSummary | null>(null);
-  const [binding, setBinding] = useState(loadDeviceBinding());
-  const [deviceId] = useState(() => getOrCreateDeviceId());
   const firebaseReady = hasFirebaseEnv();
   const missingKeys = getMissingFirebaseEnvKeys();
+  const subscribe = (callback: () => void) => {
+    window.addEventListener("lab-binding-change", callback);
+    return () => window.removeEventListener("lab-binding-change", callback);
+  };
+  const deviceId = useSyncExternalStore(subscribe, () => getOrCreateDeviceId(), () => "");
+  const binding = useSyncExternalStore(
+    subscribe,
+    () => loadDeviceBinding(),
+    () => null
+  );
 
   useEffect(() => {
     const unsubscribe = watchFirebaseUser((user) => {
@@ -47,17 +55,17 @@ export function TestLabPanel() {
   }, []);
 
   function bindChild(childId: "다온" | "지온") {
-    const nextBinding = saveDeviceBinding({
+    saveDeviceBinding({
       familyId: "mock-family",
       childId,
       deviceId: getOrCreateDeviceId()
     });
-    setBinding(nextBinding);
+    window.dispatchEvent(new Event("lab-binding-change"));
   }
 
   function clearBinding() {
     clearDeviceBinding();
-    setBinding(null);
+    window.dispatchEvent(new Event("lab-binding-change"));
   }
 
   return (
