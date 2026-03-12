@@ -33,11 +33,12 @@ export function TestLabPanel() {
     return () => window.removeEventListener("lab-binding-change", callback);
   };
   const deviceId = useSyncExternalStore(subscribe, () => getOrCreateDeviceId(), () => "");
-  const binding = useSyncExternalStore(
+  const bindingRaw = useSyncExternalStore(
     subscribe,
-    () => loadDeviceBinding(),
-    () => null
+    () => JSON.stringify(loadDeviceBinding()),
+    () => "null"
   );
+  const binding = bindingRaw ? (JSON.parse(bindingRaw) as ReturnType<typeof loadDeviceBinding>) : null;
 
   useEffect(() => {
     const unsubscribe = watchFirebaseUser((user) => {
