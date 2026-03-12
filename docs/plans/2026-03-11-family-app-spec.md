@@ -61,6 +61,12 @@ This is not a commercial account-switching product. The app should behave like a
 - This setup step exists only to connect a family, two child profiles, and each iPad
 - It is not treated as a general parent-facing management UI
 - After provisioning, normal child use should not require repeated parent interaction
+- Parent Google login is used for provisioning
+- Child Google accounts are not required for normal product use
+- For development verification:
+  - popup login may be used for desktop/local Firebase plumbing checks
+  - redirect login should be treated as the real product path for deployed web/PWA use
+- Redirect login should be considered a deployment-domain verification item, not a local-only completion gate
 
 ## Data Model Principles
 

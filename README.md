@@ -38,6 +38,13 @@ NEXT_PUBLIC_FIREBASE_APP_ID=
 - 실제 Google 로그인은 비활성화
 - 실제 Firestore read/write round-trip은 검증 불가
 
+## Auth Verification Note
+
+- Parent Google login is the intended provisioning identity.
+- Child Google accounts are not required for the product flow.
+- In local desktop development, popup-based Google login can be used to verify Firebase plumbing.
+- Redirect-based login is the intended real-world path, but should be verified again on the deployed domain for browser/PWA use.
+
 ## 오늘 구현 범위
 
 - 홈 화면

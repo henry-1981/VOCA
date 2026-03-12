@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   signOut,
+  type Auth,
   type User
 } from "firebase/auth";
 import { getFirebaseAuth } from "./client";
@@ -29,4 +30,24 @@ export function watchFirebaseUser(callback: (user: User | null) => void) {
 
 export function signOutFirebaseUser() {
   return signOut(getFirebaseAuth());
+}
+
+function waitForFirstAuthEvent(auth: Auth) {
+  return new Promise<User | null>((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+}
+
+export async function resolveFirebaseUserAfterRedirect() {
+  const auth = getFirebaseAuth();
+
+  if (typeof auth.authStateReady === "function") {
+    await auth.authStateReady();
+    return auth.currentUser;
+  }
+
+  return waitForFirstAuthEvent(auth);
 }

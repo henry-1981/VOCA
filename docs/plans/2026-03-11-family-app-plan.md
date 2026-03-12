@@ -29,6 +29,8 @@
 - Auth uses Firebase and a one-time family provisioning flow.
 - The parent signs in once during provisioning, creates or links one family record, creates two child profiles, and binds each iPad to one child.
 - This setup flow is not treated as the normal in-app parent management surface.
+- Parent Google login is the intended provisioning identity.
+- Child Google accounts are not part of the required product flow.
 - Initial word playback uses browser / OS TTS.
 - Existing Bridge VOCA MP3 assets can be explored later as an enhancement or fallback, but they are not required to ship the first family version.
 - Learn completion means the child has seen all 20 words in the Day at least once.
@@ -37,6 +39,8 @@
   - `checkpoint_test`
 - Firestore is the source of truth for live app content and progress.
 - Local JSON files exist only as an import/staging format for Day seeds.
+- Local/desktop verification may use popup-based Google login to verify Firebase plumbing.
+- Redirect-based Google login remains the target real-world path and should be verified again on the deployed domain, especially for iPad/PWA use.
 
 ## Revised Critical Execution Order
 
