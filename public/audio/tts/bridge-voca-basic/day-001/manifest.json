@@ -1,0 +1,28 @@
+{
+  "day": 1,
+  "voice": "en-US-Chirp3-HD-Kore",
+  "speakingRate": 0.88,
+  "pitch": 0.0,
+  "files": [
+    "01-adult.mp3",
+    "02-age.mp3",
+    "03-baby.mp3",
+    "04-boy.mp3",
+    "05-child.mp3",
+    "06-childhood.mp3",
+    "07-elderly.mp3",
+    "08-generation.mp3",
+    "09-gentleman.mp3",
+    "10-girl.mp3",
+    "11-guest.mp3",
+    "12-guy.mp3",
+    "13-hero.mp3",
+    "14-kid.mp3",
+    "15-lady.mp3",
+    "16-man.mp3",
+    "17-people.mp3",
+    "18-person.mp3",
+    "19-teenager.mp3",
+    "20-woman.mp3"
+  ]
+}
