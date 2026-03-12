@@ -58,3 +58,11 @@ export function saveCache<T>(key: string, value: T) {
 
   window.localStorage.setItem(`${CACHE_PREFIX}:${key}`, JSON.stringify(value));
 }
+
+export function removeCache(key: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(`${CACHE_PREFIX}:${key}`);
+}
