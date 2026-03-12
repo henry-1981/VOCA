@@ -19,6 +19,12 @@ export function TodayStage({
 }: TodayStageProps) {
   const isCheckpoint = dayKind === "checkpoint_test";
   const learnPrimary = !isCheckpoint && stage === "not_started";
+  const statusMessage =
+    stage === "test_completed"
+      ? "오늘의 학습이 완료되었습니다."
+      : isCheckpoint
+        ? "지금 바로 종합 테스트를 시작하세요."
+        : "오늘 단어를 익히고 테스트합니다.";
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#efe7ff,_#fff_45%,_#e7f2ff)] px-6 py-8">
@@ -34,11 +40,13 @@ export function TodayStage({
           </p>
         </header>
 
-        <section className="rounded-[1.75rem] bg-slate-950 p-6 text-white">
+        <section
+          className={`rounded-[1.75rem] p-6 text-white ${isCheckpoint ? "bg-violet-700 shadow-[0_16px_40px_rgba(109,40,217,0.24)]" : "bg-slate-950"}`}
+        >
           <p className="text-sm font-semibold text-slate-300">오늘의 Day</p>
           <p className="mt-3 text-3xl font-black">{dayTitle}</p>
           <p className="mt-2 text-sm text-slate-300">
-            {isCheckpoint ? "종합 점검 Day입니다." : "오늘 단어를 익히고 테스트합니다."}
+            {statusMessage}
           </p>
         </section>
 
@@ -71,7 +79,7 @@ export function TodayStage({
           </>
         ) : (
           <Link
-            className="rounded-[1.75rem] bg-slate-950 px-6 py-6 text-left text-white"
+            className="rounded-[1.75rem] bg-slate-950 px-6 py-6 text-left text-white shadow-[0_18px_40px_rgba(15,23,42,0.2)]"
             href={buildChildHref({
               pathname: "/test",
               childId,
@@ -80,6 +88,7 @@ export function TodayStage({
           >
             <p className="text-sm font-semibold">CHECKPOINT TEST</p>
             <p className="mt-2 text-2xl font-black">종합 테스트 시작</p>
+            <p className="mt-3 text-sm text-slate-300">지금 바로 종합 테스트를 시작하세요.</p>
           </Link>
         )}
       </div>

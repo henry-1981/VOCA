@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { selectEnglishVoiceName } from "@/lib/audio/select-english-voice";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import type { WordEntry } from "@/lib/types/domain";
@@ -34,8 +35,16 @@ export function LearnCard({
     }
 
     const utterance = new SpeechSynthesisUtterance(word.english);
+    const voices = window.speechSynthesis.getVoices();
+    const selectedName = selectEnglishVoiceName(voices);
     utterance.lang = "en-US";
     utterance.rate = 0.9;
+    if (selectedName) {
+      const selectedVoice = voices.find((voice) => voice.name === selectedName);
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+    }
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   }
@@ -57,6 +66,9 @@ export function LearnCard({
 
         <section className="flex flex-col items-center gap-4 rounded-[1.75rem] bg-slate-950 px-6 py-10 text-center text-white">
           <h1 className="text-5xl font-black tracking-tight">{word.english}</h1>
+          {word.pronunciation ? (
+            <p className="text-base font-semibold text-slate-300">/{word.pronunciation}/</p>
+          ) : null}
           <p className="text-2xl font-bold text-slate-100">{word.meaning}</p>
           <button
             aria-label="play pronunciation"
@@ -66,9 +78,16 @@ export function LearnCard({
           >
             ▶
           </button>
-          <p className="text-sm text-slate-300">
-            {played ? "다시 들을 수 있어요." : word.exampleSentence ?? "예문은 나중에 추가할 수 있습니다."}
-          </p>
+          {word.exampleSentence ? (
+            <div className="space-y-1 text-sm text-slate-300">
+              <p>{word.exampleSentence}</p>
+              {word.exampleKo ? <p>{word.exampleKo}</p> : null}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-300">
+              {played ? "다시 들을 수 있어요." : "예문은 나중에 추가할 수 있습니다."}
+            </p>
+          )}
         </section>
 
         <footer className="grid gap-3 md:grid-cols-2">

@@ -14,7 +14,10 @@ describe("LearnCard", () => {
         word={{
           id: "adult",
           english: "adult",
+          pronunciation: "ədʌlt",
           meaning: "어른 성인",
+          exampleSentence: "The animation is also funny for adults.",
+          exampleKo: "그 애니메이션은 어른들에게도 재미있다.",
           audioMode: "tts",
           illustrationMode: "optional"
         }}
@@ -22,6 +25,9 @@ describe("LearnCard", () => {
     );
 
     expect(screen.getByText("adult")).toBeInTheDocument();
+    expect(screen.getByText("/ədʌlt/")).toBeInTheDocument();
+    expect(screen.getByText("The animation is also funny for adults.")).toBeInTheDocument();
+    expect(screen.getByText("그 애니메이션은 어른들에게도 재미있다.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /play pronunciation/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /다음 단어/i })).toHaveAttribute(
       "href",

@@ -61,6 +61,10 @@ export function CheckpointTestScreen({
     setSelectedChoice(null);
   }
 
+  function submitTypedAnswer() {
+    advance(normalizeAnswer(typedAnswer) === normalizeAnswer(question.answer));
+  }
+
   if (completed) {
     return (
       <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#e7ebff,_#fff_50%,_#f5f8ff)] px-6 py-8">
@@ -97,11 +101,19 @@ export function CheckpointTestScreen({
           </span>
         </header>
 
-        <section className="rounded-[1.75rem] bg-slate-950 p-6 text-white">
-          <p className="text-sm font-semibold text-slate-300">{question.section}</p>
-          <h1 className="mt-3 text-3xl font-black">{question.prompt}</h1>
-          <p className="mt-3 text-sm text-slate-300">{getHelperText(question)}</p>
-        </section>
+        {question.type === "choice" ? (
+          <section className="rounded-[1.75rem] bg-violet-700 p-6 text-white shadow-[0_16px_40px_rgba(109,40,217,0.24)]">
+            <p className="text-sm font-semibold text-violet-100">지금 바로 종합 테스트를 시작하세요.</p>
+            <h1 className="mt-3 text-3xl font-black">{question.prompt}</h1>
+            <p className="mt-3 text-sm text-violet-100">{getHelperText(question)}</p>
+          </section>
+        ) : (
+          <section className="rounded-[1.75rem] bg-slate-950 p-6 text-white">
+            <p className="text-sm font-semibold text-slate-300">{question.section}</p>
+            <h1 className="mt-3 text-3xl font-black">{question.prompt}</h1>
+            <p className="mt-3 text-sm text-slate-300">{getHelperText(question)}</p>
+          </section>
+        )}
 
         {question.choices.length > 0 ? (
           <section className="grid gap-3">
@@ -124,11 +136,16 @@ export function CheckpointTestScreen({
             <input
               className="rounded-[1.5rem] border border-slate-200 px-5 py-4 text-xl font-bold"
               onChange={(event) => setTypedAnswer(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  submitTypedAnswer();
+                }
+              }}
               value={typedAnswer}
             />
             <button
               className="big-button border-0 bg-slate-950 text-white"
-              onClick={() => advance(normalizeAnswer(typedAnswer) === normalizeAnswer(question.answer))}
+              onClick={submitTypedAnswer}
               type="button"
             >
               제출

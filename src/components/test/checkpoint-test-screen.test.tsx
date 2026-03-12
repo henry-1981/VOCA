@@ -66,6 +66,32 @@ describe("CheckpointTestScreen", () => {
     expect(screen.getByText(/뜻을 번역해서 입력하세요/i)).toBeInTheDocument();
   });
 
+  it("submits typed answers on Enter for input questions", () => {
+    render(
+      <CheckpointTestScreen
+        childId="다온"
+        dayId="day-005"
+        dayTitle="Day 05 Test"
+        questions={[
+          {
+            section: "A",
+            questionId: 1,
+            type: "word_search",
+            prompt: "음악",
+            choices: [],
+            answer: "music"
+          }
+        ]}
+      />
+    );
+
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "music" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    expect(screen.getByRole("link", { name: /today로 돌아가기/i })).toBeInTheDocument();
+  });
+
   it("shows a return CTA after checkpoint completion", () => {
     render(
       <CheckpointTestScreen
