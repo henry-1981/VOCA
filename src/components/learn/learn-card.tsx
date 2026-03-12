@@ -25,6 +25,7 @@ export function LearnCard({
   word
 }: LearnCardProps) {
   const [played, setPlayed] = useState(false);
+  const [playedExample, setPlayedExample] = useState(false);
   const isLastWord = currentIndex >= total;
 
   function play() {
@@ -33,6 +34,19 @@ export function LearnCard({
       text: word.english,
       audioMode: word.audioMode,
       audioUrl: word.audioUrl
+    });
+  }
+
+  function playExample() {
+    if (!word.exampleSentence) {
+      return;
+    }
+
+    setPlayedExample(true);
+    playWordAudio({
+      text: word.exampleSentence,
+      audioMode: word.exampleAudioMode ?? word.audioMode,
+      audioUrl: word.exampleAudioUrl
     });
   }
 
@@ -66,13 +80,25 @@ export function LearnCard({
             ▶
           </button>
           {word.exampleSentence ? (
+            <button
+              aria-label="play example audio"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-white/10 px-4 text-sm font-semibold"
+              onClick={playExample}
+              type="button"
+            >
+              예문 듣기
+            </button>
+          ) : null}
+          {word.exampleSentence ? (
             <div className="space-y-1 text-sm text-slate-300">
               <p>{word.exampleSentence}</p>
               {word.exampleKo ? <p>{word.exampleKo}</p> : null}
             </div>
           ) : (
             <p className="text-sm text-slate-300">
-              {played ? "다시 들을 수 있어요." : "예문은 나중에 추가할 수 있습니다."}
+              {played || playedExample
+                ? "다시 들을 수 있어요."
+                : "예문은 나중에 추가할 수 있습니다."}
             </p>
           )}
         </section>

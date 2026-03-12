@@ -76,13 +76,25 @@ def main() -> int:
 
     generated = []
     for word in day["words"]:
-      file_name = f"{word['order']:02d}-{word['id']}.mp3"
-      output_path = output_dir / file_name
-      audio_bytes = synthesize(word["english"], token, project)
-      output_path.write_bytes(audio_bytes)
+      word_file_name = f"{word['order']:02d}-{word['id']}.mp3"
+      word_output_path = output_dir / word_file_name
+      word_audio_bytes = synthesize(word["english"], token, project)
+      word_output_path.write_bytes(word_audio_bytes)
       word["audioMode"] = "mp3"
-      word["audioUrl"] = f"/audio/tts/bridge-voca-basic/day-{args.day:03d}/{file_name}"
-      generated.append(file_name)
+      word["audioUrl"] = f"/audio/tts/bridge-voca-basic/day-{args.day:03d}/{word_file_name}"
+      generated.append(word_file_name)
+
+      example_sentence = word.get("exampleSentence")
+      if example_sentence:
+        example_file_name = f"{word['order']:02d}-{word['id']}-example.mp3"
+        example_output_path = output_dir / example_file_name
+        example_audio_bytes = synthesize(example_sentence, token, project)
+        example_output_path.write_bytes(example_audio_bytes)
+        word["exampleAudioMode"] = "mp3"
+        word["exampleAudioUrl"] = (
+            f"/audio/tts/bridge-voca-basic/day-{args.day:03d}/{example_file_name}"
+        )
+        generated.append(example_file_name)
 
     day_path.write_text(json.dumps(day, ensure_ascii=False, indent=2) + "\n")
     manifest_path = output_dir / "manifest.json"

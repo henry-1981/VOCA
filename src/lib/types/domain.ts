@@ -36,6 +36,8 @@ export type WordEntry = {
   exampleKo?: string;
   audioMode: "tts" | "mp3";
   audioUrl?: string;
+  exampleAudioMode?: "tts" | "mp3";
+  exampleAudioUrl?: string;
   illustrationMode: "none" | "optional" | "required";
   illustrationUrl?: string;
 };

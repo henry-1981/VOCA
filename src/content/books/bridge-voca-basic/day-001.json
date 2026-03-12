@@ -16,7 +16,9 @@
       "exampleKo": "그 애니메이션은 어른들에게도 재미있다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/01-adult.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/01-adult.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/01-adult-example.mp3"
     },
     {
       "id": "age",
@@ -29,7 +31,9 @@
       "exampleKo": "그는 그의 나이보다 더 늙어 보인다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/02-age.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/02-age.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/02-age-example.mp3"
     },
     {
       "id": "baby",
@@ -42,7 +46,9 @@
       "exampleKo": "그 아기는 바나나를 먹고 있다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/03-baby.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/03-baby.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/03-baby-example.mp3"
     },
     {
       "id": "boy",
@@ -55,7 +61,9 @@
       "exampleKo": "그 소년은 학교에 가는 것을 좋아한다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/04-boy.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/04-boy.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/04-boy-example.mp3"
     },
     {
       "id": "child",
@@ -68,7 +76,9 @@
       "exampleKo": "그 어린이는 바닥에 물을 엎질렀다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/05-child.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/05-child.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/05-child-example.mp3"
     },
     {
       "id": "childhood",
@@ -81,7 +91,9 @@
       "exampleKo": "나는 어린 시절에 친구들이 많았다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/06-childhood.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/06-childhood.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/06-childhood-example.mp3"
     },
     {
       "id": "elderly",
@@ -94,7 +106,9 @@
       "exampleKo": "연세 드신 분들에게 예의 바르게 행동해라.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/07-elderly.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/07-elderly.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/07-elderly-example.mp3"
     },
     {
       "id": "generation",
@@ -107,7 +121,9 @@
       "exampleKo": "청바지는 모든 세대에게 인기가 있다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/08-generation.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/08-generation.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/08-generation-example.mp3"
     },
     {
       "id": "gentleman",
@@ -120,7 +136,9 @@
       "exampleKo": "그 신사는 커피를 사고 있다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/09-gentleman.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/09-gentleman.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/09-gentleman-example.mp3"
     },
     {
       "id": "girl",
@@ -133,7 +151,9 @@
       "exampleKo": "그 소녀는 영어 알파벳을 쓸 수 있다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/10-girl.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/10-girl.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/10-girl-example.mp3"
     },
     {
       "id": "guest",
@@ -146,7 +166,9 @@
       "exampleKo": "그 손님은 몇 시에 도착했니?",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/11-guest.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/11-guest.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/11-guest-example.mp3"
     },
     {
       "id": "guy",
@@ -159,7 +181,9 @@
       "exampleKo": "그는 매우 키가 큰 남자이구나.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/12-guy.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/12-guy.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/12-guy-example.mp3"
     },
     {
       "id": "hero",
@@ -172,7 +196,9 @@
       "exampleKo": "그 영화는 진정한 영웅에 관한 것이다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/13-hero.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/13-hero.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/13-hero-example.mp3"
     },
     {
       "id": "kid",
@@ -185,7 +211,9 @@
       "exampleKo": "아이들은 일찍 잠자리에 들어야 한다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/14-kid.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/14-kid.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/14-kid-example.mp3"
     },
     {
       "id": "lady",
@@ -198,7 +226,9 @@
       "exampleKo": "한 숙녀가 식당으로 걸어 들어갔다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/15-lady.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/15-lady.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/15-lady-example.mp3"
     },
     {
       "id": "man",
@@ -211,7 +241,9 @@
       "exampleKo": "그 젊은 남자는 나무 뒤에 서 있다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/16-man.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/16-man.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/16-man-example.mp3"
     },
     {
       "id": "people",
@@ -224,7 +256,9 @@
       "exampleKo": "쇼핑몰 안에 사람들이 많이 있다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/17-people.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/17-people.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/17-people-example.mp3"
     },
     {
       "id": "person",
@@ -237,7 +271,9 @@
       "exampleKo": "Mike는 따뜻하고 친절한 사람이다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/18-person.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/18-person.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/18-person-example.mp3"
     },
     {
       "id": "teenager",
@@ -250,7 +286,9 @@
       "exampleKo": "그 십 대는 매우 열심히 공부했다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/19-teenager.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/19-teenager.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/19-teenager-example.mp3"
     },
     {
       "id": "woman",
@@ -263,7 +301,9 @@
       "exampleKo": "나는 전화로 그 여자와 이야기했다.",
       "audioMode": "mp3",
       "illustrationMode": "optional",
-      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/20-woman.mp3"
+      "audioUrl": "/audio/tts/bridge-voca-basic/day-001/20-woman.mp3",
+      "exampleAudioMode": "mp3",
+      "exampleAudioUrl": "/audio/tts/bridge-voca-basic/day-001/20-woman-example.mp3"
     }
   ]
 }

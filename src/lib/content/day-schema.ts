@@ -55,6 +55,7 @@ export function parseDayContent(input: DayContent): DayContent {
       exampleKo: entry.exampleKo?.trim(),
       order: entry.order ?? index + 1,
       audioMode: entry.audioMode ?? "tts",
+      exampleAudioMode: entry.exampleAudioMode ?? "tts",
       illustrationMode: entry.illustrationMode ?? "optional"
     };
 
