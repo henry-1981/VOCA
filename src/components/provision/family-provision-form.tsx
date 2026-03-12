@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import { getOrCreateDeviceId } from "@/lib/device/device-binding";
+import { saveDeviceBinding } from "@/lib/device/device-binding";
 import { getMissingFirebaseEnvKeys, hasFirebaseEnv } from "@/lib/firebase/client";
-import { signInWithGoogleRedirect } from "@/lib/firebase/auth";
+import {
+  signInWithGooglePopup,
+  signInWithGoogleRedirect
+} from "@/lib/firebase/auth";
+import { provisionFamily } from "@/lib/firebase/provision-family";
 import { saveProvisioningDraft } from "@/lib/firebase/provisioning-draft";
 
 type FamilyProvisionFormProps = {
@@ -17,6 +22,7 @@ export function FamilyProvisionForm({
   const [childAName, setChildAName] = useState("다온");
   const [childBName, setChildBName] = useState("지온");
   const [selectedChildIndex, setSelectedChildIndex] = useState<0 | 1>(0);
+  const [popupMessage, setPopupMessage] = useState("");
   const firebaseReady = hasFirebaseEnv();
   const missingKeys = getMissingFirebaseEnvKeys();
 
@@ -115,8 +121,57 @@ export function FamilyProvisionForm({
         }}
         type="button"
       >
-        Google로 시작
+        Google 리디렉트로 시작
       </button>
+
+      <button
+        className="big-button border-0 bg-white text-slate-950 ring-1 ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+        disabled={!firebaseReady}
+        onClick={async () => {
+          if (!firebaseReady) {
+            return;
+          }
+
+          try {
+            setPopupMessage("팝업 로그인과 provisioning을 진행하는 중입니다.");
+            const deviceId = getOrCreateDeviceId() || defaultDeviceId;
+            const result = await signInWithGooglePopup();
+            const payload = await provisionFamily({
+              familyName,
+              children: [childAName, childBName],
+              selectedChildIndex,
+              deviceId,
+              ownerUid: result.user.uid
+            });
+
+            saveDeviceBinding({
+              deviceId: payload.deviceBinding.deviceId,
+              familyId: payload.deviceBinding.familyId,
+              childId: payload.deviceBinding.childId,
+              boundAt: payload.deviceBinding.boundAt,
+              lastValidatedAt: payload.deviceBinding.lastValidatedAt
+            });
+
+            setPopupMessage("팝업 provisioning이 완료되었습니다. 홈으로 이동합니다.");
+            window.setTimeout(() => {
+              window.location.href = "/";
+            }, 1200);
+          } catch (error) {
+            setPopupMessage(
+              error instanceof Error ? error.message : "Popup provisioning failed"
+            );
+          }
+        }}
+        type="button"
+      >
+        Google 팝업 테스트
+      </button>
+
+      {popupMessage ? (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-700">
+          {popupMessage}
+        </div>
+      ) : null}
     </section>
   );
 }

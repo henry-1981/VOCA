@@ -1,5 +1,4 @@
-import { randomUUID } from "node:crypto";
-import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore";
 import type {
   ChildProfile,
   DeviceBinding,
@@ -24,12 +23,19 @@ type ProvisionFamilyPayload = {
   deviceBinding: DeviceBinding;
 };
 
+function runtimeId() {
+  return (
+    globalThis.crypto?.randomUUID?.() ??
+    `runtime-${Math.random().toString(36).slice(2, 10)}`
+  );
+}
+
 function toChildId(name: string) {
   return name
     .trim()
     .toLowerCase()
     .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9가-힣-]/g, "") || randomUUID();
+    .replace(/[^a-z0-9가-힣-]/g, "") || runtimeId();
 }
 
 export function createFamilyProvisionPayload({
@@ -38,7 +44,7 @@ export function createFamilyProvisionPayload({
   deviceId,
   ownerUid = "pending-owner",
   selectedChildIndex = 0,
-  familyId = randomUUID()
+  familyId = runtimeId()
 }: ProvisionFamilyInput): ProvisionFamilyPayload {
   const now = new Date().toISOString();
   const childProfiles: [ChildProfile, ChildProfile] = [
@@ -85,12 +91,13 @@ export function createFamilyProvisionPayload({
 export async function provisionFamily(input: ProvisionFamilyInput) {
   const payload = createFamilyProvisionPayload(input);
   const db = getFirebaseDb();
-  const batch = writeBatch(db);
 
-  batch.set(doc(db, paths.family(payload.family.id)), {
+  await setDoc(doc(db, paths.family(payload.family.id)), {
     ...payload.family,
     updatedAt: serverTimestamp()
   });
+
+  const batch = writeBatch(db);
 
   payload.children.forEach((child) => {
     batch.set(doc(db, paths.child(payload.family.id, child.id)), {
