@@ -1,5 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getRewardPreview } from "@/lib/character/reward-preview";
+
+const AVATAR_MAP: Record<string, string> = {
+  "다온": "/avatars/daon-nobg.png",
+  "지온": "/avatars/jion-nobg.png",
+};
 
 type CharacterScreenProps = {
   childName: string;
@@ -25,7 +31,8 @@ export function CharacterScreen({
   });
 
   const xpPercent = xpGoal > 0 ? Math.min((xp / xpGoal) * 100, 100) : 0;
-  const initial = childName.charAt(0);
+  const avatarSrc = AVATAR_MAP[childName] ?? AVATAR_MAP["다온"];
+  const levelTitle = level >= 10 ? "Archmage" : level >= 5 ? "Apprentice Mage" : "Student Mage";
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,_#140f2e,_#1c173e_50%,_#0f1225)] px-6 py-8 text-white">
@@ -57,14 +64,24 @@ export function CharacterScreen({
         <section className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
           <div className="flex min-h-[32rem] items-center justify-center rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_rgba(255,255,255,0.04)_60%,_transparent)]">
             {/* Avatar with magic aura */}
-            <div className="relative flex h-[28rem] w-80 flex-col items-center justify-center rounded-[2rem] bg-white/10 text-center">
+            <div className="relative flex h-[28rem] w-80 flex-col items-center justify-center rounded-[2rem] bg-white/10 text-center" data-testid="avatar-card">
               {/* Magic aura glow */}
               <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_center,_rgba(168,85,247,0.15),_rgba(128,90,255,0.08)_40%,_transparent_70%)]" />
-              {/* Avatar circle */}
-              <div className="animate-glow-pulse relative flex h-32 w-32 items-center justify-center rounded-full border-2 border-violet-300/30 bg-[radial-gradient(circle,_rgba(168,85,247,0.3),_rgba(88,28,135,0.5))] shadow-[0_0_40px_rgba(168,85,247,0.25)]">
-                <span className="text-5xl font-black text-white" data-testid="avatar-initial">{initial}</span>
+              {/* Level title */}
+              <p className="relative text-sm font-semibold tracking-widest text-violet-300/80 uppercase">{levelTitle}</p>
+              {/* Avatar image */}
+              <div className="animate-glow-pulse relative mt-3 flex h-48 w-48 items-center justify-center rounded-full shadow-[0_0_60px_rgba(168,85,247,0.3)]">
+                <div className="pointer-events-none absolute inset-0 rounded-full border-2 border-violet-300/30 bg-[radial-gradient(circle,_rgba(168,85,247,0.2),_rgba(88,28,135,0.3))]" />
+                <Image
+                  src={avatarSrc}
+                  alt={`${childName} avatar`}
+                  width={180}
+                  height={180}
+                  className="relative z-10 drop-shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+                  priority
+                />
               </div>
-              <p className="relative mt-6 text-5xl font-black">{childName}</p>
+              <p className="relative mt-5 text-4xl font-black">{childName}</p>
             </div>
           </div>
 
