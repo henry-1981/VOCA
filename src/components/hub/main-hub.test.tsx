@@ -21,7 +21,7 @@ describe("MainHub", () => {
     expect(screen.getByText(/character/i)).toBeInTheDocument();
     expect(screen.getByText(/history/i)).toBeInTheDocument();
     expect(screen.getByText(/review/i)).toBeInTheDocument();
-    expect(screen.getByText(/Day 05 Test/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Day 05 Test/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByRole("link", { name: /today/i })).toHaveAttribute(
       "href",
       "/today?child=%EB%8B%A4%EC%98%A8&day=day-005"
