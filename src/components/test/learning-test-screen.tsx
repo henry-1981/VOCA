@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
@@ -17,6 +17,16 @@ type LearningTestScreenProps = {
   completionLabel?: string;
 };
 
+/** Random sparkle positions seeded per render */
+function randomSparkles(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    top: `${30 + Math.random() * 40}%`,
+    left: `${20 + Math.random() * 60}%`,
+    delay: `${i * 0.06}s`
+  }));
+}
+
 export function LearningTestScreen({
   childId,
   dayId,
@@ -30,6 +40,27 @@ export function LearningTestScreen({
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
+
+  // Gamification effect states
+  const [showCorrectEffect, setShowCorrectEffect] = useState(false);
+  const [showWrongEffect, setShowWrongEffect] = useState(false);
+  const [combo, setCombo] = useState(0);
+  const [xpFloat, setXpFloat] = useState<string | null>(null);
+  const [showComboAnim, setShowComboAnim] = useState(false);
+
+  // Timeout cleanup refs
+  const effectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const xpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const comboAnimTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (effectTimerRef.current) clearTimeout(effectTimerRef.current);
+      if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
+      if (comboAnimTimerRef.current) clearTimeout(comboAnimTimerRef.current);
+    };
+  }, []);
+
   const isReviewMode = mode === "review";
   const question = questions[currentIndex];
   const answered = selectedChoice !== null;
@@ -88,9 +119,46 @@ export function LearningTestScreen({
     }
 
     setSelectedChoice(choice);
+    const isCorrect = choice === question.answer;
 
-    if (choice === question.answer) {
+    if (isCorrect) {
       setScore((value) => value + 1);
+
+      const newCombo = combo + 1;
+      setCombo(newCombo);
+
+      // Show effects (skip sparkle/combo in review mode)
+      if (!isReviewMode) {
+        setShowCorrectEffect(true);
+        effectTimerRef.current = setTimeout(() => {
+          setShowCorrectEffect(false);
+        }, 300);
+
+        // Show combo animation when reaching 3+
+        if (newCombo >= 3) {
+          setShowComboAnim(true);
+          comboAnimTimerRef.current = setTimeout(() => {
+            setShowComboAnim(false);
+          }, 500);
+        }
+      }
+
+      // XP float (shown in both modes, different style)
+      const xpAmount = !isReviewMode && newCombo >= 5 ? 15 : 5;
+      setXpFloat(`+${xpAmount} XP`);
+      xpTimerRef.current = setTimeout(() => {
+        setXpFloat(null);
+      }, 600);
+    } else {
+      // Wrong answer
+      setCombo(0);
+
+      if (!isReviewMode) {
+        setShowWrongEffect(true);
+        effectTimerRef.current = setTimeout(() => {
+          setShowWrongEffect(false);
+        }, 400);
+      }
     }
 
     window.setTimeout(() => {
@@ -150,7 +218,42 @@ export function LearningTestScreen({
   }
 
   return (
-    <main className={`min-h-screen px-6 py-8 ${outerBackgroundClass}`}>
+    <main className={`relative min-h-screen px-6 py-8 ${outerBackgroundClass}`}>
+      {/* Green flash overlay for correct answer */}
+      {showCorrectEffect ? (
+        <div
+          className="pointer-events-none fixed inset-0 z-50 bg-emerald-400 animate-flash-correct"
+          data-testid="correct-effect"
+        >
+          {/* Sparkle characters */}
+          {randomSparkles(4).map((s) => (
+            <span
+              key={s.id}
+              className="absolute text-2xl text-amber-300 animate-sparkle"
+              style={{ top: s.top, left: s.left, animationDelay: s.delay }}
+            >
+              ✦
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      {/* XP floating number */}
+      {xpFloat ? (
+        <div
+          className={`pointer-events-none fixed top-1/3 left-1/2 z-50 -translate-x-1/2 animate-float-up font-black ${
+            isReviewMode
+              ? "text-lg text-slate-400"
+              : xpFloat.includes("15")
+                ? "text-3xl text-amber-400"
+                : "text-xl text-amber-500"
+          }`}
+          data-testid="xp-float"
+        >
+          {xpFloat}
+        </div>
+      ) : null}
+
       <div
         className={`mx-auto flex max-w-2xl flex-col gap-5 rounded-[2rem] p-8 ${frameClass}`}
       >
@@ -225,7 +328,25 @@ export function LearningTestScreen({
           </div>
         </section>
 
-        <section className="grid grid-cols-2 gap-3">
+        {/* Combo counter */}
+        {!isReviewMode && combo >= 3 ? (
+          <div
+            className={`flex items-center justify-center gap-2 ${showComboAnim ? "animate-scale-bounce" : ""}`}
+            data-testid="combo-counter"
+          >
+            <span className={`font-black text-amber-500 ${combo >= 5 ? "text-3xl" : "text-xl"}`}>
+              x{combo}
+            </span>
+            {combo >= 5 ? (
+              <span className="text-sm font-bold text-amber-600">COMBO BONUS!</span>
+            ) : null}
+          </div>
+        ) : null}
+
+        <section
+          className={`grid grid-cols-2 gap-3 ${showWrongEffect ? "animate-shake" : ""}`}
+          data-testid={showWrongEffect ? "wrong-effect" : undefined}
+        >
           {question.choices.map((choice) => {
             const isSelected = selectedChoice === choice;
             const isCorrect = answered && choice === correctChoice;
