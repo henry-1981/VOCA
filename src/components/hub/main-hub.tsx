@@ -16,6 +16,15 @@ type MainHubProps = {
   dayStage?: "not_started" | "learn_completed" | "test_completed" | "completed";
 };
 
+function getTimeOfDayTheme() {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 7) return { bg: "from-pink-300/20 via-orange-200/10 to-purple-900/80", starOpacity: "opacity-20" };
+  if (hour >= 7 && hour < 12) return { bg: "from-sky-300/15 via-blue-200/10 to-purple-900/70", starOpacity: "opacity-0" };
+  if (hour >= 12 && hour < 17) return { bg: "from-sky-400/10 via-blue-300/8 to-purple-900/75", starOpacity: "opacity-0" };
+  if (hour >= 17 && hour < 20) return { bg: "from-purple-600/30 via-orange-400/15 to-indigo-900/80", starOpacity: "opacity-60" };
+  return { bg: "from-indigo-950/40 via-purple-900/30 to-indigo-900/90", starOpacity: "opacity-100" };
+}
+
 export function MainHub({
   childId,
   currentDayId,
@@ -26,6 +35,8 @@ export function MainHub({
   previewMode,
   dayStage = "not_started"
 }: MainHubProps) {
+  const timeTheme = getTimeOfDayTheme();
+
   // Initialize toast as visible when streak > 0, then fade out after 800ms
   const [showStreakToast, setShowStreakToast] = useState(streak > 0);
 
@@ -58,8 +69,10 @@ export function MainHub({
   ];
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#3b2d73,_#19142f_44%,_#090d18_78%)] px-5 py-6 text-white sm:px-6 sm:py-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#3b2d73,_#19142f_44%,_#090d18_78%)] px-5 py-6 text-white sm:px-6 sm:py-8">
+      {/* Time-of-day gradient overlay */}
+      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${timeTheme.bg} transition-colors duration-1000`} />
+      <div className="relative mx-auto flex max-w-6xl flex-col gap-5">
         <header className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,_rgba(20,24,49,0.92),_rgba(40,28,80,0.84))] px-5 py-5 shadow-[0_25px_80px_rgba(5,8,20,0.5)] sm:px-7">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,224,145,0.22),_transparent_32%),radial-gradient(circle_at_top_left,_rgba(166,136,255,0.16),_transparent_35%)]" />
           <div className="relative flex items-start justify-between gap-4">
@@ -127,9 +140,9 @@ export function MainHub({
             <span>Front Gate</span>
             <span>Moon Hall</span>
           </div>
-          <div className="pointer-events-none absolute left-[12%] top-24 h-3 w-3 animate-pulse rounded-full bg-amber-100/80 shadow-[0_0_18px_rgba(255,248,196,0.9)]" />
-          <div className="pointer-events-none absolute right-[16%] top-32 h-2 w-2 animate-pulse rounded-full bg-violet-100/80 shadow-[0_0_16px_rgba(224,231,255,0.85)]" />
-          <div className="pointer-events-none absolute right-[24%] top-[52%] h-2.5 w-2.5 animate-pulse rounded-full bg-sky-100/80 shadow-[0_0_14px_rgba(186,230,253,0.75)]" />
+          <div className={`pointer-events-none absolute left-[12%] top-24 h-3 w-3 animate-pulse rounded-full bg-amber-100/80 shadow-[0_0_18px_rgba(255,248,196,0.9)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
+          <div className={`pointer-events-none absolute right-[16%] top-32 h-2 w-2 animate-pulse rounded-full bg-violet-100/80 shadow-[0_0_16px_rgba(224,231,255,0.85)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
+          <div className={`pointer-events-none absolute right-[24%] top-[52%] h-2.5 w-2.5 animate-pulse rounded-full bg-sky-100/80 shadow-[0_0_14px_rgba(186,230,253,0.75)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
 
           <div className="mx-auto flex max-w-5xl flex-col items-center gap-5">
             <div className="pointer-events-none flex w-full max-w-3xl items-center justify-between px-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
@@ -221,8 +234,8 @@ export function MainHub({
               <div className="relative flex w-full flex-col items-center">
                 <div className="pointer-events-none absolute -top-3 h-8 w-48 rounded-full bg-amber-100/20 blur-xl" />
                 <div className="pointer-events-none absolute bottom-6 h-20 w-64 rounded-full bg-indigo-200/18 blur-2xl" />
-                <div className="pointer-events-none absolute left-[20%] top-12 h-2 w-2 animate-pulse rounded-full bg-amber-100/60 shadow-[0_0_18px_rgba(255,236,179,0.75)]" />
-                <div className="pointer-events-none absolute right-[22%] top-20 h-1.5 w-1.5 animate-pulse rounded-full bg-violet-100/70 shadow-[0_0_16px_rgba(220,205,255,0.75)]" />
+                <div className={`pointer-events-none absolute left-[20%] top-12 h-2 w-2 animate-pulse rounded-full bg-amber-100/60 shadow-[0_0_18px_rgba(255,236,179,0.75)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
+                <div className={`pointer-events-none absolute right-[22%] top-20 h-1.5 w-1.5 animate-pulse rounded-full bg-violet-100/70 shadow-[0_0_16px_rgba(220,205,255,0.75)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
                 <div className="pointer-events-none absolute bottom-0 h-16 w-[70%] rounded-[100%] bg-[radial-gradient(circle,_rgba(255,215,140,0.18),_transparent_68%)] blur-2xl" />
 
                 <div className="relative flex h-[22rem] w-[17rem] items-center justify-center rounded-[2.6rem] border border-white/12 bg-[linear-gradient(180deg,_rgba(251,251,255,0.14),_rgba(255,255,255,0.05))] px-6 text-center text-white shadow-[0_25px_70px_rgba(5,8,20,0.35)] backdrop-blur-md transition duration-300 hover:-translate-y-1 sm:h-[24rem] sm:w-[19rem]">
