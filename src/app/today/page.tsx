@@ -1,7 +1,10 @@
+import type { DayInfo } from "@/components/today/day-selector-modal";
 import { TodayStageContainer } from "@/components/today/today-stage-container";
+import { getBridgeVocaBasicDays } from "@/lib/content/load-day";
+import { getBridgeVocaBasicTestDays } from "@/lib/content/load-test-day";
 import { resolveDay } from "@/lib/content/resolve-day";
-import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 import type { MockDayStage } from "@/lib/mock/day-stage";
+import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 
 type TodayPageProps = {
   searchParams?: Promise<{
@@ -22,6 +25,21 @@ export default async function TodayPage({ searchParams }: TodayPageProps) {
       ? params.stage
       : "not_started";
 
+  const allDays: DayInfo[] = [
+    ...getBridgeVocaBasicDays().map((d) => ({
+      id: d.id,
+      title: d.title,
+      completed: false,
+      isCheckpoint: false,
+    })),
+    ...getBridgeVocaBasicTestDays().map((d) => ({
+      id: d.id,
+      title: d.title,
+      completed: false,
+      isCheckpoint: true,
+    })),
+  ].sort((a, b) => a.id.localeCompare(b.id));
+
   return (
     <TodayStageContainer
       childId={dashboard.childId}
@@ -29,6 +47,7 @@ export default async function TodayPage({ searchParams }: TodayPageProps) {
       dayKind={resolved.kind}
       dayTitle={resolved.day.title}
       initialStage={stage}
+      allDays={allDays}
     />
   );
 }

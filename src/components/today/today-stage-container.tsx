@@ -6,6 +6,7 @@ import {
   type MockDayStage
 } from "@/lib/mock/day-stage";
 import type { DayKind } from "@/lib/types/domain";
+import type { DayInfo } from "./day-selector-modal";
 import { TodayStage } from "./today-stage";
 
 type TodayStageContainerProps = {
@@ -14,6 +15,7 @@ type TodayStageContainerProps = {
   dayKind: DayKind;
   dayTitle: string;
   initialStage: MockDayStage;
+  allDays?: DayInfo[];
 };
 
 export function TodayStageContainer({
@@ -21,7 +23,8 @@ export function TodayStageContainer({
   dayId,
   dayKind,
   dayTitle,
-  initialStage
+  initialStage,
+  allDays
 }: TodayStageContainerProps) {
   const [stage, setStage] = useState<MockDayStage>(initialStage);
 
@@ -36,6 +39,7 @@ export function TodayStageContainer({
       dayKind={dayKind}
       dayTitle={dayTitle}
       stage={stage}
+      allDays={allDays}
     />
   );
 }
