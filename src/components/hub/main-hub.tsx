@@ -10,6 +10,7 @@ import { ProfileSwitcher } from "./profile-switcher";
 // --- Profile theme per child ---
 type ProfileTheme = {
   avatarSrc: string;
+  backgroundSrc: string;
   todayBorder: string;
   todayGlow: string;
   todayBg: string;
@@ -22,6 +23,7 @@ type ProfileTheme = {
 const PROFILE_THEMES: Record<string, ProfileTheme> = {
   "다온": {
     avatarSrc: "/avatars/daon-nobg.png",
+    backgroundSrc: "/backgrounds/academy-gate-landscape.png",
     todayBorder: "border-amber-300/45",
     todayGlow: "rgba(255,200,80,0.25)",
     todayBg: "from-amber-400/30 via-amber-500/20 to-amber-600/12",
@@ -32,6 +34,7 @@ const PROFILE_THEMES: Record<string, ProfileTheme> = {
   },
   "지온": {
     avatarSrc: "/avatars/jion-nobg.png",
+    backgroundSrc: "/backgrounds/academy-hanok-landscape.png",
     todayBorder: "border-sky-300/45",
     todayGlow: "rgba(56,189,248,0.25)",
     todayBg: "from-sky-400/30 via-sky-500/20 to-sky-600/12",
@@ -104,7 +107,7 @@ export function MainHub({
     <main className="relative h-[100dvh] w-full overflow-hidden select-none">
       {/* [1] Background image */}
       <Image
-        src="/backgrounds/academy-gate-landscape.png"
+        src={theme.backgroundSrc}
         alt="Magic Academy"
         fill
         className="object-cover object-center"
