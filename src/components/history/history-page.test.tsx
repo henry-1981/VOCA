@@ -6,6 +6,7 @@ describe("History child binding view", () => {
   it("can render another child dashboard state", () => {
     render(
       <HistoryScreen
+        childId="지온"
         childName="지온"
         entries={[
           {
@@ -21,6 +22,6 @@ describe("History child binding view", () => {
       />
     );
 
-    expect(screen.getByText(/지온의 최근 Day 기록/i)).toBeInTheDocument();
+    expect(screen.getByText(/지온의 Day 기록 보관실/i)).toBeInTheDocument();
   });
 });

@@ -31,5 +31,11 @@ export default async function HistoryDetailPage({
     notFound();
   }
 
-  return <DayHistoryDetailScreen childName={dashboard.childName} entry={entry} />;
+  return (
+    <DayHistoryDetailScreen
+      childId={dashboard.childId}
+      childName={dashboard.childName}
+      entry={entry}
+    />
+  );
 }

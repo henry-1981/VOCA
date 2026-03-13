@@ -17,6 +17,7 @@ body {
   font-family:
     "Pretendard Variable", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
   background: #fff7e8;
+  color: #0f172a;
 }
 
 button,
@@ -34,4 +35,33 @@ a {
   font-size: 1.125rem;
   font-weight: 800;
   text-decoration: none;
+}
+
+.world-panel {
+  isolation: isolate;
+}
+
+.world-panel::before {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-position: center;
+  background-size: 28px 28px;
+  content: "";
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.world-panel-review::after {
+  position: absolute;
+  inset: auto 6% 10% auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(231, 238, 255, 0.7), rgba(231, 238, 255, 0));
+  content: "";
+  filter: blur(8px);
+  pointer-events: none;
 }

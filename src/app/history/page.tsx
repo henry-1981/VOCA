@@ -12,6 +12,10 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
   const dashboard = await resolveChildDashboard(params.child);
 
   return (
-    <HistoryScreen childName={dashboard.childName} entries={dashboard.historyEntries} />
+    <HistoryScreen
+      childId={dashboard.childId}
+      childName={dashboard.childName}
+      entries={dashboard.historyEntries}
+    />
   );
 }

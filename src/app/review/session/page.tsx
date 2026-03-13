@@ -36,6 +36,9 @@ export default async function ReviewSessionPage({
   return (
     <LearningTestScreen
       dayTitle="Review Session"
+      mode="review"
+      completionHref={`/review?child=${encodeURIComponent(dashboard.childId)}`}
+      completionLabel="복습실로 돌아가기"
       questions={generateLearningTestQuestions(reviewWords, reviewWords.length)}
     />
   );

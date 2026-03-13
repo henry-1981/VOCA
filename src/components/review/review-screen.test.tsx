@@ -15,6 +15,10 @@ describe("ReviewScreen", () => {
 
     expect(screen.getByText("오늘의 복습")).toBeInTheDocument();
     expect(screen.getByText(/10문제/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/복습실/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/틀렸던 단어를 부드럽게 회복해요/i)
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /복습 시작/i })).toHaveAttribute(
       "href",
       "/review/session?child=%EB%8B%A4%EC%98%A8"

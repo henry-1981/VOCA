@@ -12,18 +12,25 @@ type LearningTestScreenProps = {
   dayId?: string;
   dayTitle: string;
   questions: LearningTestQuestion[];
+  mode?: "test" | "review";
+  completionHref?: string;
+  completionLabel?: string;
 };
 
 export function LearningTestScreen({
   childId,
   dayId,
   dayTitle,
-  questions
+  questions,
+  mode = "test",
+  completionHref,
+  completionLabel
 }: LearningTestScreenProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const isReviewMode = mode === "review";
   const question = questions[currentIndex];
   const answered = selectedChoice !== null;
   const correctChoice = question.answer;
@@ -32,6 +39,40 @@ export function LearningTestScreen({
     active: index === currentIndex,
     passed: index < currentIndex
   }));
+  const defaultCompletionHref = buildChildHref({
+    pathname: "/today",
+    childId,
+    params: {
+      day: dayId,
+      stage: "test_completed"
+    }
+  });
+  const resolvedCompletionHref = completionHref ?? defaultCompletionHref;
+  const resolvedCompletionLabel =
+    completionLabel ?? (isReviewMode ? "복습실로 돌아가기" : "Today로 돌아가기");
+  const outerBackgroundClass = isReviewMode
+    ? "bg-[radial-gradient(circle_at_top,_#f6f8ff,_#edf2ff_28%,_#f7f9ff_58%,_#ebeff8)] text-slate-950"
+    : "bg-[radial-gradient(circle_at_top,_#e9f3ff,_#fff_50%,_#fff3dc)]";
+  const frameClass = isReviewMode
+    ? "border border-white/70 bg-white/82 shadow-[0_28px_90px_rgba(94,109,148,0.18)] backdrop-blur-sm"
+    : "bg-white shadow-[0_24px_80px_rgba(15,23,42,0.12)]";
+  const progressClass = isReviewMode
+    ? "bg-[linear-gradient(90deg,_#d9e2f4,_#9fb2d8)]"
+    : "bg-violet-600";
+  const passedProgressClass = isReviewMode ? "bg-slate-300" : "bg-violet-200";
+  const promptCardClass = isReviewMode
+    ? "bg-[linear-gradient(180deg,_rgba(245,247,255,0.98),_rgba(223,230,244,0.96))] text-slate-950 shadow-[0_20px_50px_rgba(148,163,184,0.18)] ring-1 ring-white/90"
+    : "bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(49,46,129,0.92))] text-white shadow-[0_20px_50px_rgba(15,23,42,0.18)]";
+  const promptGlowClass = isReviewMode
+    ? "bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.86),_transparent_72%)]"
+    : "bg-[radial-gradient(circle_at_top,_rgba(255,226,148,0.18),_transparent_72%)]";
+  const promptKickerClass = isReviewMode ? "text-slate-500" : "text-slate-300";
+  const promptSubKickerClass = isReviewMode ? "text-slate-500" : "text-amber-100/80";
+  const promptHintClass = isReviewMode ? "text-slate-500" : "text-slate-300";
+  const audioButtonClass = isReviewMode
+    ? "bg-white text-slate-700 shadow-[0_10px_30px_rgba(148,163,184,0.18)] ring-1 ring-slate-200"
+    : "bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]";
+  const tileLabel = isReviewMode ? "Review Tile" : "Magical Tile";
 
   function playAudio() {
     playWordAudio({
@@ -68,29 +109,40 @@ export function LearningTestScreen({
 
   if (completed) {
     return (
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#e9f3ff,_#fff_50%,_#fff3dc)] px-6 py-8">
-        <div className="mx-auto flex max-w-2xl flex-col gap-4 rounded-[2rem] bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
-          <div className="rounded-[1.75rem] bg-[linear-gradient(180deg,_rgba(255,245,210,0.96),_rgba(255,234,167,0.88))] px-6 py-7 text-slate-950 shadow-[0_20px_50px_rgba(255,193,7,0.18)]">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-700">
-              Test Complete
+      <main className={`min-h-screen px-6 py-8 ${outerBackgroundClass}`}>
+        <div
+          className={`mx-auto flex max-w-2xl flex-col gap-4 rounded-[2rem] p-8 ${frameClass}`}
+        >
+          <div
+            className={`rounded-[1.75rem] px-6 py-7 text-slate-950 ${
+              isReviewMode
+                ? "bg-[linear-gradient(180deg,_rgba(245,247,255,0.98),_rgba(224,230,244,0.94))] shadow-[0_20px_50px_rgba(148,163,184,0.18)]"
+                : "bg-[linear-gradient(180deg,_rgba(255,245,210,0.96),_rgba(255,234,167,0.88))] shadow-[0_20px_50px_rgba(255,193,7,0.18)]"
+            }`}
+          >
+            <p
+              className={`text-sm font-semibold uppercase tracking-[0.18em] ${
+                isReviewMode ? "text-slate-500" : "text-slate-700"
+              }`}
+            >
+              {isReviewMode ? "Review Complete" : "Test Complete"}
             </p>
             <h1 className="mt-3 text-4xl font-black">{score} / {questions.length}</h1>
             <p className="mt-3 text-sm leading-6 text-slate-700">
-              오늘의 테스트를 마쳤습니다. 연습실의 별빛 배지가 더 밝아졌습니다.
+              {isReviewMode
+                ? "복습 기록 정리를 마쳤습니다. 오늘의 오답 서랍이 한결 가벼워졌습니다."
+                : "오늘의 테스트를 마쳤습니다. 연습실의 별빛 배지가 더 밝아졌습니다."}
             </p>
           </div>
           <Link
-            className="big-button bg-slate-950 text-white"
-            href={buildChildHref({
-              pathname: "/today",
-              childId,
-              params: {
-                day: dayId,
-                stage: "test_completed"
-              }
-            })}
+            className={`big-button ${
+              isReviewMode
+                ? "bg-[linear-gradient(180deg,_#18253f,_#243457)] text-white shadow-[0_18px_40px_rgba(36,52,87,0.28)]"
+                : "bg-slate-950 text-white"
+            }`}
+            href={resolvedCompletionHref}
           >
-            Today로 돌아가기
+            {resolvedCompletionLabel}
           </Link>
         </div>
       </main>
@@ -98,8 +150,10 @@ export function LearningTestScreen({
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#e9f3ff,_#fff_50%,_#fff3dc)] px-6 py-8">
-      <div className="mx-auto flex max-w-2xl flex-col gap-5 rounded-[2rem] bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
+    <main className={`min-h-screen px-6 py-8 ${outerBackgroundClass}`}>
+      <div
+        className={`mx-auto flex max-w-2xl flex-col gap-5 rounded-[2rem] p-8 ${frameClass}`}
+      >
         <header className="space-y-4">
           <div className="flex items-center justify-between gap-3 text-sm font-semibold text-slate-500">
             <span>{dayTitle}</span>
@@ -113,9 +167,9 @@ export function LearningTestScreen({
                 key={pip.id}
                 className={`h-2.5 rounded-full transition-all ${
                   pip.active
-                    ? "w-8 bg-violet-600"
+                    ? `w-8 ${progressClass}`
                     : pip.passed
-                      ? "w-4 bg-violet-200"
+                      ? `w-4 ${passedProgressClass}`
                       : "w-4 bg-slate-200"
                 }`}
               />
@@ -123,29 +177,50 @@ export function LearningTestScreen({
           </div>
         </header>
 
-        <section className="relative overflow-hidden rounded-[1.9rem] bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(49,46,129,0.92))] p-6 text-white shadow-[0_20px_50px_rgba(15,23,42,0.18)]">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,_rgba(255,226,148,0.18),_transparent_72%)]" />
+        <section
+          className={`relative overflow-hidden rounded-[1.9rem] p-6 ${promptCardClass}`}
+        >
+          <div
+            className={`pointer-events-none absolute inset-x-0 top-0 h-24 ${promptGlowClass}`}
+          />
           <div className="relative">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-              Round {currentIndex + 1}
+            <p
+              className={`text-sm font-semibold uppercase tracking-[0.18em] ${promptKickerClass}`}
+            >
+              {isReviewMode ? "Quiet Review Round" : `Round ${currentIndex + 1}`}
             </p>
-            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-100/80">
+            {isReviewMode ? (
+              <p className="mt-2 text-2xl font-black tracking-[-0.03em] text-slate-900">
+                Round {currentIndex + 1}
+              </p>
+            ) : null}
+            <p
+              className={`mt-2 text-xs font-semibold uppercase tracking-[0.16em] ${promptSubKickerClass}`}
+            >
               {question.direction === "en_to_ko" ? "영어를 뜻으로 바꾸기" : "뜻을 영어로 찾기"}
             </p>
-            <p className="mt-4 text-sm font-semibold text-slate-300">
-            {question.direction === "en_to_ko" ? "영어 → 뜻" : "뜻 → 영어"}
+            <p className={`mt-4 text-sm font-semibold ${promptHintClass}`}>
+              {isReviewMode
+                ? "서두르지 말고 기억을 다시 맞춰보세요."
+                : question.direction === "en_to_ko"
+                  ? "영어 → 뜻"
+                  : "뜻 → 영어"}
             </p>
             <h1 className="mt-4 text-5xl font-black sm:text-6xl">{question.prompt}</h1>
             <div className="mt-5 flex items-center gap-3">
               <button
                 aria-label="play audio"
-                className="inline-flex h-12 min-w-12 items-center justify-center rounded-full bg-white/10 px-4 text-xl font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                className={`inline-flex h-12 min-w-12 items-center justify-center rounded-full px-4 text-xl font-bold ${audioButtonClass}`}
                 onClick={playAudio}
                 type="button"
               >
                 ▶
               </button>
-              <p className="text-sm text-slate-300">힌트 음성으로 다시 확인할 수 있습니다.</p>
+              <p className={`text-sm ${promptHintClass}`}>
+                {isReviewMode
+                  ? "음성을 한 번 더 듣고 천천히 떠올려도 괜찮습니다."
+                  : "힌트 음성으로 다시 확인할 수 있습니다."}
+              </p>
             </div>
           </div>
         </section>
@@ -160,19 +235,27 @@ export function LearningTestScreen({
               <button
                 key={choice}
                 className={`rounded-[1.6rem] border-2 px-5 py-5 text-left text-xl font-black shadow-[0_14px_30px_rgba(15,23,42,0.08)] transition ${
-                  isCorrect
-                    ? "border-emerald-400 bg-emerald-50 text-emerald-950"
-                    : isWrong
-                      ? "border-rose-400 bg-rose-50 text-rose-950"
-                      : isSelected
-                        ? "border-violet-400 bg-violet-50 text-violet-950"
-                        : "border-slate-200 bg-white text-slate-900 hover:border-violet-200 hover:bg-violet-50/40"
+                  isReviewMode
+                    ? isCorrect
+                      ? "border-emerald-300 bg-emerald-50/90 text-emerald-950"
+                      : isWrong
+                        ? "border-amber-300 bg-amber-50 text-amber-950"
+                        : isSelected
+                          ? "border-slate-400 bg-slate-100 text-slate-950"
+                          : "border-slate-200 bg-white/85 text-slate-900 hover:border-slate-300 hover:bg-slate-50"
+                    : isCorrect
+                      ? "border-emerald-400 bg-emerald-50 text-emerald-950"
+                      : isWrong
+                        ? "border-rose-400 bg-rose-50 text-rose-950"
+                        : isSelected
+                          ? "border-violet-400 bg-violet-50 text-violet-950"
+                          : "border-slate-200 bg-white text-slate-900 hover:border-violet-200 hover:bg-violet-50/40"
                 } ${answered ? "cursor-default" : "active:scale-[0.98]"}`}
                 onClick={() => choose(choice)}
                 type="button"
               >
                 <span className="block text-sm font-semibold uppercase tracking-[0.14em] text-slate-400">
-                  Magical Tile
+                  {tileLabel}
                 </span>
                 <span className="mt-3 block">{choice}</span>
               </button>
@@ -183,14 +266,22 @@ export function LearningTestScreen({
         {selectedChoice ? (
           <div
             className={`rounded-[1.5rem] px-5 py-4 text-center text-sm font-semibold shadow-[0_10px_25px_rgba(15,23,42,0.06)] ${
-              selectedChoice === question.answer
-                ? "bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200"
-                : "bg-rose-50 text-rose-900 ring-1 ring-rose-200"
+              isReviewMode
+                ? selectedChoice === question.answer
+                  ? "bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200"
+                  : "bg-amber-50 text-amber-900 ring-1 ring-amber-200"
+                : selectedChoice === question.answer
+                  ? "bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200"
+                  : "bg-rose-50 text-rose-900 ring-1 ring-rose-200"
             }`}
           >
             {selectedChoice === question.answer
-              ? "정답입니다. 다음 라운드로 바로 넘어갑니다."
-              : `아쉽지만 정답은 ${question.answer} 입니다.`}
+              ? isReviewMode
+                ? "기억이 다시 맞춰졌습니다. 다음 카드로 조용히 넘어갑니다."
+                : "정답입니다. 다음 라운드로 바로 넘어갑니다."
+              : isReviewMode
+                ? `괜찮아요. 정답은 ${question.answer} 입니다. 한 번 더 눈에 담고 넘어갈게요.`
+                : `아쉽지만 정답은 ${question.answer} 입니다.`}
           </div>
         ) : null}
       </div>
