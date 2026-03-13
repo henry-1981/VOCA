@@ -121,11 +121,11 @@ export function LearnCard({
               {word.exampleSentence ? (
                 <button
                   aria-label="play example audio"
-                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/10 bg-white/8 px-4 text-sm font-semibold text-slate-100"
+                  className="inline-flex h-8 w-8 min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-white/10 bg-white/8 text-base text-slate-100"
                   onClick={playExample}
                   type="button"
                 >
-                  예문 듣기
+                  ▶
                 </button>
               ) : null}
             </div>

@@ -12,8 +12,10 @@ export function HistoryScreen({ childId, childName, entries }: HistoryScreenProp
   return (
     <main className="min-h-screen overflow-hidden bg-[linear-gradient(180deg,_#f4eee2,_#f8f3ea_42%,_#f1e7d7)] px-4 py-6 text-slate-950 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-4xl">
-        <div className="world-panel relative overflow-hidden rounded-[2.25rem] border border-[#eadfcd] bg-[linear-gradient(180deg,_rgba(255,252,245,0.94),_rgba(250,246,239,0.98))] p-6 shadow-[0_30px_90px_rgba(96,73,42,0.16)] sm:p-8">
+        <div className="world-panel relative overflow-hidden rounded-[2.25rem] border border-amber-700/20 bg-[linear-gradient(180deg,_rgba(255,252,245,0.94),_rgba(250,246,239,0.98))] p-6 shadow-[0_30px_90px_rgba(96,73,42,0.16)] sm:p-8">
           <div className="pointer-events-none absolute inset-x-8 top-0 h-32 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.86),_transparent_72%)]" />
+          {/* Subtle paper texture overlay */}
+          <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='40' height='40' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
           <div className="pointer-events-none absolute inset-x-0 top-24 h-px bg-[linear-gradient(90deg,_transparent,_rgba(163,138,98,0.4),_transparent)]" />
           <div className="relative flex flex-col gap-6">
             <header className="flex items-start justify-between gap-4">
@@ -21,7 +23,7 @@ export function HistoryScreen({ childId, childName, entries }: HistoryScreenProp
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8b6e4b]">
                   Record Archive Room
                 </p>
-                <h1 className="mt-3 text-4xl font-black tracking-[-0.03em] text-[#2f2418] sm:text-5xl">
+                <h1 className="mt-3 text-4xl font-black tracking-[-0.03em] text-amber-900 sm:text-5xl">
                   {childName}의 Day 기록 보관실
                 </h1>
                 <p className="mt-3 text-sm leading-6 text-[#6b5a44] sm:text-base">
@@ -72,7 +74,7 @@ export function HistoryScreen({ childId, childName, entries }: HistoryScreenProp
                   return (
                     <article
                       key={`${entry.dayId}-${entry.date}`}
-                      className="rounded-[1.75rem] border border-[#e6d7c1] bg-[linear-gradient(180deg,_#fffdf8,_#fcf7ee)] px-6 py-6 shadow-[0_18px_40px_rgba(96,73,42,0.08)]"
+                      className="rounded-[1.75rem] border border-amber-700/20 bg-[linear-gradient(180deg,_#fffdf8,_#fcf7ee)] px-6 py-6 shadow-[0_18px_40px_rgba(96,73,42,0.08)]"
                     >
                       <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0 flex-1">
@@ -81,7 +83,7 @@ export function HistoryScreen({ childId, childName, entries }: HistoryScreenProp
                             <span className="h-1 w-1 rounded-full bg-[#c9af85]" />
                             <span>{entry.dayId.toUpperCase()}</span>
                           </div>
-                          <h2 className="mt-3 text-3xl font-black tracking-[-0.03em] text-[#2f2418]">
+                          <h2 className="mt-3 text-3xl font-black tracking-[-0.03em] text-amber-800">
                             {entry.title}
                           </h2>
                           <p className="mt-4 text-sm leading-7 text-[#6b5a44]">
