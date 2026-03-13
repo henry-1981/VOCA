@@ -12,4 +12,4 @@ public/audio/tts/compare/
 *.tsbuildinfo
 .DS_Store
 *.zip
-*.PNG
+IMG_*.PNG

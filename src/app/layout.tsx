@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "BrideVOCA",
-  description: "30분 안에 바로 써볼 수 있는 영어 단어 테스트"
+  description: "30분 안에 바로 써볼 수 있는 영어 단어 테스트",
+  manifest: "/manifest.json"
 };
 
 export const viewport: Viewport = {
