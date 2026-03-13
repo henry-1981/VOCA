@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MainHubScene } from "@/components/hub/main-hub-scene";
 import { MainHubSceneBg } from "@/components/hub/main-hub-scene-bg";
 
@@ -28,6 +29,13 @@ export default function HubPreviewPage() {
           backgroundSrc="/backgrounds/academy-gate.png"
         />
       )}
+
+      <Link
+        href="/design-preview"
+        className="fixed bottom-3 left-3 z-50 rounded-lg bg-black/60 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm hover:bg-black/80"
+      >
+        &larr; Back to previews
+      </Link>
 
       {/* Toggle button (dev only) */}
       <div className="fixed bottom-3 right-3 z-50 flex gap-1 rounded-lg border border-white/20 bg-black/60 p-1 text-[10px] font-bold text-white backdrop-blur-sm">
