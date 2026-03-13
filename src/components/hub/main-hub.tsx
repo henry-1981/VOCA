@@ -100,7 +100,7 @@ export function MainHub({
   }, [showStreakToast]);
 
   return (
-    <main className="relative h-full w-full overflow-hidden select-none">
+    <main className="relative h-[100dvh] w-full overflow-hidden select-none">
       {/* [1] Background image */}
       <Image
         src="/backgrounds/academy-gate-landscape.png"
@@ -175,7 +175,7 @@ export function MainHub({
       )}
 
       {/* ═══ LAYOUT ═══ */}
-      <div className="relative z-10 flex h-full flex-col justify-between">
+      <div className="relative z-10 flex h-[100dvh] flex-col justify-between">
         {/* ── HUD ── */}
         <header className="flex w-full shrink-0 items-center justify-between px-8 pt-3 md:px-12 md:pt-4">
           <div>
