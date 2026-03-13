@@ -13,3 +13,7 @@ public/audio/tts/compare/
 .DS_Store
 *.zip
 IMG_*.PNG
+
+# Playwright
+test-results/
+playwright-report/
