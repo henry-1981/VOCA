@@ -1,9 +1,65 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import { ProfileSwitcher } from "./profile-switcher";
+
+// --- Profile theme per child ---
+type ProfileTheme = {
+  avatarSrc: string;
+  todayBorder: string;
+  todayGlow: string;
+  todayBg: string;
+  streakBorder: string;
+  streakBg: string;
+  streakText: string;
+  accentLabel: string;
+};
+
+const PROFILE_THEMES: Record<string, ProfileTheme> = {
+  "다온": {
+    avatarSrc: "/avatars/daon-nobg.png",
+    todayBorder: "border-amber-300/45",
+    todayGlow: "rgba(255,200,80,0.25)",
+    todayBg: "from-amber-400/30 via-amber-500/20 to-amber-600/12",
+    streakBorder: "border-amber-300/20",
+    streakBg: "bg-amber-300/10",
+    streakText: "text-amber-50",
+    accentLabel: "text-amber-200/70",
+  },
+  "지온": {
+    avatarSrc: "/avatars/jion-nobg.png",
+    todayBorder: "border-sky-300/45",
+    todayGlow: "rgba(56,189,248,0.25)",
+    todayBg: "from-sky-400/30 via-sky-500/20 to-sky-600/12",
+    streakBorder: "border-sky-300/20",
+    streakBg: "bg-sky-300/10",
+    streakText: "text-sky-50",
+    accentLabel: "text-sky-200/70",
+  },
+};
+
+const DEFAULT_THEME = PROFILE_THEMES["다온"];
+
+function getProfileTheme(childId: string): ProfileTheme {
+  return PROFILE_THEMES[childId] ?? DEFAULT_THEME;
+}
+
+// --- Time-of-day ---
+type TimeTheme = {
+  overlay: string;
+  showStars: boolean;
+};
+
+function getTimeTheme(): TimeTheme {
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 12) return { overlay: "rgba(255,220,160,0.15)", showStars: false };
+  if (hour >= 12 && hour < 17) return { overlay: "rgba(180,200,255,0.08)", showStars: false };
+  if (hour >= 17 && hour < 20) return { overlay: "rgba(255,160,80,0.20)", showStars: true };
+  return { overlay: "rgba(10,8,40,0.45)", showStars: true };
+}
 
 type MainHubProps = {
   childId: string;
@@ -16,15 +72,6 @@ type MainHubProps = {
   dayStage?: "not_started" | "learn_completed" | "test_completed" | "completed";
 };
 
-function getTimeOfDayTheme() {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 7) return { bg: "from-pink-300/20 via-orange-200/10 to-purple-900/80", starOpacity: "opacity-20" };
-  if (hour >= 7 && hour < 12) return { bg: "from-sky-300/15 via-blue-200/10 to-purple-900/70", starOpacity: "opacity-0" };
-  if (hour >= 12 && hour < 17) return { bg: "from-sky-400/10 via-blue-300/8 to-purple-900/75", starOpacity: "opacity-0" };
-  if (hour >= 17 && hour < 20) return { bg: "from-purple-600/30 via-orange-400/15 to-indigo-900/80", starOpacity: "opacity-60" };
-  return { bg: "from-indigo-950/40 via-purple-900/30 to-indigo-900/90", starOpacity: "opacity-100" };
-}
-
 export function MainHub({
   childId,
   currentDayId,
@@ -33,164 +80,203 @@ export function MainHub({
   streak,
   currentDayTitle,
   previewMode,
-  dayStage = "not_started"
+  dayStage = "not_started",
 }: MainHubProps) {
-  const timeTheme = getTimeOfDayTheme();
-
-  // Initialize toast as visible when streak > 0, then fade out after 800ms
+  const theme = getProfileTheme(childId);
+  const [timeTheme, setTimeTheme] = useState<TimeTheme>({
+    overlay: "rgba(180,200,255,0.08)",
+    showStars: false,
+  });
   const [showStreakToast, setShowStreakToast] = useState(streak > 0);
 
   useEffect(() => {
+    setTimeTheme(getTimeTheme());
+  }, []);
+
+  useEffect(() => {
     if (!showStreakToast) return;
-    const timer = setTimeout(() => {
-      setShowStreakToast(false);
-    }, 800);
+    const timer = setTimeout(() => setShowStreakToast(false), 800);
     return () => clearTimeout(timer);
   }, [showStreakToast]);
-  const supportCards = [
-    {
-      label: "Review",
-      title: "누적 오답 복습",
-      description: "복습실의 등불을 켜고 틀린 단어를 다시 잠금 해제합니다.",
-      href: buildChildHref({ pathname: "/review", childId }),
-      accent: "from-sky-200/40 via-slate-200/10 to-white/5 ring-sky-100/20 text-sky-50",
-      tilt: "-rotate-2 md:-translate-x-3",
-      eyebrow: "복습실"
-    },
-    {
-      label: "History",
-      title: "최근 Day 기록",
-      description: "탐험 일지에서 최근 Day와 놓친 단어를 돌아봅니다.",
-      href: buildChildHref({ pathname: "/history", childId }),
-      accent: "from-amber-200/30 via-orange-100/10 to-white/5 ring-amber-100/20 text-amber-50",
-      tilt: "rotate-2 md:translate-x-3",
-      eyebrow: "탐험 일지"
-    }
-  ];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#3b2d73,_#19142f_44%,_#090d18_78%)] px-5 py-6 text-white sm:px-6 sm:py-8">
-      {/* Time-of-day gradient overlay */}
-      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${timeTheme.bg} transition-colors duration-1000`} />
-      <div className="relative mx-auto flex max-w-6xl flex-col gap-5">
-        <header className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,_rgba(20,24,49,0.92),_rgba(40,28,80,0.84))] px-5 py-5 shadow-[0_25px_80px_rgba(5,8,20,0.5)] sm:px-7">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,224,145,0.22),_transparent_32%),radial-gradient(circle_at_top_left,_rgba(166,136,255,0.16),_transparent_35%)]" />
-          <div className="relative flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-200/90">
-              {previewMode ? "Preview Mode" : "Family Hub"}
+    <main className="relative h-full w-full overflow-hidden select-none">
+      {/* [1] Background image */}
+      <Image
+        src="/backgrounds/academy-gate-landscape.png"
+        alt="Magic Academy"
+        fill
+        className="object-cover object-center"
+        priority
+      />
+
+      {/* [2] Time-of-day overlay */}
+      <div
+        className="pointer-events-none absolute inset-0 transition-colors duration-1000"
+        style={{ backgroundColor: timeTheme.overlay, mixBlendMode: "multiply" }}
+      />
+
+      {/* [3] Top gradient for HUD */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-[22%]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(8,6,20,0.6) 0%, transparent 100%)",
+        }}
+      />
+
+      {/* [4] Bottom gradient */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%]"
+        style={{
+          background: `linear-gradient(180deg,
+            transparent 0%,
+            rgba(8,6,20,0.2) 15%,
+            rgba(8,6,20,0.55) 35%,
+            rgba(8,6,20,0.82) 55%,
+            rgba(8,6,20,0.95) 80%,
+            rgba(8,6,20,0.98) 100%)`,
+        }}
+      />
+
+      {/* [5] Side vignette */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 95% 90% at 50% 40%, transparent 40%, rgba(8,6,20,0.35) 100%)",
+        }}
+      />
+
+      {/* Night stars */}
+      {timeTheme.showStars && (
+        <div className="pointer-events-none absolute inset-0">
+          {[
+            { x: "12%", y: "8%", s: 2.5, d: 0 },
+            { x: "30%", y: "5%", s: 2, d: 0.6 },
+            { x: "55%", y: "7%", s: 2, d: 1.1 },
+            { x: "75%", y: "4%", s: 2.5, d: 0.3 },
+            { x: "88%", y: "9%", s: 1.5, d: 0.9 },
+          ].map((star, i) => (
+            <div
+              key={i}
+              className="absolute animate-pulse rounded-full bg-white"
+              style={{
+                left: star.x,
+                top: star.y,
+                width: star.s,
+                height: star.s,
+                animationDelay: `${star.d}s`,
+                boxShadow: `0 0 ${star.s * 4}px rgba(255,255,255,0.9)`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* ═══ LAYOUT ═══ */}
+      <div className="relative z-10 flex h-full flex-col justify-between">
+        {/* ── HUD ── */}
+        <header className="flex w-full shrink-0 items-center justify-between px-8 pt-3 md:px-12 md:pt-4">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-amber-300/50 md:text-base">
+              {previewMode ? "Preview" : "Magic Academy"}
             </p>
-              <h1
-                className="mt-3 text-4xl font-semibold tracking-[0.02em] text-white sm:text-5xl"
-                style={{ fontFamily: 'var(--font-display)' }}
-              >
-                {childName}
-              </h1>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-white/72 sm:text-base">
-                오늘은 <span className="font-semibold text-amber-100">{currentDayTitle}</span> 교실 문이 먼저
-                열립니다. 수업을 끝내면 학교 안쪽 공간들이 더 밝아집니다.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2 text-sm text-white/80">
-                <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1.5">
-                  Level {level}
-                </span>
-                <span
-                  className={`rounded-full border border-amber-200/20 bg-amber-300/10 px-3 py-1.5 text-amber-50 ${streak > 0 ? "animate-glow-pulse" : ""}`}
-                  data-testid="streak-badge"
-                >
-                  연속 학습 {streak}일
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold text-amber-100 shadow-[0_10px_30px_rgba(255,214,111,0.12)] backdrop-blur">
-                Magic Academy
-              </div>
-              <ProfileSwitcher
-                currentChildName={childName}
-                onSwitch={() => {
-                  if (typeof window !== "undefined") {
-                    window.location.href = "/provision";
-                  }
-                }}
-              />
-            </div>
+            <h1
+              className="text-2xl font-semibold text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.8)] md:text-3xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {childName}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm font-bold text-white/70 backdrop-blur-sm md:text-base">
+              Lv.{level}
+            </span>
+            <span
+              className={`rounded-full ${theme.streakBorder} ${theme.streakBg} px-4 py-2 text-sm font-bold ${theme.streakText} backdrop-blur-sm md:text-base ${streak > 0 ? "animate-glow-pulse" : ""}`}
+              data-testid="streak-badge"
+            >
+              {streak}일 연속
+            </span>
+            <ProfileSwitcher
+              currentChildName={childName}
+              onSwitch={() => {
+                if (typeof window !== "undefined") {
+                  window.location.href = "/provision";
+                }
+              }}
+            />
           </div>
         </header>
 
         {/* Streak toast */}
-        {showStreakToast ? (
+        {showStreakToast && (
           <div
             className="pointer-events-none fixed left-1/2 top-8 z-50 -translate-x-1/2 animate-float-up rounded-full bg-amber-400 px-5 py-2 text-lg font-bold text-slate-900 shadow-[0_10px_30px_rgba(251,191,36,0.4)]"
             data-testid="streak-toast"
           >
             +{streak}일 연속!
           </div>
-        ) : null}
+        )}
 
-        <section className="relative min-h-[76vh] overflow-hidden rounded-[2.25rem] border border-white/10 bg-[linear-gradient(180deg,_rgba(57,42,115,0.42),_rgba(11,14,27,0.93))] p-5 shadow-[0_35px_120px_rgba(0,0,0,0.4)] sm:p-7">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,_rgba(255,230,170,0.3),_transparent_60%)]" />
-          <div className="pointer-events-none absolute inset-x-8 top-16 h-56 rounded-full bg-[radial-gradient(circle,_rgba(128,122,255,0.12),_transparent_66%)] blur-3xl" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(180deg,_transparent,_rgba(7,10,19,0.92))]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-            <div className="h-28 w-[78%] rounded-[100%] bg-[radial-gradient(circle,_rgba(97,119,255,0.18),_rgba(8,10,18,0.02)_60%,_transparent_70%)] blur-2xl" />
-          </div>
-          <div className="pointer-events-none absolute inset-x-6 top-6 flex items-center justify-between text-xs uppercase tracking-[0.25em] text-white/30">
-            <span>North Tower</span>
-            <span>Front Gate</span>
-            <span>Moon Hall</span>
-          </div>
-          <div className={`pointer-events-none absolute left-[12%] top-24 h-3 w-3 animate-pulse rounded-full bg-amber-100/80 shadow-[0_0_18px_rgba(255,248,196,0.9)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
-          <div className={`pointer-events-none absolute right-[16%] top-32 h-2 w-2 animate-pulse rounded-full bg-violet-100/80 shadow-[0_0_16px_rgba(224,231,255,0.85)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
-          <div className={`pointer-events-none absolute right-[24%] top-[52%] h-2.5 w-2.5 animate-pulse rounded-full bg-sky-100/80 shadow-[0_0_14px_rgba(186,230,253,0.75)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
-
-          <div className="mx-auto flex max-w-5xl flex-col items-center gap-5">
-            <div className="pointer-events-none flex w-full max-w-3xl items-center justify-between px-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-              <span>Arcade of Echoes</span>
-              <span>Practice Door Open</span>
-              <span>Sky Dormitory</span>
-            </div>
+        {/* ── CENTER ── */}
+        <div className="flex flex-1 flex-col items-center justify-end min-h-0">
+          {/* TODAY card */}
+          <div className="relative z-30 flex shrink-0 justify-center px-6">
             <Link
-              className="group relative w-full max-w-2xl overflow-hidden rounded-[2.2rem] border border-amber-100/35 bg-[linear-gradient(180deg,_rgba(255,228,154,0.98),_rgba(217,165,45,0.96))] px-6 py-7 text-center text-slate-950 shadow-[0_25px_60px_rgba(255,193,7,0.24)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_35px_80px_rgba(255,193,7,0.34)] sm:px-8 sm:py-9"
               href={buildChildHref({
                 pathname: "/today",
                 childId,
-                params: { day: currentDayId }
+                params: { day: currentDayId },
               })}
+              className="group relative"
+              aria-label="Today"
             >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.5),_transparent_55%)] opacity-80" />
-              <div className="pointer-events-none absolute inset-x-8 bottom-5 h-16 rounded-[100%] bg-[radial-gradient(circle,_rgba(255,255,255,0.28),_transparent_72%)] blur-lg" />
-              <div className="relative">
-                <p className="text-sm font-bold uppercase tracking-[0.28em] text-slate-800/70">Today</p>
-                <h2
-                  className="mt-3 text-3xl font-semibold leading-tight sm:text-5xl"
-                  style={{ fontFamily: 'var(--font-display)' }}
+              <div
+                className="absolute -inset-4 rounded-[2rem] blur-2xl transition-all group-hover:opacity-100 opacity-70"
+                style={{ backgroundColor: theme.todayGlow }}
+              />
+              <div
+                className={`relative overflow-hidden rounded-[1.4rem] border-2 ${theme.todayBorder} bg-gradient-to-b ${theme.todayBg} px-12 py-4 text-center backdrop-blur-sm transition-all duration-300 group-hover:scale-105 md:px-16 md:py-5`}
+                style={{
+                  boxShadow: `0 0 40px ${theme.todayGlow}, inset 0 1px 0 rgba(255,255,255,0.15)`,
+                }}
+              >
+                <p
+                  className={`text-sm font-bold uppercase tracking-[0.35em] ${theme.accentLabel} md:text-base`}
+                >
+                  Today
+                </p>
+                <p
+                  className="mt-1 text-2xl font-semibold text-white md:text-3xl"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {currentDayTitle}
-                </h2>
-                <p className="mt-3 text-sm font-medium text-slate-800/75 sm:text-base">
-                  정문 앞 마법문이 오늘의 수업실로 이어집니다. 가장 먼저 여기로 들어가야 오늘의 탐험이
-                  움직이기 시작합니다.
                 </p>
-                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-                  <div className="inline-flex items-center rounded-full border border-slate-900/10 bg-slate-950/10 px-4 py-2 text-sm font-bold text-slate-900/85">
-                    오늘의 Day 시작
-                  </div>
-                  <div className="rounded-full bg-white/40 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-900/70">
-                    Practice Room Open
-                  </div>
-                </div>
+                <p
+                  className={`mt-1.5 text-base font-bold ${theme.accentLabel} md:text-lg`}
+                >
+                  오늘의 Day 시작 →
+                </p>
                 {/* Day progress badges */}
-                <div className="mt-3 flex flex-wrap items-center justify-center gap-2" data-testid="day-progress-badges">
+                <div
+                  className="mt-2 flex items-center justify-center gap-2"
+                  data-testid="day-progress-badges"
+                >
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-bold ${
-                      dayStage === "learn_completed" || dayStage === "test_completed" || dayStage === "completed"
+                      dayStage === "learn_completed" ||
+                      dayStage === "test_completed" ||
+                      dayStage === "completed"
                         ? "bg-emerald-600/90 text-white"
-                        : "bg-slate-900/10 text-slate-800/60"
+                        : "bg-white/15 text-white/60"
                     }`}
                     data-testid="learn-badge"
                   >
-                    {dayStage === "learn_completed" || dayStage === "test_completed" || dayStage === "completed"
+                    {dayStage === "learn_completed" ||
+                    dayStage === "test_completed" ||
+                    dayStage === "completed"
                       ? "Learn \u2713"
                       : "Learn"}
                   </span>
@@ -198,7 +284,7 @@ export function MainHub({
                     className={`rounded-full px-3 py-1 text-xs font-bold ${
                       dayStage === "test_completed" || dayStage === "completed"
                         ? "bg-emerald-600/90 text-white"
-                        : "bg-slate-900/10 text-slate-800/60"
+                        : "bg-white/15 text-white/60"
                     }`}
                     data-testid="test-badge"
                   >
@@ -209,87 +295,83 @@ export function MainHub({
                 </div>
               </div>
             </Link>
-
-            <div className="grid w-full max-w-4xl gap-4 md:grid-cols-2">
-              {supportCards.map((card) => (
-                <Link
-                  key={card.label}
-                  className={`group relative rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.12),_rgba(255,255,255,0.05))] px-6 py-5 shadow-[0_14px_35px_rgba(4,6,16,0.25)] backdrop-blur transition duration-200 hover:-translate-y-1 hover:border-white/20 ${card.accent} ${card.tilt}`}
-                  href={card.href}
-                >
-                  <div className="pointer-events-none absolute right-5 top-5 h-8 w-8 rounded-full bg-white/10 blur-sm" />
-                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-white/65">
-                    {card.label}
-                  </p>
-                  <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.24em] text-white/45">
-                    {card.eyebrow}
-                  </p>
-                  <p className="mt-3 text-2xl font-black text-white">{card.title}</p>
-                  <p className="mt-2 text-sm leading-6 text-white/70">{card.description}</p>
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-2 flex min-h-[27rem] w-full max-w-3xl items-end justify-center px-4 pb-2 pt-4">
-              <div className="relative flex w-full flex-col items-center">
-                <div className="pointer-events-none absolute -top-3 h-8 w-48 rounded-full bg-amber-100/20 blur-xl" />
-                <div className="pointer-events-none absolute bottom-6 h-20 w-64 rounded-full bg-indigo-200/18 blur-2xl" />
-                <div className={`pointer-events-none absolute left-[20%] top-12 h-2 w-2 animate-pulse rounded-full bg-amber-100/60 shadow-[0_0_18px_rgba(255,236,179,0.75)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
-                <div className={`pointer-events-none absolute right-[22%] top-20 h-1.5 w-1.5 animate-pulse rounded-full bg-violet-100/70 shadow-[0_0_16px_rgba(220,205,255,0.75)] transition-opacity duration-1000 ${timeTheme.starOpacity}`} />
-                <div className="pointer-events-none absolute bottom-0 h-16 w-[70%] rounded-[100%] bg-[radial-gradient(circle,_rgba(255,215,140,0.18),_transparent_68%)] blur-2xl" />
-
-                <div className="relative flex h-[22rem] w-[17rem] items-center justify-center rounded-[2.6rem] border border-white/12 bg-[linear-gradient(180deg,_rgba(251,251,255,0.14),_rgba(255,255,255,0.05))] px-6 text-center text-white shadow-[0_25px_70px_rgba(5,8,20,0.35)] backdrop-blur-md transition duration-300 hover:-translate-y-1 sm:h-[24rem] sm:w-[19rem]">
-                  <div className="absolute inset-x-4 bottom-4 h-12 rounded-[100%] bg-[radial-gradient(circle,_rgba(255,218,124,0.22),_rgba(255,255,255,0.04)_55%,_transparent_72%)] blur-xl" />
-                  <div className="relative">
-                    <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/55">
-                      Student Mage
-                    </p>
-                    <p
-                      className="mt-4 text-4xl font-semibold leading-none sm:text-5xl"
-                      style={{ fontFamily: 'var(--font-display)' }}
-                    >
-                      {childName}
-                    </p>
-                    <p className="mt-4 text-sm leading-6 text-white/72">
-                      오늘의 수업이 끝날 때마다 학교 안쪽의 별빛 배지가 하나씩 더 켜집니다.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-white/80">
-                  <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5">
-                    오늘의 수업 {currentDayTitle}
-                  </span>
-                  <span className="rounded-full border border-violet-100/15 bg-violet-200/10 px-3 py-1.5">
-                    Main Gate Open
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <Link
-              className="group relative w-full max-w-md rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.12),_rgba(255,255,255,0.05))] px-6 py-5 text-center shadow-[0_18px_40px_rgba(4,6,16,0.25)] backdrop-blur transition duration-200 hover:-translate-y-1 hover:border-white/20"
-              href={buildChildHref({ pathname: "/character", childId })}
-            >
-              <div className="pointer-events-none absolute inset-x-8 top-0 h-16 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.15),_transparent_68%)]" />
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-white/65">
-                Character
-              </p>
-              <div className="mt-3 flex items-center justify-center gap-3">
-                <p className="text-2xl font-black text-white sm:text-3xl">XP / Level / 성장</p>
-                <span
-                  className="rounded-full border border-amber-200/30 bg-amber-300/15 px-3 py-1 text-sm font-bold text-amber-100"
-                  data-testid="level-badge"
-                >
-                  Lv.{level}
-                </span>
-              </div>
-              <p className="mt-2 text-sm leading-6 text-white/70">
-                연구실로 내려가 오늘 켜진 배지와 연속 학습 기록을 확인합니다.
-              </p>
-            </Link>
           </div>
-        </section>
+
+          {/* CENTER ROW: Review / Avatar / History */}
+          <div className="flex w-full items-end justify-center gap-6 px-6 md:gap-10 md:px-12">
+            {/* Review */}
+            <div className="flex flex-col items-center pb-2">
+              <Link
+                href={buildChildHref({ pathname: "/review", childId })}
+                className="group flex h-[90px] w-[90px] flex-col items-center justify-center rounded-[1.2rem] border-2 border-sky-300/25 bg-sky-950/45 shadow-[0_6px_28px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-110 hover:border-sky-300/50 hover:bg-sky-800/40 md:h-[110px] md:w-[110px] md:rounded-[1.4rem]"
+              >
+                <p className="text-xs font-bold uppercase tracking-wider text-sky-300/70 md:text-sm">
+                  Review
+                </p>
+                <p className="mt-1 text-lg font-black text-sky-50 md:text-xl">
+                  복습실
+                </p>
+              </Link>
+            </div>
+
+            {/* Avatar */}
+            <div className="relative z-20 flex flex-col items-center">
+              <div className="absolute -bottom-2 h-6 w-[70%] rounded-[100%] bg-black/50 blur-2xl" />
+              <div className="relative w-[28vw] max-w-[260px] md:w-[24vw] md:max-w-[300px]">
+                <Image
+                  src={theme.avatarSrc}
+                  alt={childName}
+                  width={600}
+                  height={720}
+                  className="h-auto w-full drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
+                  priority
+                />
+                <div className="pointer-events-none absolute inset-x-[10%] -bottom-1 h-10 rounded-[100%] bg-amber-300/15 blur-2xl" />
+              </div>
+            </div>
+
+            {/* History */}
+            <div className="flex flex-col items-center pb-2">
+              <Link
+                href={buildChildHref({ pathname: "/history", childId })}
+                className="group flex h-[90px] w-[90px] flex-col items-center justify-center rounded-[1.2rem] border-2 border-amber-300/25 bg-amber-950/40 shadow-[0_6px_28px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-110 hover:border-amber-300/50 hover:bg-amber-800/35 md:h-[110px] md:w-[110px] md:rounded-[1.4rem]"
+              >
+                <p className="text-xs font-bold uppercase tracking-wider text-amber-300/70 md:text-sm">
+                  History
+                </p>
+                <p className="mt-1 text-lg font-black text-amber-50 md:text-xl">
+                  기록실
+                </p>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ── CHARACTER (bottom) ── */}
+        <div className="relative z-30 flex shrink-0 justify-center px-8 pb-3 pt-1 md:pb-4">
+          <Link
+            href={buildChildHref({ pathname: "/character", childId })}
+            className="group flex items-center gap-3 rounded-[1.2rem] border-2 border-violet-300/20 bg-gradient-to-r from-violet-950/50 via-indigo-950/40 to-violet-950/50 px-6 py-2.5 shadow-[0_6px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-105 hover:border-violet-300/40 hover:bg-violet-900/40 md:px-8 md:py-3"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-violet-300/25 bg-violet-800/35 text-base text-amber-200/70 md:h-12 md:w-12 md:text-lg">
+              ✦
+            </div>
+            <div>
+              <p className="text-base font-bold text-white md:text-lg">
+                {childName}의 성장
+              </p>
+              <p className="text-xs text-violet-200/50 md:text-sm">
+                XP · Level · 배지
+              </p>
+            </div>
+            <span
+              className="rounded-full border border-amber-200/30 bg-amber-300/15 px-3 py-1 text-sm font-bold text-amber-100"
+              data-testid="level-badge"
+            >
+              Lv.{level}
+            </span>
+          </Link>
+        </div>
       </div>
     </main>
   );
