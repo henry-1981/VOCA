@@ -19,17 +19,17 @@ export function ReviewScreen({
       <div className="mx-auto max-w-4xl">
         <div className="world-panel world-panel-review relative overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/80 p-6 shadow-[0_28px_90px_rgba(94,109,148,0.22)] backdrop-blur-sm sm:p-8">
           <div className="pointer-events-none absolute inset-x-10 top-0 h-44 rounded-full bg-[radial-gradient(circle,_rgba(255,255,255,0.92),_rgba(255,255,255,0))] blur-2xl" />
-          <div className="pointer-events-none absolute -right-12 top-12 h-40 w-40 rounded-full border border-white/40 bg-[radial-gradient(circle,_rgba(255,255,255,0.8),_rgba(208,219,245,0.24)_58%,_rgba(208,219,245,0))] shadow-[0_0_60px_rgba(214,224,246,0.4)]" />
+          <div className="pointer-events-none absolute -right-12 top-12 h-40 w-40 rounded-full border border-slate-200/40 bg-[radial-gradient(circle,_rgba(255,255,255,0.8),_rgba(203,213,225,0.2)_58%,_rgba(208,219,245,0))] shadow-[0_0_60px_rgba(203,213,225,0.3)]" />
           <div className="relative flex flex-col gap-6">
             <header className="flex items-start justify-between gap-4">
               <div className="max-w-2xl">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                   Calm Review Room
                 </p>
-                <h1 className="mt-3 text-4xl font-black tracking-[-0.03em] text-slate-950 sm:text-5xl">
+                <h1 className="mt-3 text-4xl font-black tracking-[-0.03em] text-slate-800 sm:text-5xl">
                   {title}
                 </h1>
-                <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
+                <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">
                   {childName}의 복습실에서 오늘 쌓인 단어를 차분하게 다시 정리합니다.
                 </p>
               </div>
@@ -87,7 +87,7 @@ export function ReviewScreen({
                   </div>
                 </div>
                 <Link
-                  className="big-button mt-7 bg-[linear-gradient(180deg,_#18253f,_#243457)] text-white shadow-[0_18px_40px_rgba(36,52,87,0.28)]"
+                  className="big-button mt-7 bg-[linear-gradient(180deg,_#18253f,_#243457)] text-white shadow-[0_18px_40px_rgba(36,52,87,0.28),0_0_15px_rgba(203,213,225,0.2)]"
                   href={buildChildHref({ pathname: "/review/session", childId })}
                 >
                   복습 시작

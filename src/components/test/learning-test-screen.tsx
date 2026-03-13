@@ -84,7 +84,7 @@ export function LearningTestScreen({
   const resolvedCompletionLabel =
     completionLabel ?? (isReviewMode ? "복습실로 돌아가기" : "Today로 돌아가기");
   const outerBackgroundClass = isReviewMode
-    ? "bg-[radial-gradient(circle_at_top,_#f6f8ff,_#edf2ff_28%,_#f7f9ff_58%,_#ebeff8)] text-slate-950"
+    ? "bg-[radial-gradient(circle_at_top,_#f0f2ff,_#e8edff_28%,_#f2f5ff_58%,_#e6eaf4)] text-slate-950"
     : "bg-[radial-gradient(circle_at_top,_#e9f3ff,_#fff_50%,_#fff3dc)]";
   const frameClass = isReviewMode
     ? "border border-white/70 bg-white/82 shadow-[0_28px_90px_rgba(94,109,148,0.18)] backdrop-blur-sm"
@@ -381,12 +381,12 @@ export function LearningTestScreen({
                 className={`rounded-[1.6rem] border-2 px-5 py-5 text-left text-xl font-black shadow-[0_14px_30px_rgba(15,23,42,0.08)] transition ${
                   isReviewMode
                     ? isCorrect
-                      ? "border-emerald-300 bg-emerald-50/90 text-emerald-950"
+                      ? "border-emerald-200/60 bg-emerald-200/30 text-emerald-950"
                       : isWrong
-                        ? "border-amber-300 bg-amber-50 text-amber-950"
+                        ? "border-violet-200/60 bg-violet-200/30 text-violet-950"
                         : isSelected
                           ? "border-slate-400 bg-slate-100 text-slate-950"
-                          : "border-slate-200 bg-white/85 text-slate-900 hover:border-slate-300 hover:bg-slate-50"
+                          : "border-slate-300/20 bg-white/85 text-slate-900 hover:border-slate-300/40 hover:bg-slate-50"
                     : isCorrect
                       ? "border-emerald-400 bg-emerald-50 text-emerald-950"
                       : isWrong
@@ -412,8 +412,8 @@ export function LearningTestScreen({
             className={`rounded-[1.5rem] px-5 py-4 text-center text-sm font-semibold shadow-[0_10px_25px_rgba(15,23,42,0.06)] ${
               isReviewMode
                 ? selectedChoice === question.answer
-                  ? "bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200"
-                  : "bg-amber-50 text-amber-900 ring-1 ring-amber-200"
+                  ? "bg-emerald-100/40 text-emerald-900 ring-1 ring-emerald-200/50"
+                  : "bg-violet-100/40 text-violet-900 ring-1 ring-violet-200/50"
                 : selectedChoice === question.answer
                   ? "bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200"
                   : "bg-rose-50 text-rose-900 ring-1 ring-rose-200"
