@@ -11,3 +11,5 @@ public/audio/generated/
 public/audio/tts/compare/
 *.tsbuildinfo
 .DS_Store
+*.zip
+*.PNG
