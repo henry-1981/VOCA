@@ -13,6 +13,7 @@ type MainHubProps = {
   streak: number;
   currentDayTitle: string;
   previewMode: boolean;
+  dayStage?: "not_started" | "learn_completed" | "test_completed" | "completed";
 };
 
 export function MainHub({
@@ -22,7 +23,8 @@ export function MainHub({
   level,
   streak,
   currentDayTitle,
-  previewMode
+  previewMode,
+  dayStage = "not_started"
 }: MainHubProps) {
   // Initialize toast as visible when streak > 0, then fade out after 800ms
   const [showStreakToast, setShowStreakToast] = useState(streak > 0);
@@ -165,6 +167,33 @@ export function MainHub({
                     Practice Room Open
                   </div>
                 </div>
+                {/* Day progress badges */}
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2" data-testid="day-progress-badges">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-bold ${
+                      dayStage === "learn_completed" || dayStage === "test_completed" || dayStage === "completed"
+                        ? "bg-emerald-600/90 text-white"
+                        : "bg-slate-900/10 text-slate-800/60"
+                    }`}
+                    data-testid="learn-badge"
+                  >
+                    {dayStage === "learn_completed" || dayStage === "test_completed" || dayStage === "completed"
+                      ? "Learn \u2713"
+                      : "Learn"}
+                  </span>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-bold ${
+                      dayStage === "test_completed" || dayStage === "completed"
+                        ? "bg-emerald-600/90 text-white"
+                        : "bg-slate-900/10 text-slate-800/60"
+                    }`}
+                    data-testid="test-badge"
+                  >
+                    {dayStage === "test_completed" || dayStage === "completed"
+                      ? "Test \u2713"
+                      : "Test"}
+                  </span>
+                </div>
               </div>
             </Link>
 
@@ -233,7 +262,15 @@ export function MainHub({
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-white/65">
                 Character
               </p>
-              <p className="mt-3 text-2xl font-black text-white sm:text-3xl">XP / Level / 성장</p>
+              <div className="mt-3 flex items-center justify-center gap-3">
+                <p className="text-2xl font-black text-white sm:text-3xl">XP / Level / 성장</p>
+                <span
+                  className="rounded-full border border-amber-200/30 bg-amber-300/15 px-3 py-1 text-sm font-bold text-amber-100"
+                  data-testid="level-badge"
+                >
+                  Lv.{level}
+                </span>
+              </div>
               <p className="mt-2 text-sm leading-6 text-white/70">
                 연구실로 내려가 오늘 켜진 배지와 연속 학습 기록을 확인합니다.
               </p>

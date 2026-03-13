@@ -49,4 +49,30 @@ describe("MainHub", () => {
     expect(toast).toBeInTheDocument();
     expect(toast).toHaveTextContent("+3일 연속!");
   });
+
+  it("shows learn completed badge when dayStage is learn_completed", () => {
+    render(<MainHub {...defaultProps} dayStage="learn_completed" />);
+
+    const learnBadge = screen.getByTestId("learn-badge");
+    expect(learnBadge).toHaveTextContent("Learn \u2713");
+    const testBadge = screen.getByTestId("test-badge");
+    expect(testBadge).toHaveTextContent("Test");
+    expect(testBadge).not.toHaveTextContent("\u2713");
+  });
+
+  it("shows test completed badge when dayStage is test_completed", () => {
+    render(<MainHub {...defaultProps} dayStage="test_completed" />);
+
+    const learnBadge = screen.getByTestId("learn-badge");
+    expect(learnBadge).toHaveTextContent("Learn \u2713");
+    const testBadge = screen.getByTestId("test-badge");
+    expect(testBadge).toHaveTextContent("Test \u2713");
+  });
+
+  it("shows level badge in character link area", () => {
+    render(<MainHub {...defaultProps} level={7} />);
+
+    const levelBadge = screen.getByTestId("level-badge");
+    expect(levelBadge).toHaveTextContent("Lv.7");
+  });
 });

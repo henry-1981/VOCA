@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import type { DayKind } from "@/lib/types/domain";
 import { DaySelectorModal } from "./day-selector-modal";
@@ -25,6 +25,16 @@ export function TodayStage({
   allDays
 }: TodayStageProps) {
   const [showDaySelector, setShowDaySelector] = useState(false);
+  const [showTransitionMessage, setShowTransitionMessage] = useState(stage === "learn_completed");
+
+  useEffect(() => {
+    if (!showTransitionMessage) return;
+    const timer = setTimeout(() => {
+      setShowTransitionMessage(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [showTransitionMessage]);
+
   const isCheckpoint = dayKind === "checkpoint_test";
   const learnPrimary = !isCheckpoint && stage === "not_started";
   const testPrimary = !isCheckpoint && stage === "learn_completed";
@@ -164,6 +174,17 @@ export function TodayStage({
           </div>
         </section>
 
+        {/* Learn→Test transition message */}
+        {showTransitionMessage && stage === "learn_completed" ? (
+          <div
+            className="animate-scale-bounce rounded-[1.5rem] border border-amber-200/60 bg-amber-50 px-5 py-4 text-center text-lg font-bold text-amber-900 shadow-[0_12px_30px_rgba(251,191,36,0.15)]"
+            data-testid="transition-message"
+            onClick={() => setShowTransitionMessage(false)}
+          >
+            학습 완료! 이제 테스트에 도전하세요 ✨
+          </div>
+        ) : null}
+
         {!isCheckpoint ? (
           <div className="grid gap-4 lg:grid-cols-[1.3fr_0.92fr]">
             <Link
@@ -205,7 +226,8 @@ export function TodayStage({
                   testPrimary || dayComplete
                     ? "border-slate-900 bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(2,6,23,0.98))] text-white"
                     : "border-slate-200 bg-white text-slate-500"
-                }`}
+                } ${testPrimary ? "animate-glow-pulse" : ""}`}
+                data-testid="test-card"
                 href={buildChildHref({
                   pathname: "/test",
                   childId,

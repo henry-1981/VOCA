@@ -49,4 +49,50 @@ describe("TodayStage", () => {
     expect(screen.getByText(/오늘 테스트 완료/i)).toBeInTheDocument();
     expect(screen.getByText(/오늘의 학습이 완료되었습니다/i)).toBeInTheDocument();
   });
+
+  it("shows transition message when stage is learn_completed", () => {
+    render(
+      <TodayStage
+        childId="다온"
+        dayId="day-001"
+        dayKind="learning"
+        dayTitle="Day 01"
+        stage="learn_completed"
+      />
+    );
+
+    const message = screen.getByTestId("transition-message");
+    expect(message).toBeInTheDocument();
+    expect(message).toHaveTextContent(/학습 완료/);
+  });
+
+  it("test card has glow when stage is learn_completed", () => {
+    render(
+      <TodayStage
+        childId="다온"
+        dayId="day-001"
+        dayKind="learning"
+        dayTitle="Day 01"
+        stage="learn_completed"
+      />
+    );
+
+    const testCard = screen.getByTestId("test-card");
+    expect(testCard).toHaveClass("animate-glow-pulse");
+  });
+
+  it("test card does not glow when stage is not_started", () => {
+    render(
+      <TodayStage
+        childId="다온"
+        dayId="day-001"
+        dayKind="learning"
+        dayTitle="Day 01"
+        stage="not_started"
+      />
+    );
+
+    const testCard = screen.getByTestId("test-card");
+    expect(testCard).not.toHaveClass("animate-glow-pulse");
+  });
 });
