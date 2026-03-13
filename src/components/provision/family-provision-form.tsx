@@ -106,34 +106,13 @@ export function FamilyProvisionForm({
       <button
         className="big-button border-0 bg-slate-950 text-white disabled:cursor-not-allowed disabled:bg-slate-300"
         disabled={!firebaseReady}
-        onClick={() => {
-          if (!firebaseReady) {
-            return;
-          }
-
-          saveProvisioningDraft({
-            familyName,
-            children: [childAName, childBName],
-            selectedChildIndex,
-            deviceId: getOrCreateDeviceId() || defaultDeviceId
-          });
-          void signInWithGoogleRedirect();
-        }}
-        type="button"
-      >
-        Google 리디렉트로 시작
-      </button>
-
-      <button
-        className="big-button border-0 bg-white text-slate-950 ring-1 ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-100"
-        disabled={!firebaseReady}
         onClick={async () => {
           if (!firebaseReady) {
             return;
           }
 
           try {
-            setPopupMessage("팝업 로그인과 provisioning을 진행하는 중입니다.");
+            setPopupMessage("Google 로그인 중입니다...");
             const deviceId = getOrCreateDeviceId() || defaultDeviceId;
             const result = await signInWithGooglePopup();
             const payload = await provisionFamily({
@@ -152,19 +131,40 @@ export function FamilyProvisionForm({
               lastValidatedAt: payload.deviceBinding.lastValidatedAt
             });
 
-            setPopupMessage("팝업 provisioning이 완료되었습니다. 홈으로 이동합니다.");
+            setPopupMessage("가족 연결 완료! 홈으로 이동합니다.");
             window.setTimeout(() => {
               window.location.href = "/";
             }, 1200);
           } catch (error) {
             setPopupMessage(
-              error instanceof Error ? error.message : "Popup provisioning failed"
+              error instanceof Error ? error.message : "Google 로그인에 실패했습니다."
             );
           }
         }}
         type="button"
       >
-        Google 팝업 테스트
+        Google 로그인으로 시작
+      </button>
+
+      <button
+        className="big-button border-0 bg-white text-slate-950 ring-1 ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+        disabled={!firebaseReady}
+        onClick={() => {
+          if (!firebaseReady) {
+            return;
+          }
+
+          saveProvisioningDraft({
+            familyName,
+            children: [childAName, childBName],
+            selectedChildIndex,
+            deviceId: getOrCreateDeviceId() || defaultDeviceId
+          });
+          void signInWithGoogleRedirect();
+        }}
+        type="button"
+      >
+        리디렉트 방식으로 시도 (팝업 차단 시)
       </button>
 
       {popupMessage ? (
