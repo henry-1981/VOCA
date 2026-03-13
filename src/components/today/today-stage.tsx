@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import type { DayKind } from "@/lib/types/domain";
+import { DaySelectorModal } from "./day-selector-modal";
+import type { DayInfo } from "./day-selector-modal";
 
 type TodayStageProps = {
   childId?: string;
@@ -8,6 +13,7 @@ type TodayStageProps = {
   dayKind: DayKind;
   dayTitle: string;
   stage: "not_started" | "learn_completed" | "test_completed" | "completed";
+  allDays?: DayInfo[];
 };
 
 export function TodayStage({
@@ -15,8 +21,10 @@ export function TodayStage({
   dayId,
   dayKind,
   dayTitle,
-  stage
+  stage,
+  allDays
 }: TodayStageProps) {
+  const [showDaySelector, setShowDaySelector] = useState(false);
   const isCheckpoint = dayKind === "checkpoint_test";
   const learnPrimary = !isCheckpoint && stage === "not_started";
   const testPrimary = !isCheckpoint && stage === "learn_completed";
@@ -83,7 +91,16 @@ export function TodayStage({
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {allDays && allDays.length > 0 && (
+                <button
+                  type="button"
+                  className="rounded-full border border-violet-300/30 bg-violet-500/15 px-3 py-1.5 text-xs font-bold text-violet-700 transition hover:bg-violet-500/25"
+                  onClick={() => setShowDaySelector(true)}
+                >
+                  다른 Day 선택
+                </button>
+              )}
               {progressLabels.map((label, index) => {
                 const active =
                   isCheckpoint
@@ -277,6 +294,23 @@ export function TodayStage({
           </Link>
         )}
       </div>
+
+      {showDaySelector && allDays && (
+        <DaySelectorModal
+          days={allDays}
+          currentDayId={dayId}
+          onSelect={(selectedDayId) => {
+            setShowDaySelector(false);
+            const href = buildChildHref({
+              pathname: "/today",
+              childId,
+              params: { day: selectedDayId }
+            });
+            window.location.href = href;
+          }}
+          onClose={() => setShowDaySelector(false)}
+        />
+      )}
     </main>
   );
 }
