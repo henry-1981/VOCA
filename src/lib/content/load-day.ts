@@ -1,13 +1,24 @@
-import day001 from "@/content/books/bridge-voca-basic/day-001.json";
-import day002 from "@/content/books/bridge-voca-basic/day-002.json";
-import day003 from "@/content/books/bridge-voca-basic/day-003.json";
-import day004 from "@/content/books/bridge-voca-basic/day-004.json";
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 import type { DayContent } from "@/lib/types/domain";
 import { parseDayContent } from "./day-schema";
 
-const bridgeVocaBasicDays = [day001, day002, day003, day004].map((day) =>
-  parseDayContent(day as DayContent)
-);
+const CONTENT_ROOT = path.resolve(process.cwd(), "src/content/books/bridge-voca-basic");
+
+function loadBridgeVocaBasicDays() {
+  return readdirSync(CONTENT_ROOT)
+    .filter((name) => /^day-\d{3}\.json$/.test(name))
+    .sort((left, right) => left.localeCompare(right))
+    .map((name) => {
+      const day = JSON.parse(
+        readFileSync(path.join(CONTENT_ROOT, name), "utf-8")
+      ) as DayContent;
+
+      return parseDayContent(day);
+    });
+}
+
+const bridgeVocaBasicDays = loadBridgeVocaBasicDays();
 
 export function getBridgeVocaBasicDays() {
   return bridgeVocaBasicDays;
