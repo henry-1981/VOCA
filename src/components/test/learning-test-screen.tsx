@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { DayCompleteCelebration } from "@/components/effects/day-complete-celebration";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
@@ -40,6 +41,7 @@ export function LearningTestScreen({
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Gamification effect states
   const [showCorrectEffect, setShowCorrectEffect] = useState(false);
@@ -166,13 +168,34 @@ export function LearningTestScreen({
         if (childId && dayId) {
           setMockDayStage(childId, dayId, "test_completed");
         }
-        setCompleted(true);
+        // In test mode, show celebration overlay before results
+        if (!isReviewMode) {
+          setShowCelebration(true);
+        } else {
+          setCompleted(true);
+        }
         return;
       }
 
       setCurrentIndex((value) => value + 1);
       setSelectedChoice(null);
     }, 250);
+  }
+
+  // Calculate XP total for celebration: 5 per correct answer (simplified)
+  const totalXp = score * 5;
+
+  if (showCelebration) {
+    return (
+      <DayCompleteCelebration
+        dayTitle={dayTitle}
+        totalXp={totalXp}
+        onClose={() => {
+          setShowCelebration(false);
+          setCompleted(true);
+        }}
+      />
+    );
   }
 
   if (completed) {
