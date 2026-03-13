@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
 
 type MainHubProps = {
@@ -20,6 +23,16 @@ export function MainHub({
   currentDayTitle,
   previewMode
 }: MainHubProps) {
+  // Initialize toast as visible when streak > 0, then fade out after 800ms
+  const [showStreakToast, setShowStreakToast] = useState(streak > 0);
+
+  useEffect(() => {
+    if (!showStreakToast) return;
+    const timer = setTimeout(() => {
+      setShowStreakToast(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [showStreakToast]);
   const supportCards = [
     {
       label: "Review",
@@ -65,7 +78,10 @@ export function MainHub({
                 <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1.5">
                   Level {level}
                 </span>
-                <span className="rounded-full border border-amber-200/20 bg-amber-300/10 px-3 py-1.5 text-amber-50">
+                <span
+                  className={`rounded-full border border-amber-200/20 bg-amber-300/10 px-3 py-1.5 text-amber-50 ${streak > 0 ? "animate-glow-pulse" : ""}`}
+                  data-testid="streak-badge"
+                >
                   연속 학습 {streak}일
                 </span>
               </div>
@@ -75,6 +91,16 @@ export function MainHub({
             </div>
           </div>
         </header>
+
+        {/* Streak toast */}
+        {showStreakToast ? (
+          <div
+            className="pointer-events-none fixed left-1/2 top-8 z-50 -translate-x-1/2 animate-float-up rounded-full bg-amber-400 px-5 py-2 text-lg font-bold text-slate-900 shadow-[0_10px_30px_rgba(251,191,36,0.4)]"
+            data-testid="streak-toast"
+          >
+            +{streak}일 연속!
+          </div>
+        ) : null}
 
         <section className="relative min-h-[76vh] overflow-hidden rounded-[2.25rem] border border-white/10 bg-[linear-gradient(180deg,_rgba(57,42,115,0.42),_rgba(11,14,27,0.93))] p-5 shadow-[0_35px_120px_rgba(0,0,0,0.4)] sm:p-7">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,_rgba(255,230,170,0.3),_transparent_60%)]" />
