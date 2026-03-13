@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
+import { loadDeviceBinding, saveDeviceBinding } from "@/lib/device/device-binding";
 import { ProfileSwitcher } from "./profile-switcher";
 
 // --- Profile theme per child ---
@@ -202,9 +203,11 @@ export function MainHub({
             <ProfileSwitcher
               currentChildName={childName}
               onSwitch={() => {
-                if (typeof window !== "undefined") {
-                  window.location.href = "/provision";
-                }
+                const binding = loadDeviceBinding();
+                if (!binding) return;
+                const nextChildId = binding.childId === "다온" ? "지온" : "다온";
+                saveDeviceBinding({ ...binding, childId: nextChildId });
+                window.location.href = "/";
               }}
             />
           </div>
