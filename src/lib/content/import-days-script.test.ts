@@ -21,4 +21,18 @@ describe("import_bridge_voca_days.py", () => {
     expect(output).toContain("usage:");
     expect(output).toContain("--day");
   });
+
+  it("dry-runs against a valid Firestore document path", () => {
+    const output = execFileSync(
+      "python3",
+      [scriptPath, "--day", "11", "--dry-run", "--project", "bridgevoca"],
+      {
+        encoding: "utf-8"
+      }
+    );
+
+    expect(output).toContain(
+      "/documents/contentBooks/bridge-voca-basic/days/day-011"
+    );
+  });
 });

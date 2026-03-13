@@ -85,7 +85,7 @@ def read_day_payload(path: Path) -> dict:
 
 
 def firestore_document_url(project: str, book_id: str, day_id: str) -> str:
-    document_path = f"content/books/{book_id}/days/{day_id}"
+    document_path = f"contentBooks/{book_id}/days/{day_id}"
     encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in document_path.split("/"))
     return (
         f"https://firestore.googleapis.com/v1/projects/{project}/databases/(default)/documents/"

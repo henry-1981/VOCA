@@ -36,7 +36,7 @@ export const paths = {
     `families/${familyId}/children/${childId}/history`,
   childReviewQueueCollection: (familyId: FamilyId, childId: ChildId) =>
     `families/${familyId}/children/${childId}/reviewQueue`,
-  contentDay: (bookId: string, dayId: DayId) => `content/books/${bookId}/days/${dayId}`
+  contentDay: (bookId: string, dayId: DayId) => `contentBooks/${bookId}/days/${dayId}`
 } as const;
 
 export function familyDocRef(db: Firestore, familyId: FamilyId): DocumentReference<FamilyDoc> {
