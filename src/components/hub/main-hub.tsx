@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
+import { ProfileSwitcher } from "./profile-switcher";
 
 type MainHubProps = {
   childId: string;
@@ -86,8 +87,18 @@ export function MainHub({
                 </span>
               </div>
             </div>
-            <div className="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold text-amber-100 shadow-[0_10px_30px_rgba(255,214,111,0.12)] backdrop-blur">
-              Magic Academy
+            <div className="flex flex-col items-end gap-2">
+              <div className="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold text-amber-100 shadow-[0_10px_30px_rgba(255,214,111,0.12)] backdrop-blur">
+                Magic Academy
+              </div>
+              <ProfileSwitcher
+                currentChildName={childName}
+                onSwitch={() => {
+                  if (typeof window !== "undefined") {
+                    window.location.href = "/provision";
+                  }
+                }}
+              />
             </div>
           </div>
         </header>
