@@ -1,57 +1,36 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { MainHubScene } from "@/components/hub/main-hub-scene";
-import { MainHubSceneBg } from "@/components/hub/main-hub-scene-bg";
+import { useSearchParams } from "next/navigation";
+import { MainHub } from "@/components/hub/main-hub";
 
-const commonProps = {
-  childId: "daon",
-  currentDayId: "day-005",
-  childName: "다온",
-  level: 7,
-  streak: 12,
-  currentDayTitle: "Day 05 Test",
-  previewMode: true,
-  avatarSrc: "/avatars/daon.png",
+const PROFILES = {
+  "다온": { childId: "다온", childName: "다온", level: 7, streak: 12, currentDayId: "day-005", currentDayTitle: "Day 05 Test" },
+  "지온": { childId: "지온", childName: "지온", level: 4, streak: 5, currentDayId: "day-003", currentDayTitle: "Day 03" },
 } as const;
 
 export default function HubPreviewPage() {
-  const [variant, setVariant] = useState<"css" | "bg">("css");
+  const params = useSearchParams();
+  const profileKey = params.get("child") === "지온" ? "지온" : "다온";
+  const profile = PROFILES[profileKey];
 
   return (
-    <div className="relative">
-      {variant === "css" ? (
-        <MainHubScene {...commonProps} />
-      ) : (
-        <MainHubSceneBg
-          {...commonProps}
-          backgroundSrc="/backgrounds/academy-gate.png"
-        />
-      )}
-
+    <div className="relative h-[100dvh] w-[100dvw]">
+      <MainHub
+        childId={profile.childId}
+        currentDayId={profile.currentDayId}
+        childName={profile.childName}
+        level={profile.level}
+        streak={profile.streak}
+        currentDayTitle={profile.currentDayTitle}
+        previewMode
+      />
       <Link
         href="/design-preview"
         className="fixed bottom-3 left-3 z-50 rounded-lg bg-black/60 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm hover:bg-black/80"
       >
         &larr; Back to previews
       </Link>
-
-      {/* Toggle button (dev only) */}
-      <div className="fixed bottom-3 right-3 z-50 flex gap-1 rounded-lg border border-white/20 bg-black/60 p-1 text-[10px] font-bold text-white backdrop-blur-sm">
-        <button
-          className={`rounded px-2 py-1 transition ${variant === "css" ? "bg-white/20" : "opacity-50"}`}
-          onClick={() => setVariant("css")}
-        >
-          CSS
-        </button>
-        <button
-          className={`rounded px-2 py-1 transition ${variant === "bg" ? "bg-white/20" : "opacity-50"}`}
-          onClick={() => setVariant("bg")}
-        >
-          BG Image
-        </button>
-      </div>
     </div>
   );
 }

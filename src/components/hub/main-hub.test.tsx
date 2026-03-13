@@ -18,7 +18,7 @@ describe("MainHub", () => {
 
     expect(screen.getByRole("heading", { name: "다온" })).toBeInTheDocument();
     expect(screen.getByText(/today/i)).toBeInTheDocument();
-    expect(screen.getByText(/character/i)).toBeInTheDocument();
+    expect(screen.getByText(/성장/)).toBeInTheDocument();
     expect(screen.getByText(/history/i)).toBeInTheDocument();
     expect(screen.getByText(/review/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Day 05 Test/i).length).toBeGreaterThanOrEqual(1);
@@ -67,6 +67,12 @@ describe("MainHub", () => {
     expect(learnBadge).toHaveTextContent("Learn \u2713");
     const testBadge = screen.getByTestId("test-badge");
     expect(testBadge).toHaveTextContent("Test \u2713");
+  });
+
+  it("지온 profile uses sky-themed streak badge", () => {
+    render(<MainHub {...defaultProps} childId="지온" childName="지온" streak={5} />);
+    const badge = screen.getByTestId("streak-badge");
+    expect(badge).toHaveClass("bg-sky-300/10");
   });
 
   it("shows level badge in character link area", () => {
