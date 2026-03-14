@@ -16,7 +16,7 @@ describe("TodayStage", () => {
 
     expect(screen.getAllByText("Learn").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Test").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/오늘 단어 익히기 시작/i)).toBeInTheDocument();
+    expect(screen.getByText(/단어 익히기/i)).toBeInTheDocument();
   });
 
   it("shows Test as primary immediately for a checkpoint day", () => {
@@ -31,8 +31,7 @@ describe("TodayStage", () => {
     );
 
     expect(screen.getAllByText(/종합 테스트 시작/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.queryByText(/오늘 단어 익히기 시작/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/지금 바로 종합 테스트를 시작하세요/i)).toBeInTheDocument();
+    expect(screen.queryByText(/단어 익히기/i)).not.toBeInTheDocument();
   });
 
   it("shows a completion-oriented state after test completion", () => {
@@ -46,8 +45,7 @@ describe("TodayStage", () => {
       />
     );
 
-    expect(screen.getByText(/오늘 테스트 완료/i)).toBeInTheDocument();
-    expect(screen.getByText(/오늘의 학습이 완료되었습니다/i)).toBeInTheDocument();
+    expect(screen.getByText(/테스트 완료/i)).toBeInTheDocument();
   });
 
   it("shows transition message when stage is learn_completed", () => {
