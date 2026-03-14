@@ -1,4 +1,3 @@
-import { ProvisionComplete } from "@/components/provision/provision-complete";
 import { FamilyProvisionForm } from "@/components/provision/family-provision-form";
 import { ProvisionResetButton } from "@/components/provision/provision-reset-button";
 
@@ -9,7 +8,6 @@ export default function ProvisionPage() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-60 bg-[radial-gradient(ellipse_at_top,_rgba(139,92,246,0.15),_transparent_70%)]" />
 
       <div className="relative z-10 mx-auto flex max-w-xl flex-col gap-4 px-6 py-10">
-        <ProvisionComplete />
         <FamilyProvisionForm />
         <ProvisionResetButton />
       </div>
