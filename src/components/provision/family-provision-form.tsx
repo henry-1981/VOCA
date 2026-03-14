@@ -15,6 +15,14 @@ type FamilyProvisionFormProps = {
   defaultDeviceId?: string;
 };
 
+function isStandalonePwa() {
+  if (typeof window === "undefined") return false;
+  return (
+    ("standalone" in window.navigator && (window.navigator as unknown as { standalone: boolean }).standalone) ||
+    window.matchMedia("(display-mode: standalone)").matches
+  );
+}
+
 export function FamilyProvisionForm({
   defaultDeviceId = "ipad-a"
 }: FamilyProvisionFormProps) {
@@ -25,6 +33,55 @@ export function FamilyProvisionForm({
   const [popupMessage, setPopupMessage] = useState("");
   const firebaseReady = hasFirebaseEnv();
   const missingKeys = getMissingFirebaseEnvKeys();
+  const isPwa = isStandalonePwa();
+
+  function saveDraftAndRedirect() {
+    const deviceId = getOrCreateDeviceId() || defaultDeviceId;
+    saveProvisioningDraft({
+      familyName,
+      children: [childAName, childBName],
+      selectedChildIndex,
+      deviceId
+    });
+    void signInWithGoogleRedirect();
+  }
+
+  async function tryPopupLogin() {
+    try {
+      setPopupMessage("Google 로그인 중입니다...");
+      const deviceId = getOrCreateDeviceId() || defaultDeviceId;
+      const result = await signInWithGooglePopup();
+      const payload = await provisionFamily({
+        familyName,
+        children: [childAName, childBName],
+        selectedChildIndex,
+        deviceId,
+        ownerUid: result.user.uid
+      });
+
+      saveDeviceBinding({
+        deviceId: payload.deviceBinding.deviceId,
+        familyId: payload.deviceBinding.familyId,
+        childId: payload.deviceBinding.childId,
+        boundAt: payload.deviceBinding.boundAt,
+        lastValidatedAt: payload.deviceBinding.lastValidatedAt
+      });
+
+      setPopupMessage("가족 연결 완료! 홈으로 이동합니다.");
+      window.setTimeout(() => {
+        window.location.href = "/";
+      }, 1200);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "";
+      // Popup blocked or closed → fall back to redirect
+      if (msg.includes("popup") || msg.includes("closed") || msg.includes("cancelled")) {
+        setPopupMessage("팝업이 차단되어 리디렉트 방식으로 전환합니다...");
+        window.setTimeout(() => saveDraftAndRedirect(), 500);
+      } else {
+        setPopupMessage(msg || "Google 로그인에 실패했습니다.");
+      }
+    }
+  }
 
   return (
     <section className="mx-auto flex max-w-xl flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-sm">
@@ -87,10 +144,6 @@ export function FamilyProvisionForm({
         </label>
       </fieldset>
 
-      <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/50">
-        현재 기기 기본 ID: {defaultDeviceId}
-      </p>
-
       {!firebaseReady ? (
         <div className="rounded-2xl border border-amber-400/20 bg-amber-950/30 px-4 py-4 text-sm text-amber-200">
           <p className="font-semibold">Firebase env가 아직 없습니다</p>
@@ -106,65 +159,18 @@ export function FamilyProvisionForm({
       <button
         className="big-button border-0 bg-violet-600 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30 disabled:shadow-none"
         disabled={!firebaseReady}
-        onClick={async () => {
-          if (!firebaseReady) {
-            return;
-          }
-
-          try {
-            setPopupMessage("Google 로그인 중입니다...");
-            const deviceId = getOrCreateDeviceId() || defaultDeviceId;
-            const result = await signInWithGooglePopup();
-            const payload = await provisionFamily({
-              familyName,
-              children: [childAName, childBName],
-              selectedChildIndex,
-              deviceId,
-              ownerUid: result.user.uid
-            });
-
-            saveDeviceBinding({
-              deviceId: payload.deviceBinding.deviceId,
-              familyId: payload.deviceBinding.familyId,
-              childId: payload.deviceBinding.childId,
-              boundAt: payload.deviceBinding.boundAt,
-              lastValidatedAt: payload.deviceBinding.lastValidatedAt
-            });
-
-            setPopupMessage("가족 연결 완료! 홈으로 이동합니다.");
-            window.setTimeout(() => {
-              window.location.href = "/";
-            }, 1200);
-          } catch (error) {
-            setPopupMessage(
-              error instanceof Error ? error.message : "Google 로그인에 실패했습니다."
-            );
+        onClick={() => {
+          if (!firebaseReady) return;
+          if (isPwa) {
+            // PWA standalone → popup doesn't work, use redirect directly
+            saveDraftAndRedirect();
+          } else {
+            void tryPopupLogin();
           }
         }}
         type="button"
       >
         Google 로그인으로 시작
-      </button>
-
-      <button
-        className="big-button border border-white/15 bg-white/5 text-white/80 backdrop-blur-sm disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/20"
-        disabled={!firebaseReady}
-        onClick={() => {
-          if (!firebaseReady) {
-            return;
-          }
-
-          saveProvisioningDraft({
-            familyName,
-            children: [childAName, childBName],
-            selectedChildIndex,
-            deviceId: getOrCreateDeviceId() || defaultDeviceId
-          });
-          void signInWithGoogleRedirect();
-        }}
-        type="button"
-      >
-        리디렉트 방식으로 시도 (팝업 차단 시)
       </button>
 
       {popupMessage ? (

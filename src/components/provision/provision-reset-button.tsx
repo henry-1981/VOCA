@@ -1,11 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { signOutFirebaseUser } from "@/lib/firebase/auth";
-import { resetProvisionState } from "@/lib/reset/reset-provision-state";
 
 export function ProvisionResetButton() {
   const [status, setStatus] = useState<"idle" | "confirming" | "done">("idle");
+
+  async function fullReset() {
+    // 1. Clear all localStorage
+    localStorage.clear();
+
+    // 2. Clear all sessionStorage
+    sessionStorage.clear();
+
+    // 3. Delete all IndexedDB databases (Firebase Auth + Firestore cache)
+    if (typeof indexedDB !== "undefined" && indexedDB.databases) {
+      try {
+        const dbs = await indexedDB.databases();
+        for (const db of dbs) {
+          if (db.name) {
+            indexedDB.deleteDatabase(db.name);
+          }
+        }
+      } catch {
+        // Fallback: delete known Firebase DB names
+        indexedDB.deleteDatabase("firebaseLocalStorageDb");
+        indexedDB.deleteDatabase("firestore/[DEFAULT]/bridgevoca/main");
+      }
+    } else {
+      // Safari fallback
+      indexedDB.deleteDatabase("firebaseLocalStorageDb");
+      indexedDB.deleteDatabase("firestore/[DEFAULT]/bridgevoca/main");
+    }
+
+    setStatus("done");
+    window.setTimeout(() => {
+      window.location.reload();
+    }, 800);
+  }
 
   if (status === "done") {
     return (
@@ -22,33 +53,13 @@ export function ProvisionResetButton() {
           정말 초기화하시겠습니까?
         </p>
         <p className="mt-1 text-xs text-red-200/60">
-          로컬 바인딩, mock 학습 데이터, Firebase 인증이 모두 삭제됩니다.
+          로컬 바인딩, 학습 데이터, Firebase 인증이 모두 삭제됩니다.
         </p>
         <div className="mt-3 flex gap-3">
           <button
             type="button"
             className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white"
-            onClick={async () => {
-              try {
-                await signOutFirebaseUser();
-              } catch {
-                // ignore
-              }
-              resetProvisionState();
-              // Clear all mock day stage data
-              const keysToRemove: string[] = [];
-              for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith("mock-day-stage:")) {
-                  keysToRemove.push(key);
-                }
-              }
-              keysToRemove.forEach((key) => localStorage.removeItem(key));
-              setStatus("done");
-              window.setTimeout(() => {
-                window.location.reload();
-              }, 600);
-            }}
+            onClick={() => void fullReset()}
           >
             초기화 실행
           </button>
