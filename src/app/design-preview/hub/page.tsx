@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { MainHub } from "@/components/hub/main-hub";
 
@@ -9,7 +10,7 @@ const PROFILES = {
   "지온": { childId: "지온", childName: "지온", level: 4, streak: 5, currentDayId: "day-003", currentDayTitle: "Day 03" },
 } as const;
 
-export default function HubPreviewPage() {
+function HubPreviewContent() {
   const params = useSearchParams();
   const profileKey = params.get("child") === "지온" ? "지온" : "다온";
   const profile = PROFILES[profileKey];
@@ -32,5 +33,13 @@ export default function HubPreviewPage() {
         &larr; Back to previews
       </Link>
     </div>
+  );
+}
+
+export default function HubPreviewPage() {
+  return (
+    <Suspense>
+      <HubPreviewContent />
+    </Suspense>
   );
 }
