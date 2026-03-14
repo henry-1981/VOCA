@@ -128,11 +128,11 @@ export function ProvisionComplete() {
   }, []);
 
   return (
-    <section className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-4 text-sm text-sky-950">
+    <section className="rounded-2xl border border-violet-300/15 bg-violet-950/30 px-4 py-4 text-sm text-violet-100 backdrop-blur-sm">
       <p className="font-semibold">Provision status</p>
-      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-sky-700">{status}</p>
-      <p className="mt-2">{message}</p>
-      <p className="mt-2 text-xs text-sky-800">{debug}</p>
+      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-violet-300/70">{status}</p>
+      <p className="mt-2 text-white/70">{message}</p>
+      <p className="mt-2 text-xs text-violet-300/50">{debug}</p>
     </section>
   );
 }

@@ -4,32 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { HistoryEntry } from "@/lib/mock/child-dashboard";
 import { buildChildHref } from "@/lib/navigation/child-href";
-
-type HistoryTheme = {
-  backgroundSrc: string;
-  cardBorder: string;
-  cardBg: string;
-  labelText: string;
-  accentText: string;
-};
-
-const HISTORY_THEMES: Record<string, HistoryTheme> = {
-  "다온": {
-    backgroundSrc: "/backgrounds/history-library-warm.png",
-    cardBorder: "border-amber-300/20",
-    cardBg: "bg-amber-950/40",
-    labelText: "text-amber-200/70",
-    accentText: "text-amber-100",
-  },
-  "지온": {
-    backgroundSrc: "/backgrounds/history-library-cool.png",
-    cardBorder: "border-sky-300/20",
-    cardBg: "bg-sky-950/40",
-    labelText: "text-sky-200/70",
-    accentText: "text-sky-100",
-  },
-};
-const DEFAULT_THEME = HISTORY_THEMES["다온"];
+import { getScreenBackground, getProfileAccent } from "@/lib/theme/profile-themes";
 
 type HistoryScreenProps = {
   childId: string;
@@ -38,7 +13,8 @@ type HistoryScreenProps = {
 };
 
 export function HistoryScreen({ childId, childName, entries }: HistoryScreenProps) {
-  const theme = HISTORY_THEMES[childName] ?? DEFAULT_THEME;
+  const accent = getProfileAccent(childName);
+  const theme = { ...accent, backgroundSrc: getScreenBackground("history", childName) };
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden">

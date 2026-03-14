@@ -4,32 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
+import { getScreenBackground, getProfileAccent } from "@/lib/theme/profile-themes";
 import type { DayKind } from "@/lib/types/domain";
 import { DaySelectorModal } from "./day-selector-modal";
 import type { DayInfo } from "./day-selector-modal";
-
-type TodayTheme = {
-  backgroundSrc: string;
-  cardBorder: string;
-  cardBg: string;
-  labelText: string;
-};
-
-const TODAY_THEMES: Record<string, TodayTheme> = {
-  "다온": {
-    backgroundSrc: "/backgrounds/today-practice-warm.png",
-    cardBorder: "border-amber-300/20",
-    cardBg: "bg-amber-950/35",
-    labelText: "text-amber-200/70",
-  },
-  "지온": {
-    backgroundSrc: "/backgrounds/today-practice-cool.png",
-    cardBorder: "border-sky-300/20",
-    cardBg: "bg-sky-950/35",
-    labelText: "text-sky-200/70",
-  },
-};
-const DEFAULT_THEME = TODAY_THEMES["다온"];
 
 type TodayStageProps = {
   childId?: string;
@@ -59,25 +37,17 @@ export function TodayStage({
     return () => clearTimeout(timer);
   }, [showTransitionMessage]);
 
-  const theme = (childId && TODAY_THEMES[childId]) || DEFAULT_THEME;
+  const accent = getProfileAccent(childId ?? "다온");
+  const theme = {
+    backgroundSrc: getScreenBackground("today", childId ?? "다온"),
+    cardBorder: accent.cardBorder,
+    cardBg: accent.cardBg,
+    labelText: accent.labelText,
+  };
   const isCheckpoint = dayKind === "checkpoint_test";
   const learnPrimary = !isCheckpoint && stage === "not_started";
   const testPrimary = !isCheckpoint && stage === "learn_completed";
   const dayComplete = stage === "test_completed" || stage === "completed";
-  const statusMessage =
-    dayComplete
-      ? "오늘의 학습이 완료되었습니다."
-      : isCheckpoint
-        ? "지금 바로 종합 테스트를 시작하세요."
-        : "오늘 단어를 익히고 테스트합니다.";
-  const stageLabel =
-    stage === "not_started"
-      ? "아직 시작 전"
-      : stage === "learn_completed"
-        ? "Learn 완료"
-        : dayComplete
-          ? "Day 완료"
-          : "진행 중";
   const progressLabels = isCheckpoint
     ? ["준비", "Checkpoint Test", "완료"]
     : ["시작 전", "Learn", "Test", "완료"];
@@ -85,13 +55,7 @@ export function TodayStage({
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden">
       {/* Background image */}
-      <Image
-        alt=""
-        className="object-cover"
-        fill
-        priority
-        src={theme.backgroundSrc}
-      />
+      <Image alt="" className="object-cover" fill priority src={theme.backgroundSrc} />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-[rgba(15,12,35,0.65)]" />
       {/* Top gradient */}
@@ -101,126 +65,52 @@ export function TodayStage({
 
       {/* Content */}
       <div className="relative z-10 flex h-[100dvh] flex-col">
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="mx-auto flex max-w-4xl flex-col gap-5">
-            {/* Header */}
-            <header
-              className={`relative overflow-hidden rounded-[2.2rem] border p-6 backdrop-blur-sm ${
-                isCheckpoint
-                  ? "border-indigo-300/20 bg-indigo-500/10"
-                  : "border-white/15 bg-white/8"
-              }`}
-            >
-              {/* Header decorations */}
-              <div
-                className={`pointer-events-none absolute inset-x-0 top-0 h-24 ${
-                  isCheckpoint
-                    ? "bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.18),_transparent_70%)]"
-                    : "bg-[radial-gradient(circle_at_top,_rgba(168,85,247,0.16),_transparent_70%)]"
-                }`}
-              />
-              <div
-                className={`pointer-events-none absolute right-8 top-8 h-16 w-16 rounded-full blur-2xl ${
-                  isCheckpoint ? "bg-indigo-300/20" : "bg-violet-300/20"
-                }`}
-              />
+        {/* ── HEADER BAR (compact, non-interactive status) ── */}
+        <header className="shrink-0 px-6 pt-5 pb-2 sm:px-8">
+          <div className="mx-auto flex max-w-4xl items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-black text-white sm:text-3xl">{dayTitle}</h1>
+              <div className="flex items-center gap-1.5">
+                {progressLabels.map((label, index) => {
+                  const active =
+                    isCheckpoint
+                      ? (stage === "not_started" && index === 0) ||
+                        (!dayComplete && stage !== "not_started" && index === 1) ||
+                        (dayComplete && index === 2)
+                      : (stage === "not_started" && index === 0) ||
+                        (stage === "learn_completed" && index === 2) ||
+                        (dayComplete && index === 3) ||
+                        (stage !== "not_started" && !testPrimary && index === 1);
 
-              <div className="relative space-y-4">
-                {/* Top row: label + 홈으로 button */}
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
-                      {isCheckpoint ? "Checkpoint Today" : "Today"}
-                    </p>
-                    <h1 className="text-4xl font-black text-white sm:text-5xl">{dayTitle}</h1>
-                    <p className="text-sm font-semibold text-white/70">{stageLabel}</p>
-                    <p className="max-w-2xl text-sm leading-6 text-white/60">
-                      {isCheckpoint
-                        ? "오늘은 복습 카드가 아니라 종합 점검실에 들어가는 날입니다."
-                        : "연습실 문이 열린 상태입니다. 단어를 먼저 만나고, 그 다음 테스트 문을 여는 흐름입니다."}
-                    </p>
-                  </div>
-                  <Link
-                    className="inline-flex shrink-0 rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm font-semibold text-white/70 backdrop-blur-sm"
-                    href={buildChildHref({ pathname: "/", childId })}
-                  >
-                    홈으로
-                  </Link>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  {allDays && allDays.length > 0 && (
-                    <button
-                      type="button"
-                      className="rounded-full border border-violet-300/30 bg-violet-500/15 px-3 py-1.5 text-xs font-bold text-violet-300 transition hover:bg-violet-500/25"
-                      onClick={() => setShowDaySelector(true)}
+                  return (
+                    <span
+                      key={label}
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] ${
+                        active
+                          ? isCheckpoint
+                            ? "bg-indigo-600 text-white"
+                            : "bg-violet-600 text-white"
+                          : "bg-white/10 text-white/40"
+                      }`}
                     >
-                      다른 Day 선택
-                    </button>
-                  )}
-                  {progressLabels.map((label, index) => {
-                    const active =
-                      isCheckpoint
-                        ? (stage === "not_started" && index === 0) ||
-                          (!dayComplete && stage !== "not_started" && index === 1) ||
-                          (dayComplete && index === 2)
-                        : (stage === "not_started" && index === 0) ||
-                          (stage === "learn_completed" && index === 2) ||
-                          (dayComplete && index === 3) ||
-                          (stage !== "not_started" && !testPrimary && index === 1);
-
-                    return (
-                      <span
-                        key={label}
-                        className={`rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] ${
-                          active
-                            ? isCheckpoint
-                              ? "bg-indigo-600 text-white"
-                              : "bg-violet-600 text-white"
-                            : "bg-white/10 text-white/50"
-                        }`}
-                      >
-                        {label}
-                      </span>
-                    );
-                  })}
-                </div>
+                      {label}
+                    </span>
+                  );
+                })}
               </div>
-            </header>
-
-            {/* Dark info section */}
-            <section
-              className={`relative overflow-hidden rounded-[2.2rem] border p-6 text-white backdrop-blur-sm ${
-                isCheckpoint
-                  ? "border-indigo-400/20 bg-indigo-900/40"
-                  : "border-white/10 bg-white/8"
-              }`}
+            </div>
+            <Link
+              className="inline-flex shrink-0 rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm font-semibold text-white/70 backdrop-blur-sm"
+              href={buildChildHref({ pathname: "/", childId })}
             >
-              <div
-                className={`pointer-events-none absolute inset-x-0 top-0 h-24 ${
-                  isCheckpoint
-                    ? "bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_72%)]"
-                    : "bg-[radial-gradient(circle_at_top,_rgba(255,214,111,0.10),_transparent_72%)]"
-                }`}
-              />
-              <div className="academy-float pointer-events-none absolute right-10 top-10 h-12 w-12 rounded-full bg-white/10 blur-xl" />
-              <div className="pointer-events-none absolute inset-x-10 bottom-6 h-14 rounded-[100%] bg-[radial-gradient(circle,_rgba(255,255,255,0.08),_transparent_70%)] blur-xl" />
-              <div className="relative">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/60">
-                  {isCheckpoint ? "종합 점검 Day" : "개인 연습실"}
-                </p>
-                <p className="mt-3 text-3xl font-black sm:text-4xl">{dayTitle}</p>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70">
-                  {statusMessage}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/75">
-                  <span className="rounded-full bg-white/10 px-3 py-2">Practice Room</span>
-                  <span className="rounded-full bg-white/10 px-3 py-2">
-                    {isCheckpoint ? "Test Door Only" : "Learn First"}
-                  </span>
-                </div>
-              </div>
-            </section>
+              홈으로
+            </Link>
+          </div>
+        </header>
+
+        {/* ── MAIN AREA (scrollable action cards) ── */}
+        <div className="flex-1 overflow-y-auto px-6 pb-6 sm:px-8">
+          <div className="mx-auto flex max-w-4xl flex-col gap-4">
 
             {/* Learn→Test transition message */}
             {showTransitionMessage && stage === "learn_completed" ? (
@@ -229,145 +119,191 @@ export function TodayStage({
                 data-testid="transition-message"
                 onClick={() => setShowTransitionMessage(false)}
               >
-                학습 완료! 이제 테스트에 도전하세요 ✨
+                학습 완료! 이제 테스트에 도전하세요
               </div>
             ) : null}
 
-            {/* Learn / Test cards */}
+            {/* ── ACTION CARDS ── */}
             {!isCheckpoint ? (
-              <div className="grid gap-4 lg:grid-cols-[1.3fr_0.92fr]">
-                {/* Learn card */}
+              <div className="grid gap-4 lg:grid-cols-2">
+                {/* Learn action card */}
                 <Link
-                  className={`relative overflow-hidden rounded-[2rem] border px-6 py-7 text-left transition ${
+                  className={`group relative overflow-hidden rounded-[2rem] border px-6 py-6 text-left transition active:scale-[0.98] ${
                     learnPrimary
-                      ? "border-violet-400/30 bg-violet-600/80 text-white backdrop-blur-sm"
-                      : "border-white/15 bg-white/8 text-white backdrop-blur-sm"
-                  }`}
+                      ? "border-violet-400/40 bg-violet-600/80 shadow-[0_16px_40px_rgba(139,92,246,0.25)]"
+                      : dayComplete
+                        ? "border-white/10 bg-white/5 opacity-60"
+                        : "border-white/15 bg-white/8"
+                  } text-white backdrop-blur-sm`}
                   href={buildChildHref({
                     pathname: "/today/learn",
                     childId,
                     params: { day: dayId }
                   })}
                 >
-                  <div className="pointer-events-none absolute inset-x-8 bottom-5 h-14 rounded-[100%] bg-[radial-gradient(circle,_rgba(255,255,255,0.10),_transparent_68%)] blur-lg" />
-                  <p className={`text-sm font-semibold uppercase tracking-[0.18em] ${learnPrimary ? "text-violet-200" : "text-white/50"}`}>
-                    Learn
+                  <div className="flex items-center justify-between">
+                    <p className={`text-xs font-bold uppercase tracking-[0.18em] ${learnPrimary ? "text-violet-200" : "text-white/40"}`}>
+                      Learn
+                    </p>
+                    {learnPrimary && (
+                      <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white">
+                        지금 시작
+                      </span>
+                    )}
+                    {!learnPrimary && !dayComplete && (
+                      <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300">
+                        완료
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-3 text-xl font-black sm:text-2xl">
+                    {learnPrimary ? "단어 익히기" : "단어 학습 완료"}
                   </p>
-                  <p className="mt-3 text-2xl font-black sm:text-3xl">오늘 단어 익히기 시작</p>
-                  <p className={`mt-3 text-sm leading-6 ${learnPrimary ? "text-violet-100/90" : "text-white/60"}`}>
-                    단어, 뜻, 발음, 예문을 한 장씩 보며 오늘 연습실의 첫 문을 엽니다.
+                  <p className={`mt-2 text-sm leading-6 ${learnPrimary ? "text-violet-100/80" : "text-white/50"}`}>
+                    {learnPrimary
+                      ? "단어 20개를 한 장씩 보며 발음과 뜻을 익힙니다."
+                      : "다시 보기가 가능합니다."}
                   </p>
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    <div className="inline-flex rounded-full bg-white/12 px-4 py-2 text-sm font-bold">
-                      {learnPrimary ? "지금 해야 할 첫 행동" : "완료됨 · 다시 보기 가능"}
-                    </div>
-                    <div
-                      className={`inline-flex rounded-full px-4 py-2 text-sm font-bold ${
-                        learnPrimary ? "bg-white/8 text-violet-100/90" : "bg-white/10 text-white/60"
-                      }`}
-                    >
-                      단어 20개를 차례대로 수집
-                    </div>
+                  {/* Touch affordance: arrow */}
+                  <div className="mt-4 flex items-center gap-2">
+                    <span className={`text-lg transition group-hover:translate-x-1 ${learnPrimary ? "text-violet-200" : "text-white/30"}`}>→</span>
+                    <span className={`text-sm font-semibold ${learnPrimary ? "text-violet-200" : "text-white/30"}`}>
+                      {learnPrimary ? "탭하여 입장" : "탭하여 다시 보기"}
+                    </span>
                   </div>
                 </Link>
 
-                <div className="flex flex-col gap-4">
-                  {/* Test card */}
-                  <Link
-                    className={`relative overflow-hidden rounded-[2rem] border px-6 py-6 text-left transition ${
-                      testPrimary || dayComplete
-                        ? "border-slate-700 bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(2,6,23,0.98))] text-white"
-                        : "border-white/10 bg-white/5 text-white/50"
-                    } ${testPrimary ? "animate-glow-pulse" : ""}`}
-                    data-testid="test-card"
-                    href={buildChildHref({
-                      pathname: "/test",
-                      childId,
-                      params: { day: dayId }
-                    })}
-                  >
-                    <div className="pointer-events-none absolute right-6 top-6 h-10 w-10 rounded-full bg-white/6 blur-md" />
-                    <p
-                      className={`text-sm font-semibold uppercase tracking-[0.18em] ${
-                        testPrimary || dayComplete ? "text-slate-300" : "text-white/40"
-                      }`}
-                    >
+                {/* Test action card */}
+                <Link
+                  className={`group relative overflow-hidden rounded-[2rem] border px-6 py-6 text-left transition active:scale-[0.98] ${
+                    testPrimary
+                      ? "border-slate-600 bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(2,6,23,0.98))] shadow-[0_16px_40px_rgba(15,23,42,0.4)] animate-glow-pulse"
+                      : dayComplete
+                        ? "border-emerald-500/20 bg-emerald-950/30"
+                        : "border-white/8 bg-white/4 opacity-50"
+                  } text-white backdrop-blur-sm`}
+                  data-testid="test-card"
+                  href={buildChildHref({
+                    pathname: "/test",
+                    childId,
+                    params: { day: dayId }
+                  })}
+                >
+                  <div className="flex items-center justify-between">
+                    <p className={`text-xs font-bold uppercase tracking-[0.18em] ${
+                      testPrimary ? "text-slate-300" : dayComplete ? "text-emerald-300/70" : "text-white/30"
+                    }`}>
                       Test
                     </p>
-                    <p className="mt-2 text-2xl font-black">
-                      {testPrimary
-                        ? "이제 테스트 시작"
-                        : dayComplete
-                          ? "오늘 테스트 완료"
-                          : "Learn 완료 후 시작"}
-                    </p>
-                    <p
-                      className={`mt-3 text-sm leading-6 ${
-                        testPrimary || dayComplete ? "text-slate-300" : "text-white/40"
-                      }`}
-                    >
-                      {testPrimary
-                        ? "연습실 다음 문이 열렸습니다. 이제 문제를 풀어 오늘 Day를 마무리합니다."
-                        : dayComplete
-                          ? "오늘 테스트는 이미 끝났습니다. 필요하면 다시 들어가 확인할 수 있습니다."
-                          : "Learn에서 단어 20개를 모두 만난 뒤에만 이 문이 열립니다."}
-                    </p>
-                    <div
-                      className={`mt-5 inline-flex rounded-full px-4 py-2 text-sm font-bold ${
-                        testPrimary || dayComplete ? "bg-white/10" : "bg-white/5 text-white/40"
-                      }`}
-                    >
-                      {testPrimary
-                        ? "문이 열렸습니다"
-                        : dayComplete
-                          ? "완료됨"
-                          : "아직 잠겨 있음"}
-                    </div>
-                  </Link>
-
-                  {/* Room Status */}
-                  <div className="rounded-[1.7rem] border border-white/15 bg-white/8 px-5 py-5 text-white backdrop-blur-sm">
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/50">Room Status</p>
-                    <p className="mt-3 text-base font-bold text-white">
-                      {learnPrimary
-                        ? "연습실 첫 문이 열려 있습니다."
-                        : testPrimary
-                          ? "테스트 문이 반짝이며 열려 있습니다."
-                          : dayComplete
-                            ? "오늘 방은 정리됐고 다음 보상만 남았습니다."
-                            : "오늘 방 안을 탐험하는 중입니다."}
-                    </p>
+                    {testPrimary && (
+                      <span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-200">
+                        문이 열림
+                      </span>
+                    )}
+                    {dayComplete && (
+                      <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300">
+                        완료
+                      </span>
+                    )}
+                    {!testPrimary && !dayComplete && (
+                      <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-bold text-white/30">
+                        잠김
+                      </span>
+                    )}
                   </div>
-                </div>
+                  <p className="mt-3 text-xl font-black sm:text-2xl">
+                    {testPrimary
+                      ? "테스트 시작"
+                      : dayComplete
+                        ? "테스트 완료"
+                        : "Learn 완료 후 열림"}
+                  </p>
+                  <p className={`mt-2 text-sm leading-6 ${
+                    testPrimary ? "text-slate-300" : dayComplete ? "text-emerald-200/60" : "text-white/30"
+                  }`}>
+                    {testPrimary
+                      ? "4지선다 문제로 오늘 배운 단어를 테스트합니다."
+                      : dayComplete
+                        ? "결과를 다시 확인할 수 있습니다."
+                        : "Learn에서 단어 20개를 모두 본 뒤 열립니다."}
+                  </p>
+                  {/* Touch affordance: arrow */}
+                  <div className="mt-4 flex items-center gap-2">
+                    <span className={`text-lg transition group-hover:translate-x-1 ${
+                      testPrimary ? "text-slate-300" : dayComplete ? "text-emerald-300/50" : "text-white/20"
+                    }`}>→</span>
+                    <span className={`text-sm font-semibold ${
+                      testPrimary ? "text-slate-300" : dayComplete ? "text-emerald-300/50" : "text-white/20"
+                    }`}>
+                      {testPrimary ? "탭하여 입장" : dayComplete ? "탭하여 다시 보기" : "아직 잠겨 있음"}
+                    </span>
+                  </div>
+                </Link>
               </div>
             ) : (
-              /* Checkpoint test card */
+              /* Checkpoint test — single action card */
               <Link
-                className="relative overflow-hidden rounded-[2.2rem] border border-indigo-500/40 bg-[linear-gradient(180deg,_rgba(55,48,163,0.90),_rgba(15,23,42,0.90))] px-6 py-8 text-left text-white backdrop-blur-sm transition hover:-translate-y-0.5"
+                className="group relative overflow-hidden rounded-[2rem] border border-indigo-500/40 bg-[linear-gradient(180deg,_rgba(55,48,163,0.90),_rgba(15,23,42,0.90))] px-6 py-8 text-left text-white backdrop-blur-sm transition active:scale-[0.98]"
                 href={buildChildHref({
                   pathname: "/test",
                   childId,
                   params: { day: dayId }
                 })}
               >
-                <div className="pointer-events-none absolute inset-x-10 bottom-5 h-16 rounded-[100%] bg-[radial-gradient(circle,_rgba(255,255,255,0.12),_transparent_70%)] blur-xl" />
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-200">
-                  Checkpoint Test
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-200">
+                    Checkpoint Test
+                  </p>
+                  <span className="rounded-full bg-indigo-400/20 px-3 py-1 text-xs font-bold text-indigo-200">
+                    {dayComplete ? "완료" : "Learn 없이 바로 시작"}
+                  </span>
+                </div>
+                <p className="mt-3 text-2xl font-black sm:text-3xl">
+                  {dayComplete ? "종합 테스트 완료" : "종합 테스트 시작"}
                 </p>
-                <p className="mt-3 text-3xl font-black sm:text-4xl">종합 테스트 시작</p>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-indigo-100/90">
-                  점검실 안에서는 카드 공부를 하지 않습니다. 오늘은 바로 종합 테스트로 들어가 네 Day 동안
-                  익힌 단어를 꺼내는 날입니다.
+                <p className="mt-2 text-sm leading-6 text-indigo-100/80">
+                  {dayComplete
+                    ? "결과를 다시 확인할 수 있습니다."
+                    : "네 Day 동안 익힌 단어를 종합 점검합니다."}
                 </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <div className="inline-flex rounded-full bg-white/12 px-4 py-2 text-sm font-bold text-white">
-                    지금 바로 종합 테스트 시작
-                  </div>
-                  <div className="inline-flex rounded-full bg-indigo-300/12 px-4 py-2 text-sm font-bold text-indigo-100">
-                    Learn 없음 · Test only
-                  </div>
+                <div className="mt-5 flex items-center gap-2">
+                  <span className="text-lg text-indigo-200 transition group-hover:translate-x-1">→</span>
+                  <span className="text-sm font-semibold text-indigo-200">
+                    탭하여 입장
+                  </span>
                 </div>
               </Link>
+            )}
+
+            {/* ── DAY SELECTOR (separate navigation action) ── */}
+            {allDays && allDays.length > 0 && (
+              <button
+                type="button"
+                className={`w-full rounded-[1.5rem] border px-6 py-4 text-left transition active:scale-[0.98] ${
+                  isCheckpoint
+                    ? "border-indigo-300/20 bg-indigo-500/10 hover:bg-indigo-500/20"
+                    : "border-violet-300/20 bg-violet-500/10 hover:bg-violet-500/20"
+                } backdrop-blur-sm`}
+                onClick={() => setShowDaySelector(true)}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${
+                      isCheckpoint ? "text-indigo-300/70" : "text-violet-300/70"
+                    }`}>
+                      Day Navigation
+                    </p>
+                    <p className={`mt-1 text-lg font-bold ${
+                      isCheckpoint ? "text-indigo-100" : "text-violet-100"
+                    }`}>
+                      다른 Day 선택하기
+                    </p>
+                  </div>
+                  <span className={`text-2xl ${
+                    isCheckpoint ? "text-indigo-300/50" : "text-violet-300/50"
+                  }`}>→</span>
+                </div>
+              </button>
             )}
           </div>
         </div>

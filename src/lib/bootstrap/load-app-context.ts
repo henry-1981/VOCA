@@ -1,5 +1,5 @@
 import { getDoc } from "firebase/firestore";
-import { getRegisteredDeviceBinding } from "@/lib/firebase/device-registry";
+import { getRegisteredDeviceBinding, registerDeviceBinding } from "@/lib/firebase/device-registry";
 import { getFirebaseDb, hasFirebaseEnv } from "@/lib/firebase/client";
 import { loadDeviceBinding } from "@/lib/device/device-binding";
 import { childDocRef } from "@/lib/firebase/firestore";
@@ -55,12 +55,17 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
   try {
     const registered = await getRegisteredDeviceBinding(binding.familyId, binding.deviceId);
 
-    if (!registered || registered.childId !== binding.childId) {
+    if (!registered) {
       return {
         status: "stale_binding",
         binding,
         reason: "Device registry does not match the local binding"
       };
+    }
+
+    // Same family, different child = local profile switch — not stale
+    if (registered.childId !== binding.childId) {
+      await registerDeviceBinding({ ...binding });
     }
 
     const childSnapshot = await getDoc(

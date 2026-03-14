@@ -3,36 +3,23 @@
 import Link from "next/link";
 import Image from "next/image";
 import { buildChildHref } from "@/lib/navigation/child-href";
+import { getScreenBackground, getProfileAccent } from "@/lib/theme/profile-themes";
 
-// --- Review theme per child (moonlit/silver tone) ---
-type ReviewTheme = {
-  backgroundSrc: string;
-  cardBorder: string;
-  cardBg: string;
-  labelText: string;
-  ctaGlow: string;
+// Screen-specific extension: CTA glow per profile
+const REVIEW_CTA_GLOW: Record<string, string> = {
+  "다온": "shadow-[0_18px_40px_rgba(255,200,80,0.2)]",
+  "지온": "shadow-[0_18px_40px_rgba(148,163,184,0.2)]",
 };
 
-const REVIEW_THEMES: Record<string, ReviewTheme> = {
-  "다온": {
-    backgroundSrc: "/backgrounds/review-moonlit-warm.png",
-    cardBorder: "border-amber-200/20",
-    cardBg: "bg-amber-950/35",
-    labelText: "text-amber-200/60",
-    ctaGlow: "shadow-[0_18px_40px_rgba(255,200,80,0.2)]",
-  },
-  "지온": {
-    backgroundSrc: "/backgrounds/review-moonlit-cool.png",
-    cardBorder: "border-slate-300/20",
-    cardBg: "bg-slate-800/40",
-    labelText: "text-slate-300/60",
-    ctaGlow: "shadow-[0_18px_40px_rgba(148,163,184,0.2)]",
-  },
-};
-const DEFAULT_THEME = REVIEW_THEMES["다온"];
-
-function getReviewTheme(childId: string): ReviewTheme {
-  return REVIEW_THEMES[childId] ?? DEFAULT_THEME;
+function getReviewTheme(childId: string) {
+  const accent = getProfileAccent(childId);
+  return {
+    backgroundSrc: getScreenBackground("review", childId),
+    cardBorder: accent.cardBorder,
+    cardBg: accent.cardBg,
+    labelText: accent.labelText,
+    ctaGlow: REVIEW_CTA_GLOW[childId] ?? REVIEW_CTA_GLOW["다온"],
+  };
 }
 
 type ReviewScreenProps = {

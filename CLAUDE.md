@@ -91,30 +91,38 @@ content/books/{bookId}
 
 ### Screen Worlds
 
-| Screen | Location | Tone |
-|---|---|---|
-| Hub | 아카데미 외부 (정문+탑) | 게임 로비 |
-| Today | 개인 연습실 | 학습 집중 |
-| Learn | 연습실 내부 | 차분한 학습 |
-| Test | 연습실 내부 | 도전적 |
-| Review | 달빛 복습실 | 차분한 회복 (moonlit/silver) |
-| History | 도서관/기록 보관실 | 조용한 종이/책 느낌 |
-| Character | 비밀 마법 연구실 | 성취감/보상 |
+| Screen | Location | Tone | Background Images |
+|---|---|---|---|
+| Hub | 아카데미 외부 (정문+탑) | 게임 로비 | `hub-academy-*.png` |
+| Today | 개인 연습실 | 학습 집중 | `today-practice-*.png` |
+| Learn | 연습실 내부 | 차분한 학습 | Today와 동일 이미지 재사용 |
+| Test | 연습실 내부 | 도전적 | 배경 이미지 없음 (다크 그라데이션) |
+| Review | 달빛 복습실 | 차분한 회복 (moonlit/silver) | `review-moonlit-*.png` |
+| History | 도서관/기록 보관실 | 조용한 종이/책 느낌 | `history-library-*.png` |
+| Character | 비밀 마법 연구실 | 성취감/보상 | `character-lab-*.png` |
+
+- 공통 다크 디자인 언어: `<Image fill>` 배경 + 다크 오버레이 + glassmorphism 카드 (`backdrop-blur-sm`)
+- 프로필별 테마: 다온(amber/warm), 지온(sky/cool) — 각 컴포넌트 내 `*_THEMES` 맵
+- 배경 이미지 경로: `public/backgrounds/` (Vertex AI Imagen 3 생성)
 
 ## Key Design Documents (SSOT)
 
 - `docs/plans/2026-03-13-v0.2-stabilize-deploy-spec.md` — v0.2 Spec (40개 항목)
 - `docs/plans/2026-03-13-v0.2-stabilize-deploy-design.md` — v0.2 Design
 - `docs/plans/2026-03-13-v0.2-stabilize-deploy-plan.md` — v0.2 Plan (작성 예정)
+- `docs/plans/2026-03-14-sub-screens-dark-redesign-design.md` — 서브 화면 다크 리디자인 Design
+- `docs/plans/2026-03-14-today-dark-redesign-plan.md` — Today 다크 리디자인 Plan
 - `docs/plans/archive/` — v0.1 시절 문서 (레거시 참조용)
 
 ## Current Status
 
-- **Branch**: `feat/v0-2-mvp`
-- **Phase**: v0.2 안정화 + 배포 (41개 항목)
-- v0.2 MVP 코드 완성, 안정화/폴리시/게이미피케이션/배포 진행 중
+- **Branch**: `main`
+- **Phase**: v0.2 폴리시 + 다크 리디자인
+- 전체 화면 다크 디자인 통일 완료 (Hub, Today, Learn, Test, Review, History, Character)
+- 프로필별(다온/지온) 배경 이미지 10장 생성 완료
 - Days 1-20 콘텐츠 + 오디오 에셋 완료
-- 배포 타겟: Vercel
+- 배포: Vercel (https://bridevoca.vercel.app)
+- **남은 작업**: Day History Detail, Provision 화면 다크 테마 미적용
 
 ## Development Rules
 

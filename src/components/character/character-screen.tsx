@@ -1,34 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getRewardPreview } from "@/lib/character/reward-preview";
+import { getScreenBackground, getProfileAccent, PROFILE_AVATARS } from "@/lib/theme/profile-themes";
 
-const AVATAR_MAP: Record<string, string> = {
-  "다온": "/avatars/daon-nobg.png",
-  "지온": "/avatars/jion-nobg.png",
+// Screen-specific extension: aura glow color per profile
+const CHARACTER_AURA: Record<string, string> = {
+  "다온": "rgba(255,200,80,0.15)",
+  "지온": "rgba(56,189,248,0.15)",
 };
-
-type CharacterTheme = {
-  backgroundSrc: string;
-  cardBorder: string;
-  cardBg: string;
-  auraColor: string;
-};
-
-const CHARACTER_THEMES: Record<string, CharacterTheme> = {
-  "다온": {
-    backgroundSrc: "/backgrounds/character-lab-warm.png",
-    cardBorder: "border-amber-300/20",
-    cardBg: "bg-amber-950/30",
-    auraColor: "rgba(255,200,80,0.15)",
-  },
-  "지온": {
-    backgroundSrc: "/backgrounds/character-lab-cool.png",
-    cardBorder: "border-sky-300/20",
-    cardBg: "bg-sky-950/30",
-    auraColor: "rgba(56,189,248,0.15)",
-  },
-};
-const DEFAULT_THEME = CHARACTER_THEMES["다온"];
 
 type CharacterScreenProps = {
   childName: string;
@@ -54,9 +33,15 @@ export function CharacterScreen({
   });
 
   const xpPercent = xpGoal > 0 ? Math.min((xp / xpGoal) * 100, 100) : 0;
-  const avatarSrc = AVATAR_MAP[childName] ?? AVATAR_MAP["다온"];
+  const avatarSrc = PROFILE_AVATARS[childName as keyof typeof PROFILE_AVATARS] ?? PROFILE_AVATARS["다온"];
   const levelTitle = level >= 10 ? "Archmage" : level >= 5 ? "Apprentice Mage" : "Student Mage";
-  const theme = CHARACTER_THEMES[childName] ?? DEFAULT_THEME;
+  const accent = getProfileAccent(childName);
+  const theme = {
+    backgroundSrc: getScreenBackground("character", childName),
+    cardBorder: accent.cardBorder,
+    cardBg: accent.cardBg,
+    auraColor: CHARACTER_AURA[childName] ?? CHARACTER_AURA["다온"],
+  };
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden text-white">

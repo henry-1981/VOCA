@@ -6,13 +6,8 @@ import { useState } from "react";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
+import { getScreenBackground } from "@/lib/theme/profile-themes";
 import type { WordEntry } from "@/lib/types/domain";
-
-const LEARN_THEMES: Record<string, { backgroundSrc: string }> = {
-  "다온": { backgroundSrc: "/backgrounds/today-practice-warm.png" },
-  "지온": { backgroundSrc: "/backgrounds/today-practice-cool.png" },
-};
-const DEFAULT_LEARN_THEME = LEARN_THEMES["다온"];
 
 type LearnCardProps = {
   childId?: string;
@@ -38,7 +33,7 @@ export function LearnCard({
   const progressLabel = isLastWord
     ? "마지막 발견 카드"
     : `${remainingCount}개의 단어가 더 기다리고 있어요`;
-  const theme = (childId && LEARN_THEMES[childId]) || DEFAULT_LEARN_THEME;
+  const backgroundSrc = getScreenBackground("learn", childId ?? "다온");
 
   function play() {
     setPlayed(true);
@@ -70,7 +65,7 @@ export function LearnCard({
         className="object-cover"
         fill
         priority
-        src={theme.backgroundSrc}
+        src={backgroundSrc}
       />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-[rgba(15,12,35,0.65)]" />
@@ -100,39 +95,11 @@ export function LearnCard({
             </div>
           </header>
 
-          <section className="relative overflow-hidden rounded-[1.9rem] border border-white/15 bg-white/8 p-6 backdrop-blur-sm">
-            <div className="relative">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-white/60">
-                    {topic ?? "단어 학습"}
-                  </p>
-                  <p className="mt-2 text-sm text-white/70">오늘의 연습실에서 새 단어를 발견하는 카드입니다.</p>
-                </div>
-                <div className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-violet-200">
-                  Discovery
-                </div>
-              </div>
-              <div className="mt-5 flex min-h-52 items-end justify-center rounded-[1.6rem] border border-white/10 bg-white/5 px-6 pb-6 pt-8">
-                <div className="w-full rounded-[1.4rem] border border-dashed border-white/20 bg-white/5 px-5 py-10 text-center">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300/70">
-                    {word.illustrationMode === "optional" ? "Magic scene ready" : "Scene"}
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-white/50">
-                    {word.illustrationMode === "optional"
-                      ? "일러스트가 없어도 이 카드가 비어 보이지 않도록, 단어를 발견하는 무대처럼 보여줍니다."
-                      : "이 단어를 위한 장면이 여기에 들어갑니다."}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
           <section className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(30,27,75,0.98))] px-6 py-8 text-white shadow-[0_28px_70px_rgba(15,23,42,0.25)]">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top,_rgba(255,214,111,0.16),_transparent_70%)]" />
             <div className="relative flex flex-col items-center gap-5 text-center">
               <div className="inline-flex rounded-full border border-violet-200/15 bg-white/8 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-violet-100">
-                collectible word card
+                {topic ?? "단어 학습"}
               </div>
               <h1 className="text-5xl font-black tracking-tight sm:text-6xl">{word.english}</h1>
               {word.pronunciation ? (

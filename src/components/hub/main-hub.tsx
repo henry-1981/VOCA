@@ -5,50 +5,46 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import { loadDeviceBinding, saveDeviceBinding } from "@/lib/device/device-binding";
+import { getScreenBackground, getProfileAccent, PROFILE_AVATARS } from "@/lib/theme/profile-themes";
 import { ProfileSwitcher } from "./profile-switcher";
 
-// --- Profile theme per child ---
-type ProfileTheme = {
-  avatarSrc: string;
-  backgroundSrc: string;
+// Hub-specific theme extensions per profile
+const HUB_EXTRAS: Record<string, {
   todayBorder: string;
   todayGlow: string;
   todayBg: string;
   streakBorder: string;
   streakBg: string;
   streakText: string;
-  accentLabel: string;
-};
-
-const PROFILE_THEMES: Record<string, ProfileTheme> = {
+}> = {
   "다온": {
-    avatarSrc: "/avatars/daon-nobg.png",
-    backgroundSrc: "/backgrounds/academy-gate-landscape.png",
     todayBorder: "border-amber-300/45",
     todayGlow: "rgba(255,200,80,0.25)",
     todayBg: "from-amber-400/30 via-amber-500/20 to-amber-600/12",
     streakBorder: "border-amber-300/20",
     streakBg: "bg-amber-300/10",
     streakText: "text-amber-50",
-    accentLabel: "text-amber-200/70",
   },
   "지온": {
-    avatarSrc: "/avatars/jion-nobg.png",
-    backgroundSrc: "/backgrounds/academy-hanok-landscape.png",
     todayBorder: "border-sky-300/45",
     todayGlow: "rgba(56,189,248,0.25)",
     todayBg: "from-sky-400/30 via-sky-500/20 to-sky-600/12",
     streakBorder: "border-sky-300/20",
     streakBg: "bg-sky-300/10",
     streakText: "text-sky-50",
-    accentLabel: "text-sky-200/70",
   },
 };
+const DEFAULT_HUB_EXTRAS = HUB_EXTRAS["다온"];
 
-const DEFAULT_THEME = PROFILE_THEMES["다온"];
-
-function getProfileTheme(childId: string): ProfileTheme {
-  return PROFILE_THEMES[childId] ?? DEFAULT_THEME;
+function getProfileTheme(childId: string) {
+  const accent = getProfileAccent(childId);
+  const extras = HUB_EXTRAS[childId] ?? DEFAULT_HUB_EXTRAS;
+  return {
+    avatarSrc: PROFILE_AVATARS[childId as keyof typeof PROFILE_AVATARS] ?? PROFILE_AVATARS["다온"],
+    backgroundSrc: getScreenBackground("hub", childId),
+    accentLabel: accent.labelText,
+    ...extras,
+  };
 }
 
 // --- Time-of-day ---
@@ -87,15 +83,8 @@ export function MainHub({
   dayStage = "not_started",
 }: MainHubProps) {
   const theme = getProfileTheme(childId);
-  const [timeTheme, setTimeTheme] = useState<TimeTheme>({
-    overlay: "rgba(180,200,255,0.08)",
-    showStars: false,
-  });
+  const [timeTheme] = useState<TimeTheme>(getTimeTheme);
   const [showStreakToast, setShowStreakToast] = useState(streak > 0);
-
-  useEffect(() => {
-    setTimeTheme(getTimeTheme());
-  }, []);
 
   useEffect(() => {
     if (!showStreakToast) return;
@@ -117,6 +106,7 @@ export function MainHub({
       {/* [2] Time-of-day overlay */}
       <div
         className="pointer-events-none absolute inset-0 transition-colors duration-1000"
+        suppressHydrationWarning
         style={{ backgroundColor: timeTheme.overlay, mixBlendMode: "multiply" }}
       />
 

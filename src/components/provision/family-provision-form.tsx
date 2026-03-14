@@ -27,18 +27,18 @@ export function FamilyProvisionForm({
   const missingKeys = getMissingFirebaseEnvKeys();
 
   return (
-    <section className="mx-auto flex max-w-xl flex-col gap-4 rounded-[2rem] bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+    <section className="mx-auto flex max-w-xl flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-sm">
       <div>
-        <p className="text-sm font-semibold text-slate-500">Provisioning</p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950">
+        <p className="text-sm font-semibold text-violet-300/70">Provisioning</p>
+        <h1 className="mt-2 text-3xl font-black text-white">
           가족 프로필과 기기 연결
         </h1>
       </div>
 
       <label className="grid gap-2">
-        <span className="text-sm font-semibold text-slate-700">가족 이름</span>
+        <span className="text-sm font-semibold text-white/70">가족 이름</span>
         <input
-          className="rounded-2xl border border-slate-200 px-4 py-3"
+          className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-white/30 backdrop-blur-sm"
           onChange={(event) => setFamilyName(event.target.value)}
           value={familyName}
         />
@@ -46,17 +46,17 @@ export function FamilyProvisionForm({
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2">
-          <span className="text-sm font-semibold text-slate-700">아이 1</span>
+          <span className="text-sm font-semibold text-white/70">아이 1</span>
           <input
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-white/30 backdrop-blur-sm"
             onChange={(event) => setChildAName(event.target.value)}
             value={childAName}
           />
         </label>
         <label className="grid gap-2">
-          <span className="text-sm font-semibold text-slate-700">아이 2</span>
+          <span className="text-sm font-semibold text-white/70">아이 2</span>
           <input
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-white/30 backdrop-blur-sm"
             onChange={(event) => setChildBName(event.target.value)}
             value={childBName}
           />
@@ -64,10 +64,10 @@ export function FamilyProvisionForm({
       </div>
 
       <fieldset className="grid gap-2">
-        <legend className="text-sm font-semibold text-slate-700">
+        <legend className="text-sm font-semibold text-white/70">
           이 iPad는 누구의 기기인가요?
         </legend>
-        <label className="flex items-center gap-3">
+        <label className="flex items-center gap-3 text-white/80">
           <input
             checked={selectedChildIndex === 0}
             name="selected-child"
@@ -76,7 +76,7 @@ export function FamilyProvisionForm({
           />
           <span>{childAName}</span>
         </label>
-        <label className="flex items-center gap-3">
+        <label className="flex items-center gap-3 text-white/80">
           <input
             checked={selectedChildIndex === 1}
             name="selected-child"
@@ -87,15 +87,15 @@ export function FamilyProvisionForm({
         </label>
       </fieldset>
 
-      <p className="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
+      <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/50">
         현재 기기 기본 ID: {defaultDeviceId}
       </p>
 
       {!firebaseReady ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
+        <div className="rounded-2xl border border-amber-400/20 bg-amber-950/30 px-4 py-4 text-sm text-amber-200">
           <p className="font-semibold">Firebase env가 아직 없습니다</p>
-          <p className="mt-2">실제 Google 로그인과 Firestore round-trip 검증은 아직 진행할 수 없습니다.</p>
-          <ul className="mt-3 list-disc pl-5">
+          <p className="mt-2 text-amber-200/70">실제 Google 로그인과 Firestore round-trip 검증은 아직 진행할 수 없습니다.</p>
+          <ul className="mt-3 list-disc pl-5 text-amber-200/70">
             {missingKeys.map((key) => (
               <li key={key}>{key}</li>
             ))}
@@ -104,7 +104,7 @@ export function FamilyProvisionForm({
       ) : null}
 
       <button
-        className="big-button border-0 bg-slate-950 text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+        className="big-button border-0 bg-violet-600 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30 disabled:shadow-none"
         disabled={!firebaseReady}
         onClick={async () => {
           if (!firebaseReady) {
@@ -147,7 +147,7 @@ export function FamilyProvisionForm({
       </button>
 
       <button
-        className="big-button border-0 bg-white text-slate-950 ring-1 ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+        className="big-button border border-white/15 bg-white/5 text-white/80 backdrop-blur-sm disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/20"
         disabled={!firebaseReady}
         onClick={() => {
           if (!firebaseReady) {
@@ -168,7 +168,7 @@ export function FamilyProvisionForm({
       </button>
 
       {popupMessage ? (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-700">
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/70">
           {popupMessage}
         </div>
       ) : null}
