@@ -6,6 +6,7 @@ import { useState } from "react";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
+import { syncLearnCompletion } from "@/lib/sync/sync-day-completion";
 import { getScreenBackground } from "@/lib/theme/profile-themes";
 import type { WordEntry } from "@/lib/types/domain";
 
@@ -158,6 +159,7 @@ export function LearnCard({
                 onClick={() => {
                   if (childId && dayId) {
                     setMockDayStage(childId, dayId, "learn_completed");
+                    void syncLearnCompletion({ childId, dayId });
                   }
 
                   window.location.href = buildChildHref({

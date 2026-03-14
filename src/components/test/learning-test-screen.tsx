@@ -6,6 +6,7 @@ import { DayCompleteCelebration } from "@/components/effects/day-complete-celebr
 import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
+import { syncTestCompletion } from "@/lib/sync/sync-day-completion";
 import type { LearningTestQuestion } from "@/lib/test/generate-learning-test";
 
 type LearningTestScreenProps = {
@@ -40,6 +41,7 @@ export function LearningTestScreen({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [score, setScore] = useState(0);
+  const [wrongIds, setWrongIds] = useState<string[]>([]);
   const [completed, setCompleted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -154,6 +156,7 @@ export function LearningTestScreen({
     } else {
       // Wrong answer
       setCombo(0);
+      setWrongIds((prev) => [...prev, question.id]);
 
       if (!isReviewMode) {
         setShowWrongEffect(true);
@@ -167,6 +170,18 @@ export function LearningTestScreen({
       if (currentIndex === questions.length - 1) {
         if (childId && dayId) {
           setMockDayStage(childId, dayId, "test_completed");
+
+          // Compute final score/wrongIds including this answer
+          const finalScore = isCorrect ? score + 1 : score;
+          const finalWrongIds = isCorrect ? wrongIds : [...wrongIds, question.id];
+
+          void syncTestCompletion({
+            childId,
+            dayId,
+            score: finalScore,
+            totalQuestions: questions.length,
+            wrongWordIds: finalWrongIds
+          });
         }
         // In test mode, show celebration overlay before results
         if (!isReviewMode) {

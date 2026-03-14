@@ -7,7 +7,9 @@ import {
   type AppBootstrapState
 } from "@/lib/bootstrap/load-app-context";
 import { clearDeviceBinding } from "@/lib/device/device-binding";
-import { getMockChildDashboard } from "@/lib/mock/child-dashboard";
+import { getMockChildDashboard, type ChildDashboardState } from "@/lib/mock/child-dashboard";
+import { getMockDayStage } from "@/lib/mock/day-stage";
+import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
 import { MainHub } from "@/components/hub/main-hub";
 
 const initialState: AppBootstrapState = {
@@ -17,6 +19,7 @@ const initialState: AppBootstrapState = {
 
 export function BootstrapLanding() {
   const [state, setState] = useState<AppBootstrapState>(initialState);
+  const [dashboard, setDashboard] = useState<ChildDashboardState | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -41,6 +44,31 @@ export function BootstrapLanding() {
       active = false;
     };
   }, []);
+
+  // Load dashboard when state becomes "ready"
+  useEffect(() => {
+    if (state.status !== "ready") {
+      return;
+    }
+
+    let active = true;
+
+    void resolveChildDashboard(state.binding.childId)
+      .then((result) => {
+        if (active) {
+          setDashboard(result);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setDashboard(getMockChildDashboard(state.binding.childId));
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [state]);
 
   if (state.status === "loading") {
     return (
@@ -109,22 +137,35 @@ export function BootstrapLanding() {
   }
 
   if (state.status === "preview_ready") {
-    const dashboard = getMockChildDashboard(state.binding.childId);
+    const previewDashboard = getMockChildDashboard(state.binding.childId);
+    const dayStage = getMockDayStage(previewDashboard.childId, previewDashboard.currentDayId);
 
     return (
       <MainHub
-        childId={dashboard.childId}
-        currentDayId={dashboard.currentDayId}
-        childName={dashboard.childName}
-        level={dashboard.level}
-        streak={dashboard.streak}
-        currentDayTitle={dashboard.currentDayTitle}
+        childId={previewDashboard.childId}
+        currentDayId={previewDashboard.currentDayId}
+        childName={previewDashboard.childName}
+        level={previewDashboard.level}
+        streak={previewDashboard.streak}
+        currentDayTitle={previewDashboard.currentDayTitle}
+        dayStage={dayStage}
         previewMode
       />
     );
   }
 
-  const dashboard = getMockChildDashboard(state.binding.childId);
+  if (!dashboard) {
+    return (
+      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#f1e6ff,_#fff_50%,_#e8f5ff)] px-6 py-10">
+        <div className="mx-auto max-w-xl rounded-[2rem] bg-white p-8 text-center shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+          불러오는 중...
+        </div>
+      </main>
+    );
+  }
+
+  const dayStage = getMockDayStage(dashboard.childId, dashboard.currentDayId);
+
   return (
     <MainHub
       childId={dashboard.childId}
@@ -133,6 +174,7 @@ export function BootstrapLanding() {
       level={dashboard.level}
       streak={dashboard.streak}
       currentDayTitle={dashboard.currentDayTitle}
+      dayStage={dayStage}
       previewMode={false}
     />
   );
