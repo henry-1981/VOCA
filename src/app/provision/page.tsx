@@ -1,5 +1,6 @@
 import { ProvisionComplete } from "@/components/provision/provision-complete";
 import { FamilyProvisionForm } from "@/components/provision/family-provision-form";
+import { ProvisionResetButton } from "@/components/provision/provision-reset-button";
 
 export default function ProvisionPage() {
   return (
@@ -10,6 +11,7 @@ export default function ProvisionPage() {
       <div className="relative z-10 mx-auto flex max-w-xl flex-col gap-4 px-6 py-10">
         <ProvisionComplete />
         <FamilyProvisionForm />
+        <ProvisionResetButton />
       </div>
     </main>
   );
