@@ -104,7 +104,7 @@ export function ReviewScreen({
             className="inline-flex rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm font-semibold text-white/70 shadow-[0_10px_30px_rgba(0,0,0,0.3)] backdrop-blur-sm"
             href={buildChildHref({ pathname: "/", childId })}
           >
-            허브로
+            홈으로
           </Link>
         </header>
 

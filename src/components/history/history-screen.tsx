@@ -81,7 +81,7 @@ export function HistoryScreen({ childId, childName, entries }: HistoryScreenProp
               className={`inline-flex rounded-full border ${theme.cardBorder} backdrop-blur-sm ${theme.cardBg} px-4 py-2 text-sm font-semibold text-white/90 shadow-lg`}
               href={buildChildHref({ pathname: "/", childId })}
             >
-              허브로
+              홈으로
             </Link>
           </div>
         </header>
