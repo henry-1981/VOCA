@@ -1,6 +1,7 @@
 import { getDoc } from "firebase/firestore";
 import { getRegisteredDeviceBinding, registerDeviceBinding } from "@/lib/firebase/device-registry";
 import { getFirebaseDb, hasFirebaseEnv } from "@/lib/firebase/client";
+import { resolveFirebaseUserAfterRedirect } from "@/lib/firebase/auth";
 import { loadDeviceBinding } from "@/lib/device/device-binding";
 import { childDocRef } from "@/lib/firebase/firestore";
 
@@ -53,6 +54,18 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
   }
 
   try {
+    // Wait for Firebase Auth to restore session before Firestore reads
+    // (security rules require isSignedIn() for all reads)
+    const user = await resolveFirebaseUserAfterRedirect();
+
+    if (!user) {
+      return {
+        status: "stale_binding",
+        binding,
+        reason: "Firebase auth session not available. Please re-provision."
+      };
+    }
+
     const registered = await getRegisteredDeviceBinding(binding.familyId, binding.deviceId);
 
     if (!registered) {
