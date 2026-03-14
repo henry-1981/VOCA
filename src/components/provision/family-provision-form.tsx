@@ -4,12 +4,24 @@ import { useState } from "react";
 import { getOrCreateDeviceId } from "@/lib/device/device-binding";
 import { saveDeviceBinding } from "@/lib/device/device-binding";
 import { getMissingFirebaseEnvKeys, hasFirebaseEnv } from "@/lib/firebase/client";
-import { signInWithGooglePopup } from "@/lib/firebase/auth";
+import {
+  signInWithGooglePopup,
+  signInWithGoogleRedirect,
+  resolveGoogleRedirectResult,
+  resolveFirebaseUserAfterRedirect
+} from "@/lib/firebase/auth";
 import { provisionFamily } from "@/lib/firebase/provision-family";
+import { saveProvisioningDraft, loadProvisioningDraft, clearProvisioningDraft } from "@/lib/firebase/provisioning-draft";
 
 type FamilyProvisionFormProps = {
   defaultDeviceId?: string;
 };
+
+type LogEntry = { time: string; msg: string };
+
+function ts() {
+  return new Date().toLocaleTimeString("ko-KR", { hour12: false });
+}
 
 export function FamilyProvisionForm({
   defaultDeviceId = "ipad-a"
@@ -18,9 +30,107 @@ export function FamilyProvisionForm({
   const [childAName, setChildAName] = useState("다온");
   const [childBName, setChildBName] = useState("지온");
   const [selectedChildIndex, setSelectedChildIndex] = useState<0 | 1>(0);
-  const [statusMessage, setStatusMessage] = useState("");
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [busy, setBusy] = useState(false);
   const firebaseReady = hasFirebaseEnv();
   const missingKeys = getMissingFirebaseEnvKeys();
+
+  function log(msg: string) {
+    setLogs((prev) => [...prev, { time: ts(), msg }]);
+  }
+
+  async function completeProvision(uid: string, deviceId: string) {
+    log(`[provision] uid=${uid.slice(0, 8)}…`);
+    const payload = await provisionFamily({
+      familyName,
+      children: [childAName, childBName],
+      selectedChildIndex,
+      deviceId,
+      ownerUid: uid
+    });
+    log(`[provision] familyId=${payload.family.id.slice(0, 8)}…`);
+
+    saveDeviceBinding({
+      deviceId: payload.deviceBinding.deviceId,
+      familyId: payload.deviceBinding.familyId,
+      childId: payload.deviceBinding.childId,
+      boundAt: payload.deviceBinding.boundAt,
+      lastValidatedAt: payload.deviceBinding.lastValidatedAt
+    });
+    clearProvisioningDraft();
+    log("[done] binding saved → redirecting home");
+
+    window.setTimeout(() => {
+      window.location.href = "/";
+    }, 800);
+  }
+
+  async function tryPopup() {
+    const deviceId = getOrCreateDeviceId() || defaultDeviceId;
+    log("[popup] signInWithGooglePopup() 호출...");
+    try {
+      const result = await signInWithGooglePopup();
+      log(`[popup] 성공: ${result.user.email}`);
+      await completeProvision(result.user.uid, deviceId);
+    } catch (error) {
+      const code = (error as { code?: string })?.code ?? "";
+      const msg = error instanceof Error ? error.message : String(error);
+      log(`[popup] 실패: code=${code} msg=${msg}`);
+      throw error;
+    }
+  }
+
+  async function tryRedirect() {
+    const deviceId = getOrCreateDeviceId() || defaultDeviceId;
+    log("[redirect] draft 저장 + signInWithGoogleRedirect() 호출...");
+    saveProvisioningDraft({
+      familyName,
+      children: [childAName, childBName],
+      selectedChildIndex,
+      deviceId
+    });
+    await signInWithGoogleRedirect();
+    // page will navigate away here
+  }
+
+  // Check redirect result on mount (handles return from redirect)
+  useState(() => {
+    if (typeof window === "undefined") return;
+    const draft = loadProvisioningDraft();
+    if (!draft) return;
+
+    // We have a draft → might be returning from redirect
+    setBusy(true);
+    const startLog: LogEntry = { time: ts(), msg: "[redirect-return] draft 발견, 결과 확인 중..." };
+    setLogs([startLog]);
+
+    void (async () => {
+      try {
+        const result = await resolveGoogleRedirectResult();
+        if (result?.user) {
+          log(`[redirect-return] getRedirectResult 성공: ${result.user.email}`);
+          await completeProvision(result.user.uid, draft.deviceId);
+          return;
+        }
+        log("[redirect-return] getRedirectResult=null, authStateReady 시도...");
+
+        const user = await resolveFirebaseUserAfterRedirect();
+        if (user) {
+          log(`[redirect-return] authStateReady 성공: ${user.email}`);
+          await completeProvision(user.uid, draft.deviceId);
+          return;
+        }
+        log("[redirect-return] 인증 사용자 없음. 다시 로그인 필요.");
+        clearProvisioningDraft();
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        log(`[redirect-return] 에러: ${msg}`);
+        clearProvisioningDraft();
+      } finally {
+        setBusy(false);
+      }
+    })();
+  });
 
   return (
     <section className="mx-auto flex max-w-xl flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-sm">
@@ -94,54 +204,62 @@ export function FamilyProvisionForm({
         </div>
       ) : null}
 
-      <button
-        className="big-button border-0 bg-violet-600 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30 disabled:shadow-none"
-        disabled={!firebaseReady}
-        onClick={async () => {
-          if (!firebaseReady) return;
+      {/* Login buttons */}
+      <div className="flex flex-col gap-3">
+        <button
+          className="big-button border-0 bg-violet-600 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30 disabled:shadow-none"
+          disabled={!firebaseReady || busy}
+          onClick={async () => {
+            if (!firebaseReady || busy) return;
+            setBusy(true);
+            setLogs([]);
+            try {
+              await tryPopup();
+            } catch {
+              log("[fallback] popup 실패 → redirect 시도 가능");
+            } finally {
+              setBusy(false);
+            }
+          }}
+          type="button"
+        >
+          Google 로그인 (팝업)
+        </button>
+        <button
+          className="big-button border border-white/15 bg-white/5 text-white/80 backdrop-blur-sm disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/20"
+          disabled={!firebaseReady || busy}
+          onClick={async () => {
+            if (!firebaseReady || busy) return;
+            setBusy(true);
+            setLogs([]);
+            try {
+              await tryRedirect();
+            } catch (error) {
+              const msg = error instanceof Error ? error.message : String(error);
+              log(`[redirect] 실패: ${msg}`);
+              setBusy(false);
+            }
+          }}
+          type="button"
+        >
+          Google 로그인 (리디렉트)
+        </button>
+      </div>
 
-          try {
-            setStatusMessage("Google 로그인 중입니다...");
-            const deviceId = getOrCreateDeviceId() || defaultDeviceId;
-            const result = await signInWithGooglePopup();
-
-            setStatusMessage("가족 프로필을 생성하는 중입니다...");
-            const payload = await provisionFamily({
-              familyName,
-              children: [childAName, childBName],
-              selectedChildIndex,
-              deviceId,
-              ownerUid: result.user.uid
-            });
-
-            saveDeviceBinding({
-              deviceId: payload.deviceBinding.deviceId,
-              familyId: payload.deviceBinding.familyId,
-              childId: payload.deviceBinding.childId,
-              boundAt: payload.deviceBinding.boundAt,
-              lastValidatedAt: payload.deviceBinding.lastValidatedAt
-            });
-
-            setStatusMessage("완료! 홈으로 이동합니다.");
-            window.setTimeout(() => {
-              window.location.href = "/";
-            }, 800);
-          } catch (error) {
-            setStatusMessage(
-              error instanceof Error ? error.message : "Google 로그인에 실패했습니다."
-            );
-          }
-        }}
-        type="button"
-      >
-        Google 로그인으로 시작
-      </button>
-
-      {statusMessage ? (
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/70">
-          {statusMessage}
+      {/* Diagnostic log */}
+      {logs.length > 0 && (
+        <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-4 backdrop-blur-sm">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-white/40">진단 로그</p>
+          <div className="flex flex-col gap-1 font-mono text-xs text-white/70">
+            {logs.map((entry, i) => (
+              <p key={i}>
+                <span className="text-white/30">{entry.time}</span>{" "}
+                {entry.msg}
+              </p>
+            ))}
+          </div>
         </div>
-      ) : null}
+      )}
     </section>
   );
 }
