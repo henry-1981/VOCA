@@ -60,15 +60,20 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
     };
   }
 
+  // Binding exists + Firebase env ready → try online validation,
+  // but NEVER block the user if validation fails.
+  // The hub uses local mock data regardless, so auth/Firestore checks
+  // are a nice-to-have, not a gate.
   try {
-    // Wait for Firebase Auth to restore session (with 5s timeout for iPad Safari)
     const user = await withTimeout(resolveFirebaseUserAfterRedirect(), 5000);
 
     if (!user) {
+      // Auth not available (iPad Safari PWA, session expired, etc.)
+      // → proceed with binding as-is
       return {
-        status: "stale_binding",
+        status: "ready",
         binding,
-        reason: "Firebase auth session not available. Please re-provision."
+        registryChecked: false
       };
     }
 
@@ -78,14 +83,16 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
     );
 
     if (!registered) {
+      // Device not in Firestore registry — could be deleted or never synced.
+      // Still proceed; the binding in localStorage is authoritative for UX.
       return {
-        status: "stale_binding",
+        status: "ready",
         binding,
-        reason: "Device registry does not match the local binding"
+        registryChecked: false
       };
     }
 
-    // Same family, different child = local profile switch — not stale
+    // Same family, different child = local profile switch — sync Firestore
     if (registered.childId !== binding.childId) {
       await registerDeviceBinding({ ...binding });
     }
@@ -96,10 +103,11 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
     );
 
     if (!childSnapshot || !childSnapshot.exists()) {
+      // Child doc missing — still proceed with local binding
       return {
-        status: "stale_binding",
+        status: "ready",
         binding,
-        reason: "Child profile no longer exists in Firestore"
+        registryChecked: false
       };
     }
 
@@ -108,12 +116,12 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
       binding,
       registryChecked: true
     };
-  } catch (error) {
+  } catch {
+    // Any error during validation → proceed anyway
     return {
-      status: "unavailable",
+      status: "ready",
       binding,
-      reason:
-        error instanceof Error ? error.message : "Failed to validate device binding"
+      registryChecked: false
     };
   }
 }
