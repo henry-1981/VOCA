@@ -51,8 +51,8 @@ export const PROFILE_ACCENTS = {
 
 // --- Avatars ---
 export const PROFILE_AVATARS = {
-  "다온": "/avatars/daon-nobg.webp",
-  "지온": "/avatars/jion-nobg.webp",
+  "다온": "/avatars/daon-nobg.png",
+  "지온": "/avatars/jion-nobg.png",
 } as const;
 
 // Helper to get background for a screen + profile

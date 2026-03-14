@@ -66,8 +66,8 @@ export function TodayStage({
       {/* Content */}
       <div className="relative z-10 flex h-[100dvh] flex-col">
         {/* ── HEADER BAR (compact, non-interactive status) ── */}
-        <header className="shrink-0 px-6 pt-5 pb-2 sm:px-8">
-          <div className="mx-auto flex max-w-4xl items-center justify-between gap-4">
+        <header className="shrink-0 px-8 pt-5 pb-2 md:px-12">
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-black text-white sm:text-3xl">{dayTitle}</h1>
               <div className="flex items-center gap-1.5">
@@ -108,9 +108,9 @@ export function TodayStage({
           </div>
         </header>
 
-        {/* ── MAIN AREA (scrollable action cards) ── */}
-        <div className="flex-1 overflow-y-auto px-6 pb-6 sm:px-8">
-          <div className="mx-auto flex max-w-4xl flex-col gap-4">
+        {/* ── MAIN AREA (centered action cards) ── */}
+        <div className="flex flex-1 items-center justify-center px-8 pb-6 md:px-12">
+          <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
 
             {/* Learn→Test transition message */}
             {showTransitionMessage && stage === "learn_completed" ? (
@@ -125,10 +125,10 @@ export function TodayStage({
 
             {/* ── ACTION CARDS ── */}
             {!isCheckpoint ? (
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 {/* Learn action card */}
                 <Link
-                  className={`group relative overflow-hidden rounded-[2rem] border px-6 py-6 text-left transition active:scale-[0.98] ${
+                  className={`group relative overflow-hidden rounded-[2rem] border px-8 py-8 text-left transition active:scale-[0.98] ${
                     learnPrimary
                       ? "border-violet-400/40 bg-violet-600/80 shadow-[0_16px_40px_rgba(139,92,246,0.25)]"
                       : dayComplete
@@ -156,10 +156,10 @@ export function TodayStage({
                       </span>
                     )}
                   </div>
-                  <p className="mt-3 text-xl font-black sm:text-2xl">
+                  <p className="mt-4 text-2xl font-black sm:text-3xl">
                     {learnPrimary ? "단어 익히기" : "단어 학습 완료"}
                   </p>
-                  <p className={`mt-2 text-sm leading-6 ${learnPrimary ? "text-violet-100/80" : "text-white/50"}`}>
+                  <p className={`mt-3 text-base leading-7 ${learnPrimary ? "text-violet-100/80" : "text-white/50"}`}>
                     {learnPrimary
                       ? "단어 20개를 한 장씩 보며 발음과 뜻을 익힙니다."
                       : "다시 보기가 가능합니다."}
@@ -175,7 +175,7 @@ export function TodayStage({
 
                 {/* Test action card */}
                 <Link
-                  className={`group relative overflow-hidden rounded-[2rem] border px-6 py-6 text-left transition active:scale-[0.98] ${
+                  className={`group relative overflow-hidden rounded-[2rem] border px-8 py-8 text-left transition active:scale-[0.98] ${
                     testPrimary
                       ? "border-slate-600 bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(2,6,23,0.98))] shadow-[0_16px_40px_rgba(15,23,42,0.4)] animate-glow-pulse"
                       : dayComplete
@@ -211,14 +211,14 @@ export function TodayStage({
                       </span>
                     )}
                   </div>
-                  <p className="mt-3 text-xl font-black sm:text-2xl">
+                  <p className="mt-4 text-2xl font-black sm:text-3xl">
                     {testPrimary
                       ? "테스트 시작"
                       : dayComplete
                         ? "테스트 완료"
                         : "Learn 완료 후 열림"}
                   </p>
-                  <p className={`mt-2 text-sm leading-6 ${
+                  <p className={`mt-3 text-base leading-7 ${
                     testPrimary ? "text-slate-300" : dayComplete ? "text-emerald-200/60" : "text-white/30"
                   }`}>
                     {testPrimary
@@ -243,7 +243,7 @@ export function TodayStage({
             ) : (
               /* Checkpoint test — single action card */
               <Link
-                className="group relative overflow-hidden rounded-[2rem] border border-indigo-500/40 bg-[linear-gradient(180deg,_rgba(55,48,163,0.90),_rgba(15,23,42,0.90))] px-6 py-8 text-left text-white backdrop-blur-sm transition active:scale-[0.98]"
+                className="group relative overflow-hidden rounded-[2rem] border border-indigo-500/40 bg-[linear-gradient(180deg,_rgba(55,48,163,0.90),_rgba(15,23,42,0.90))] px-8 py-10 text-left text-white backdrop-blur-sm transition active:scale-[0.98]"
                 href={buildChildHref({
                   pathname: "/test",
                   childId,
@@ -279,7 +279,7 @@ export function TodayStage({
             {allDays && allDays.length > 0 && (
               <button
                 type="button"
-                className={`w-full rounded-[1.5rem] border px-6 py-4 text-left transition active:scale-[0.98] ${
+                className={`w-full rounded-[1.5rem] border px-8 py-5 text-left transition active:scale-[0.98] ${
                   isCheckpoint
                     ? "border-indigo-300/20 bg-indigo-500/10 hover:bg-indigo-500/20"
                     : "border-violet-300/20 bg-violet-500/10 hover:bg-violet-500/20"

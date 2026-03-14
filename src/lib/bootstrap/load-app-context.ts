@@ -65,7 +65,7 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
   // The hub uses local mock data regardless, so auth/Firestore checks
   // are a nice-to-have, not a gate.
   try {
-    const user = await withTimeout(resolveFirebaseUserAfterRedirect(), 5000);
+    const user = await withTimeout(resolveFirebaseUserAfterRedirect(), 2000);
 
     if (!user) {
       // Auth not available (iPad Safari PWA, session expired, etc.)
@@ -79,7 +79,7 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
 
     const registered = await withTimeout(
       getRegisteredDeviceBinding(binding.familyId, binding.deviceId),
-      5000
+      2000
     );
 
     if (!registered) {
@@ -99,7 +99,7 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
 
     const childSnapshot = await withTimeout(
       getDoc(childDocRef(getFirebaseDb(), binding.familyId, binding.childId)),
-      5000
+      2000
     );
 
     if (!childSnapshot || !childSnapshot.exists()) {

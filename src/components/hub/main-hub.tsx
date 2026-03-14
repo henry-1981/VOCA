@@ -217,9 +217,9 @@ export function MainHub({
         )}
 
         {/* ── CENTER ── */}
-        <div className="flex flex-1 flex-col items-center justify-end min-h-0">
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 min-h-0 px-6 md:px-12">
           {/* TODAY card */}
-          <div className="relative z-30 flex shrink-0 justify-center px-6">
+          <div className="relative z-30 flex shrink-0 justify-center">
             <Link
               href={buildChildHref({
                 pathname: "/today",
@@ -234,7 +234,7 @@ export function MainHub({
                 style={{ backgroundColor: theme.todayGlow }}
               />
               <div
-                className={`relative overflow-hidden rounded-[1.4rem] border-2 ${theme.todayBorder} bg-gradient-to-b ${theme.todayBg} px-12 py-4 text-center backdrop-blur-sm transition-all duration-300 group-hover:scale-105 md:px-16 md:py-5`}
+                className={`relative overflow-hidden rounded-[1.4rem] border-2 ${theme.todayBorder} bg-gradient-to-b ${theme.todayBg} px-16 py-5 text-center backdrop-blur-sm transition-all duration-300 group-hover:scale-105 md:px-20 md:py-6`}
                 style={{
                   boxShadow: `0 0 40px ${theme.todayGlow}, inset 0 1px 0 rgba(255,255,255,0.15)`,
                 }}
@@ -245,19 +245,19 @@ export function MainHub({
                   Today
                 </p>
                 <p
-                  className="mt-1 text-2xl font-semibold text-white md:text-3xl"
+                  className="mt-1.5 text-3xl font-semibold text-white md:text-4xl"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {currentDayTitle}
                 </p>
                 <p
-                  className={`mt-1.5 text-base font-bold ${theme.accentLabel} md:text-lg`}
+                  className={`mt-2 text-lg font-bold ${theme.accentLabel} md:text-xl`}
                 >
                   오늘의 Day 시작 →
                 </p>
                 {/* Day progress badges */}
                 <div
-                  className="mt-2 flex items-center justify-center gap-2"
+                  className="mt-3 flex items-center justify-center gap-2"
                   data-testid="day-progress-badges"
                 >
                   <span
@@ -294,17 +294,17 @@ export function MainHub({
           </div>
 
           {/* CENTER ROW: Review / Avatar / History */}
-          <div className="flex w-full items-end justify-center gap-6 px-6 md:gap-10 md:px-12">
+          <div className="flex w-full items-end justify-center gap-8 md:gap-12">
             {/* Review */}
             <div className="flex flex-col items-center pb-2">
               <Link
                 href={buildChildHref({ pathname: "/review", childId })}
-                className="group flex h-[90px] w-[90px] flex-col items-center justify-center rounded-[1.2rem] border-2 border-sky-300/25 bg-sky-950/45 shadow-[0_6px_28px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-110 hover:border-sky-300/50 hover:bg-sky-800/40 md:h-[110px] md:w-[110px] md:rounded-[1.4rem]"
+                className="group flex h-[110px] w-[110px] flex-col items-center justify-center rounded-[1.4rem] border-2 border-sky-300/25 bg-sky-950/45 shadow-[0_6px_28px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-110 hover:border-sky-300/50 hover:bg-sky-800/40 md:h-[130px] md:w-[130px] md:rounded-[1.6rem]"
               >
                 <p className="text-xs font-bold uppercase tracking-wider text-sky-300/70 md:text-sm">
                   Review
                 </p>
-                <p className="mt-1 text-lg font-black text-sky-50 md:text-xl">
+                <p className="mt-1 text-xl font-black text-sky-50 md:text-2xl">
                   복습실
                 </p>
               </Link>
@@ -313,7 +313,7 @@ export function MainHub({
             {/* Avatar */}
             <div className="relative z-20 flex flex-col items-center">
               <div className="absolute -bottom-2 h-6 w-[70%] rounded-[100%] bg-black/50 blur-2xl" />
-              <div className="relative w-[28vw] max-w-[260px] md:w-[24vw] md:max-w-[300px]">
+              <div className="relative w-[30vw] max-w-[300px] md:w-[26vw] md:max-w-[340px]">
                 <Image
                   src={theme.avatarSrc}
                   alt={childName}
@@ -330,12 +330,12 @@ export function MainHub({
             <div className="flex flex-col items-center pb-2">
               <Link
                 href={buildChildHref({ pathname: "/history", childId })}
-                className="group flex h-[90px] w-[90px] flex-col items-center justify-center rounded-[1.2rem] border-2 border-amber-300/25 bg-amber-950/40 shadow-[0_6px_28px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-110 hover:border-amber-300/50 hover:bg-amber-800/35 md:h-[110px] md:w-[110px] md:rounded-[1.4rem]"
+                className="group flex h-[110px] w-[110px] flex-col items-center justify-center rounded-[1.4rem] border-2 border-amber-300/25 bg-amber-950/40 shadow-[0_6px_28px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-110 hover:border-amber-300/50 hover:bg-amber-800/35 md:h-[130px] md:w-[130px] md:rounded-[1.6rem]"
               >
                 <p className="text-xs font-bold uppercase tracking-wider text-amber-300/70 md:text-sm">
                   History
                 </p>
-                <p className="mt-1 text-lg font-black text-amber-50 md:text-xl">
+                <p className="mt-1 text-xl font-black text-amber-50 md:text-2xl">
                   기록실
                 </p>
               </Link>
@@ -344,24 +344,24 @@ export function MainHub({
         </div>
 
         {/* ── CHARACTER (bottom) ── */}
-        <div className="relative z-30 flex shrink-0 justify-center px-8 pb-3 pt-1 md:pb-4">
+        <div className="relative z-30 flex shrink-0 justify-center px-8 pb-4 pt-2 md:pb-5">
           <Link
             href={buildChildHref({ pathname: "/character", childId })}
-            className="group flex items-center gap-3 rounded-[1.2rem] border-2 border-violet-300/20 bg-gradient-to-r from-violet-950/50 via-indigo-950/40 to-violet-950/50 px-6 py-2.5 shadow-[0_6px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-105 hover:border-violet-300/40 hover:bg-violet-900/40 md:px-8 md:py-3"
+            className="group flex items-center gap-4 rounded-[1.4rem] border-2 border-violet-300/20 bg-gradient-to-r from-violet-950/50 via-indigo-950/40 to-violet-950/50 px-8 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all hover:scale-105 hover:border-violet-300/40 hover:bg-violet-900/40 md:px-10 md:py-4"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-violet-300/25 bg-violet-800/35 text-base text-amber-200/70 md:h-12 md:w-12 md:text-lg">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-violet-300/25 bg-violet-800/35 text-lg text-amber-200/70 md:h-14 md:w-14 md:text-xl">
               ✦
             </div>
             <div>
-              <p className="text-base font-bold text-white md:text-lg">
+              <p className="text-lg font-bold text-white md:text-xl">
                 {childName}의 성장
               </p>
-              <p className="text-xs text-violet-200/50 md:text-sm">
+              <p className="text-sm text-violet-200/50 md:text-base">
                 XP · Level · 배지
               </p>
             </div>
             <span
-              className="rounded-full border border-amber-200/30 bg-amber-300/15 px-3 py-1 text-sm font-bold text-amber-100"
+              className="rounded-full border border-amber-200/30 bg-amber-300/15 px-4 py-1.5 text-base font-bold text-amber-100"
               data-testid="level-badge"
             >
               Lv.{level}
