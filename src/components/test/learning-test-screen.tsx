@@ -84,26 +84,26 @@ export function LearningTestScreen({
   const resolvedCompletionLabel =
     completionLabel ?? (isReviewMode ? "복습실로 돌아가기" : "Today로 돌아가기");
   const outerBackgroundClass = isReviewMode
-    ? "bg-[radial-gradient(circle_at_top,_#f0f2ff,_#e8edff_28%,_#f2f5ff_58%,_#e6eaf4)] text-slate-950"
-    : "bg-[radial-gradient(circle_at_top,_#e9f3ff,_#fff_50%,_#fff3dc)]";
+    ? "bg-[linear-gradient(180deg,_#0f0c23,_#141030_50%,_#0c0f1a)] text-white"
+    : "bg-[linear-gradient(180deg,_#140f2e,_#1c173e_50%,_#0f1225)] text-white";
   const frameClass = isReviewMode
-    ? "border border-white/70 bg-white/82 shadow-[0_28px_90px_rgba(94,109,148,0.18)] backdrop-blur-sm"
-    : "bg-white shadow-[0_24px_80px_rgba(15,23,42,0.12)]";
+    ? "border border-white/10 bg-white/8 shadow-[0_28px_90px_rgba(0,0,0,0.4)] backdrop-blur-sm"
+    : "border border-white/10 bg-white/8 shadow-[0_24px_80px_rgba(0,0,0,0.4)] backdrop-blur-sm";
   const progressClass = isReviewMode
     ? "bg-[linear-gradient(90deg,_#d9e2f4,_#9fb2d8)]"
     : "bg-violet-600";
-  const passedProgressClass = isReviewMode ? "bg-slate-300" : "bg-violet-200";
+  const passedProgressClass = isReviewMode ? "bg-slate-500/40" : "bg-violet-400/40";
   const promptCardClass = isReviewMode
-    ? "bg-[linear-gradient(180deg,_rgba(245,247,255,0.98),_rgba(223,230,244,0.96))] text-slate-950 shadow-[0_20px_50px_rgba(148,163,184,0.18)] ring-1 ring-white/90"
+    ? "bg-white/10 text-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] backdrop-blur-sm ring-1 ring-white/10"
     : "bg-[linear-gradient(180deg,_rgba(15,23,42,0.98),_rgba(49,46,129,0.92))] text-white shadow-[0_20px_50px_rgba(15,23,42,0.18)]";
   const promptGlowClass = isReviewMode
     ? "bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.86),_transparent_72%)]"
     : "bg-[radial-gradient(circle_at_top,_rgba(255,226,148,0.18),_transparent_72%)]";
-  const promptKickerClass = isReviewMode ? "text-slate-500" : "text-slate-300";
-  const promptSubKickerClass = isReviewMode ? "text-slate-500" : "text-amber-100/80";
-  const promptHintClass = isReviewMode ? "text-slate-500" : "text-slate-300";
+  const promptKickerClass = isReviewMode ? "text-white/60" : "text-slate-300";
+  const promptSubKickerClass = isReviewMode ? "text-white/50" : "text-amber-100/80";
+  const promptHintClass = isReviewMode ? "text-white/50" : "text-slate-300";
   const audioButtonClass = isReviewMode
-    ? "bg-white text-slate-700 shadow-[0_10px_30px_rgba(148,163,184,0.18)] ring-1 ring-slate-200"
+    ? "bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ring-1 ring-white/10 text-white"
     : "bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]";
   const tileLabel = isReviewMode ? "Review Tile" : "Magical Tile";
 
@@ -200,26 +200,26 @@ export function LearningTestScreen({
 
   if (completed) {
     return (
-      <main className={`min-h-screen px-6 py-8 ${outerBackgroundClass}`}>
+      <main className={`min-h-[100dvh] px-6 py-8 ${outerBackgroundClass}`}>
         <div
           className={`mx-auto flex max-w-2xl flex-col gap-4 rounded-[2rem] p-8 ${frameClass}`}
         >
           <div
-            className={`rounded-[1.75rem] px-6 py-7 text-slate-950 ${
+            className={`rounded-[1.75rem] px-6 py-7 ${
               isReviewMode
-                ? "bg-[linear-gradient(180deg,_rgba(245,247,255,0.98),_rgba(224,230,244,0.94))] shadow-[0_20px_50px_rgba(148,163,184,0.18)]"
-                : "bg-[linear-gradient(180deg,_rgba(255,245,210,0.96),_rgba(255,234,167,0.88))] shadow-[0_20px_50px_rgba(255,193,7,0.18)]"
+                ? "bg-white/10 text-white backdrop-blur-sm"
+                : "bg-amber-500/20 text-white backdrop-blur-sm"
             }`}
           >
             <p
               className={`text-sm font-semibold uppercase tracking-[0.18em] ${
-                isReviewMode ? "text-slate-500" : "text-slate-700"
+                isReviewMode ? "text-white/60" : "text-white/70"
               }`}
             >
               {isReviewMode ? "Review Complete" : "Test Complete"}
             </p>
             <h1 className="mt-3 text-4xl font-black">{score} / {questions.length}</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-700">
+            <p className="mt-3 text-sm leading-6 text-white/70">
               {isReviewMode
                 ? "복습 기록 정리를 마쳤습니다. 오늘의 오답 서랍이 한결 가벼워졌습니다."
                 : "오늘의 테스트를 마쳤습니다. 연습실의 별빛 배지가 더 밝아졌습니다."}
@@ -241,7 +241,7 @@ export function LearningTestScreen({
   }
 
   return (
-    <main className={`relative min-h-screen px-6 py-8 ${outerBackgroundClass}`}>
+    <main className={`relative min-h-[100dvh] px-6 py-8 ${outerBackgroundClass}`}>
       {/* Green flash overlay for correct answer */}
       {showCorrectEffect ? (
         <div
@@ -281,7 +281,7 @@ export function LearningTestScreen({
         className={`mx-auto flex max-w-2xl flex-col gap-5 rounded-[2rem] p-8 ${frameClass}`}
       >
         <header className="space-y-4">
-          <div className="flex items-center justify-between gap-3 text-sm font-semibold text-slate-500">
+          <div className="flex items-center justify-between gap-3 text-sm font-semibold text-white/60">
             <span>{dayTitle}</span>
             <span>
               {currentIndex + 1} / {questions.length}
@@ -296,7 +296,7 @@ export function LearningTestScreen({
                     ? `w-8 ${progressClass}`
                     : pip.passed
                       ? `w-4 ${passedProgressClass}`
-                      : "w-4 bg-slate-200"
+                      : "w-4 bg-white/15"
                 }`}
               />
             ))}
@@ -316,7 +316,7 @@ export function LearningTestScreen({
               {isReviewMode ? "Quiet Review Round" : `Round ${currentIndex + 1}`}
             </p>
             {isReviewMode ? (
-              <p className="mt-2 text-2xl font-black tracking-[-0.03em] text-slate-900">
+              <p className="mt-2 text-2xl font-black tracking-[-0.03em] text-white">
                 Round {currentIndex + 1}
               </p>
             ) : null}
@@ -381,24 +381,24 @@ export function LearningTestScreen({
                 className={`rounded-[1.6rem] border-2 px-5 py-5 text-left text-xl font-black shadow-[0_14px_30px_rgba(15,23,42,0.08)] transition ${
                   isReviewMode
                     ? isCorrect
-                      ? "border-emerald-200/60 bg-emerald-200/30 text-emerald-950"
+                      ? "border-emerald-400/40 bg-emerald-500/20 text-emerald-200"
                       : isWrong
-                        ? "border-violet-200/60 bg-violet-200/30 text-violet-950"
+                        ? "border-violet-400/40 bg-violet-500/20 text-violet-200"
                         : isSelected
-                          ? "border-slate-400 bg-slate-100 text-slate-950"
-                          : "border-slate-300/20 bg-white/85 text-slate-900 hover:border-slate-300/40 hover:bg-slate-50"
+                          ? "border-slate-400/40 bg-white/10 text-white"
+                          : "border-white/10 bg-white/8 text-white hover:border-white/20 hover:bg-white/12"
                     : isCorrect
-                      ? "border-emerald-400 bg-emerald-50 text-emerald-950"
+                      ? "border-emerald-400/40 bg-emerald-500/20 text-emerald-200"
                       : isWrong
-                        ? "border-rose-400 bg-rose-50 text-rose-950"
+                        ? "border-rose-400/40 bg-rose-500/20 text-rose-200"
                         : isSelected
-                          ? "border-violet-400 bg-violet-50 text-violet-950"
-                          : "border-slate-200 bg-white text-slate-900 hover:border-violet-200 hover:bg-violet-50/40"
+                          ? "border-violet-400/40 bg-violet-500/20 text-violet-200"
+                          : "border-white/10 bg-white/8 text-white hover:border-violet-400/30 hover:bg-violet-500/10"
                 } ${answered ? "cursor-default" : "active:scale-[0.98]"}`}
                 onClick={() => choose(choice)}
                 type="button"
               >
-                <span className="block text-sm font-semibold uppercase tracking-[0.14em] text-slate-400">
+                <span className="block text-sm font-semibold uppercase tracking-[0.14em] text-white/40">
                   {tileLabel}
                 </span>
                 <span className="mt-3 block">{choice}</span>
@@ -409,14 +409,14 @@ export function LearningTestScreen({
 
         {selectedChoice ? (
           <div
-            className={`rounded-[1.5rem] px-5 py-4 text-center text-sm font-semibold shadow-[0_10px_25px_rgba(15,23,42,0.06)] ${
+            className={`rounded-[1.5rem] px-5 py-4 text-center text-sm font-semibold shadow-[0_10px_25px_rgba(0,0,0,0.15)] ${
               isReviewMode
                 ? selectedChoice === question.answer
-                  ? "bg-emerald-100/40 text-emerald-900 ring-1 ring-emerald-200/50"
-                  : "bg-violet-100/40 text-violet-900 ring-1 ring-violet-200/50"
+                  ? "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30"
+                  : "bg-violet-500/15 text-violet-200 ring-1 ring-violet-400/30"
                 : selectedChoice === question.answer
-                  ? "bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200"
-                  : "bg-rose-50 text-rose-900 ring-1 ring-rose-200"
+                  ? "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30"
+                  : "bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/30"
             }`}
           >
             {selectedChoice === question.answer
