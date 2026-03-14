@@ -4,7 +4,7 @@ import {
   getFirestore,
   initializeFirestore,
   persistentLocalCache,
-  persistentMultipleTabManager
+  persistentSingleTabManager
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -57,7 +57,7 @@ export function getFirebaseDb() {
     try {
       initializeFirestore(app, {
         localCache: persistentLocalCache({
-          tabManager: persistentMultipleTabManager()
+          tabManager: persistentSingleTabManager({ forceOwnership: true })
         })
       });
     } catch {

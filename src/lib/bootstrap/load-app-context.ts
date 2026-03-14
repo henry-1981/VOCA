@@ -35,6 +35,13 @@ export type AppBootstrapState =
       registryChecked: boolean;
     };
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  return Promise.race([
+    promise,
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), ms))
+  ]);
+}
+
 export async function loadAppContext(): Promise<AppBootstrapState> {
   const binding = loadDeviceBinding();
 
@@ -54,9 +61,8 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
   }
 
   try {
-    // Wait for Firebase Auth to restore session before Firestore reads
-    // (security rules require isSignedIn() for all reads)
-    const user = await resolveFirebaseUserAfterRedirect();
+    // Wait for Firebase Auth to restore session (with 5s timeout for iPad Safari)
+    const user = await withTimeout(resolveFirebaseUserAfterRedirect(), 5000);
 
     if (!user) {
       return {
@@ -66,7 +72,10 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
       };
     }
 
-    const registered = await getRegisteredDeviceBinding(binding.familyId, binding.deviceId);
+    const registered = await withTimeout(
+      getRegisteredDeviceBinding(binding.familyId, binding.deviceId),
+      5000
+    );
 
     if (!registered) {
       return {
@@ -81,11 +90,12 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
       await registerDeviceBinding({ ...binding });
     }
 
-    const childSnapshot = await getDoc(
-      childDocRef(getFirebaseDb(), binding.familyId, binding.childId)
+    const childSnapshot = await withTimeout(
+      getDoc(childDocRef(getFirebaseDb(), binding.familyId, binding.childId)),
+      5000
     );
 
-    if (!childSnapshot.exists()) {
+    if (!childSnapshot || !childSnapshot.exists()) {
       return {
         status: "stale_binding",
         binding,
