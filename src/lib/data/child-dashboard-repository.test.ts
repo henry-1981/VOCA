@@ -10,6 +10,6 @@ describe("child dashboard repository", () => {
     });
 
     expect(dashboard.childName).toBe("다온");
-    expect(dashboard.currentDayTitle).toBe("Day 05 Test");
+    expect(dashboard.currentDayTitle).toBe("Day 01");
   });
 });

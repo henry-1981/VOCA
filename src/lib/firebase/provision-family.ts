@@ -104,6 +104,14 @@ export async function provisionFamily(input: ProvisionFamilyInput) {
       ...child,
       updatedAt: serverTimestamp()
     });
+    batch.set(doc(db, paths.childProgress(payload.family.id, child.id)), {
+      childId: child.id,
+      currentDayId: "day-001",
+      xp: 0,
+      level: 1,
+      streak: 0,
+      updatedAt: serverTimestamp()
+    });
   });
 
   batch.set(doc(db, paths.device(payload.family.id, payload.deviceBinding.deviceId)), {
