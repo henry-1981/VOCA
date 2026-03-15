@@ -114,33 +114,32 @@ export function LearnCard({
               ) : null}
               <p className="text-2xl font-bold text-slate-100">{word.meaning}</p>
 
-              <div className="mt-1 flex flex-col items-center gap-3">
-                <button
-                  aria-label="play pronunciation"
-                  className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[linear-gradient(180deg,_rgba(255,222,133,1),_rgba(228,179,62,1))] px-6 text-base font-black text-slate-950 shadow-[0_20px_40px_rgba(255,193,7,0.25)]"
-                  onClick={play}
-                  type="button"
-                >
-                  <span className="text-xl">▶</span>
-                  단어 듣기
-                </button>
-                {word.exampleSentence ? (
-                  <button
-                    aria-label="play example audio"
-                    className="inline-flex h-8 w-8 min-w-[44px] min-h-[44px] items-center justify-center rounded-full border border-white/10 bg-white/8 text-base text-slate-100"
-                    onClick={playExample}
-                    type="button"
-                  >
-                    ▶
-                  </button>
-                ) : null}
-              </div>
+              <button
+                aria-label="play pronunciation"
+                className="mt-1 inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[linear-gradient(180deg,_rgba(255,222,133,1),_rgba(228,179,62,1))] px-6 text-base font-black text-slate-950 shadow-[0_20px_40px_rgba(255,193,7,0.25)]"
+                onClick={play}
+                type="button"
+              >
+                <span className="text-xl">▶</span>
+                단어 듣기
+              </button>
 
               {word.exampleSentence ? (
-                <div className="mt-2 w-full rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.1),_rgba(255,255,255,0.04))] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-100/80">
-                    Scene Card
-                  </p>
+                <div className="mt-4 w-full rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.1),_rgba(255,255,255,0.04))] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-100/80">
+                      Scene Card
+                    </p>
+                    <button
+                      aria-label="play example audio"
+                      className="inline-flex min-w-[44px] min-h-[44px] items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/18"
+                      onClick={playExample}
+                      type="button"
+                    >
+                      <span className="text-sm">▶</span>
+                      예문 듣기
+                    </button>
+                  </div>
                   <p className="mt-3 text-base font-semibold leading-7 text-white">
                     {word.exampleSentence}
                   </p>
@@ -149,7 +148,7 @@ export function LearnCard({
                   ) : null}
                 </div>
               ) : (
-                <p className="text-sm text-slate-300">
+                <p className="mt-2 text-sm text-slate-300">
                   {played || playedExample
                     ? "다시 들을 수 있어요."
                     : "예문은 나중에 추가할 수 있습니다."}

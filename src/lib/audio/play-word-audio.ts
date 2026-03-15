@@ -6,6 +6,13 @@ type PlayWordAudioInput = {
   audioUrl?: string;
 };
 
+let currentMp3: HTMLAudioElement | null = null;
+let playing = false;
+
+export function isWordAudioPlaying(): boolean {
+  return playing;
+}
+
 export function chooseAudioPlaybackMode({
   audioMode,
   audioUrl
@@ -21,12 +28,21 @@ export function playWordAudio({ text, audioMode, audioUrl }: PlayWordAudioInput)
   if (typeof window === "undefined") {
     return;
   }
+  if (playing) return;
 
   const mode = chooseAudioPlaybackMode({ text, audioMode, audioUrl });
 
   if (mode === "mp3" && audioUrl) {
+    if (currentMp3) {
+      currentMp3.pause();
+      currentMp3 = null;
+    }
     const audio = new Audio(audioUrl);
-    void audio.play();
+    currentMp3 = audio;
+    playing = true;
+    audio.onended = () => { playing = false; currentMp3 = null; };
+    audio.onerror = () => { playing = false; currentMp3 = null; };
+    void audio.play().catch(() => { playing = false; currentMp3 = null; });
     return;
   }
 
@@ -45,6 +61,9 @@ export function playWordAudio({ text, audioMode, audioUrl }: PlayWordAudioInput)
       utterance.voice = selectedVoice;
     }
   }
+  playing = true;
+  utterance.onend = () => { playing = false; };
+  utterance.onerror = () => { playing = false; };
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
 }
