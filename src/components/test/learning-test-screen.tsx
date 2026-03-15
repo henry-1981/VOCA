@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { DayCompleteCelebration } from "@/components/effects/day-complete-celebration";
+import { stopBgm } from "@/lib/audio/bgm";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { playSfx } from "@/lib/audio/sfx";
 import { setMockDayStage } from "@/lib/mock/day-stage";
@@ -59,6 +60,7 @@ export function LearningTestScreen({
   const comboAnimTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    stopBgm();
     return () => {
       if (effectTimerRef.current) clearTimeout(effectTimerRef.current);
       if (xpTimerRef.current) clearTimeout(xpTimerRef.current);

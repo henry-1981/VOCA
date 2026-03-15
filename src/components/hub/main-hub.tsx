@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { playBgm, stopBgm, isBgmEnabled, setBgmEnabled } from "@/lib/audio/bgm";
 import { isSfxEnabled, setSfxEnabled, playSfx } from "@/lib/audio/sfx";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import { loadDeviceBinding, saveDeviceBinding } from "@/lib/device/device-binding";
@@ -89,6 +90,14 @@ export function MainHub({
   const [sfxOn, setSfxOn] = useState(() =>
     typeof window !== "undefined" ? isSfxEnabled() : true
   );
+  const [bgmOn, setBgmOn] = useState(() =>
+    typeof window !== "undefined" ? isBgmEnabled() : true
+  );
+
+  useEffect(() => {
+    playBgm("hub-theme");
+    return () => stopBgm();
+  }, []);
 
   useEffect(() => {
     if (!showStreakToast) return;
@@ -221,6 +230,19 @@ export function MainHub({
               aria-label={sfxOn ? "효과음 끄기" : "효과음 켜기"}
             >
               {sfxOn ? "\uD83D\uDD0A" : "\uD83D\uDD07"}
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-white/15 bg-black/40 px-3 py-2 text-xs font-bold text-white/70 backdrop-blur-sm transition hover:bg-white/18"
+              onClick={() => {
+                const next = !bgmOn;
+                setBgmOn(next);
+                setBgmEnabled(next);
+                if (next) playBgm("hub-theme");
+              }}
+              aria-label={bgmOn ? "배경음 끄기" : "배경음 켜기"}
+            >
+              {bgmOn ? "\uD83C\uDFB5" : "\uD83C\uDFB5\u2715"}
             </button>
             <Link
               href="/provision"

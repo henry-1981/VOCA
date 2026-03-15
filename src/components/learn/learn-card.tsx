@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { stopBgm } from "@/lib/audio/bgm";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
 import { playSfx } from "@/lib/audio/sfx";
 import { setMockDayStage } from "@/lib/mock/day-stage";
@@ -28,6 +29,10 @@ export function LearnCard({
   topic,
   word
 }: LearnCardProps) {
+  useEffect(() => {
+    stopBgm();
+  }, []);
+
   const [played, setPlayed] = useState(false);
   const [playedExample, setPlayedExample] = useState(false);
   const isLastWord = currentIndex >= total;

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { BgmTrigger } from "./bgm-trigger";
 import { getRewardPreview } from "@/lib/character/reward-preview";
 import { getScreenBackground, getProfileAccent, PROFILE_AVATARS } from "@/lib/theme/profile-themes";
 
@@ -45,6 +46,7 @@ export function CharacterScreen({
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden text-white">
+      <BgmTrigger trackId="hub-theme" />
       {/* Background image */}
       <Image
         src={theme.backgroundSrc}
