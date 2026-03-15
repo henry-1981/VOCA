@@ -8,8 +8,16 @@ import { getFirebaseAuth } from "./client";
 
 export async function ensureAnonymousAuth(): Promise<User> {
   const auth = getFirebaseAuth();
-  const current = auth.currentUser;
-  if (current) return current;
+
+  // Wait for Firebase Auth to restore session from persistence
+  const existingUser = await new Promise<User | null>((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+
+  if (existingUser) return existingUser;
 
   const credential = await signInAnonymously(auth);
   return credential.user;

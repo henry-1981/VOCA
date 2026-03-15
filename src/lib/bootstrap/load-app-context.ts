@@ -1,9 +1,7 @@
-import { getDoc } from "firebase/firestore";
 import { getRegisteredDeviceBinding, registerDeviceBinding } from "@/lib/firebase/device-registry";
-import { getFirebaseDb, hasFirebaseEnv } from "@/lib/firebase/client";
+import { hasFirebaseEnv } from "@/lib/firebase/client";
 import { ensureAnonymousAuth } from "@/lib/firebase/auth";
 import { loadDeviceBinding } from "@/lib/device/device-binding";
-import { childDocRef } from "@/lib/firebase/firestore";
 
 export type AppBootstrapState =
   | {
@@ -42,6 +40,25 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
   ]);
 }
 
+// Background validation: sync device registry if needed.
+// Never blocks boot — failures are silently ignored.
+async function validateRegistryInBackground(
+  binding: NonNullable<ReturnType<typeof loadDeviceBinding>>
+) {
+  try {
+    const registered = await withTimeout(
+      getRegisteredDeviceBinding(binding.familyId, binding.deviceId),
+      2000
+    );
+
+    if (registered && registered.childId !== binding.childId) {
+      await registerDeviceBinding({ ...binding });
+    }
+  } catch {
+    // Silently ignore — registry sync is best-effort
+  }
+}
+
 export async function loadAppContext(): Promise<AppBootstrapState> {
   const binding = loadDeviceBinding();
 
@@ -60,64 +77,21 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
     };
   }
 
-  // Binding exists + Firebase env ready → try online validation,
-  // but NEVER block the user if validation fails.
-  // The hub uses local mock data regardless, so auth/Firestore checks
-  // are a nice-to-have, not a gate.
+  // Auth is the only gate — get a user, then return ready immediately.
+  // Registry/child validation runs in the background (never blocks boot).
   try {
     const user = await withTimeout(ensureAnonymousAuth(), 3000);
 
-    if (!user) {
-      // Auth not available (iPad Safari PWA, session expired, etc.)
-      // → proceed with binding as-is
-      return {
-        status: "ready",
-        binding,
-        registryChecked: false
-      };
-    }
-
-    const registered = await withTimeout(
-      getRegisteredDeviceBinding(binding.familyId, binding.deviceId),
-      2000
-    );
-
-    if (!registered) {
-      // Device not in Firestore registry — could be deleted or never synced.
-      // Still proceed; the binding in localStorage is authoritative for UX.
-      return {
-        status: "ready",
-        binding,
-        registryChecked: false
-      };
-    }
-
-    // Same family, different child = local profile switch — sync Firestore
-    if (registered.childId !== binding.childId) {
-      await registerDeviceBinding({ ...binding });
-    }
-
-    const childSnapshot = await withTimeout(
-      getDoc(childDocRef(getFirebaseDb(), binding.familyId, binding.childId)),
-      2000
-    );
-
-    if (!childSnapshot || !childSnapshot.exists()) {
-      // Child doc missing — still proceed with local binding
-      return {
-        status: "ready",
-        binding,
-        registryChecked: false
-      };
+    if (user) {
+      void validateRegistryInBackground(binding);
     }
 
     return {
       status: "ready",
       binding,
-      registryChecked: true
+      registryChecked: false
     };
   } catch {
-    // Any error during validation → proceed anyway
     return {
       status: "ready",
       binding,

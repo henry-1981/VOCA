@@ -56,6 +56,10 @@ export function getFirebaseDb() {
 
   if (!dbInitialized) {
     try {
+      // iOS Safari PWA standalone mode has IndexedDB reliability issues
+      // that cause persistentLocalCache to hang on initialization,
+      // blocking all Firestore queries indefinitely. Use memoryLocalCache
+      // as a workaround — each app launch hits Firestore cold but avoids hangs.
       const isPwaStandalone =
         typeof window !== "undefined" &&
         window.matchMedia("(display-mode: standalone)").matches;

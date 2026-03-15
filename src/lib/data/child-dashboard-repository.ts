@@ -1,4 +1,4 @@
-import { getDoc, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { getFirebaseDb, hasFirebaseEnv } from "@/lib/firebase/client";
 import {
   childDocRef,
@@ -144,19 +144,37 @@ class FirestoreChildDashboardRepository implements ChildDashboardRepository {
   }
 
   async getHistoryEntry(
-    selector: ChildSelector,
+    { familyId, childId }: ChildSelector,
     dayId: string
   ): Promise<HistoryEntry | null> {
-    const dashboard = await this.getDashboard(selector);
-    return dashboard.historyEntries.find((entry) => entry.dayId === dayId) ?? null;
+    const db = getFirebaseDb();
+    const snapshot = await getDocs(
+      query(
+        childHistoryCollectionRef(db, familyId, childId),
+        where("dayId", "==", dayId),
+        orderBy("completedAt", "desc"),
+        limit(1)
+      )
+    );
+
+    if (snapshot.empty) return null;
+    return toHistoryEntry(snapshot.docs[0].data());
   }
 
   async getReviewWords(
-    selector: ChildSelector,
+    { familyId, childId }: ChildSelector,
     limitCount: number
   ): Promise<string[]> {
-    const dashboard = await this.getDashboard(selector);
-    return dashboard.reviewWords.slice(0, limitCount);
+    const db = getFirebaseDb();
+    const snapshot = await getDocs(
+      query(
+        childReviewQueueCollectionRef(db, familyId, childId),
+        orderBy("createdAt", "desc"),
+        limit(limitCount)
+      )
+    );
+
+    return snapshot.docs.map((doc) => doc.data().wordId);
   }
 }
 

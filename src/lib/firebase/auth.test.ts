@@ -4,7 +4,11 @@ const mockSignInAnonymously = vi.fn();
 const mockAuth = { currentUser: null as { uid: string } | null };
 
 vi.mock("firebase/auth", () => ({
-  onAuthStateChanged: vi.fn(),
+  onAuthStateChanged: (_auth: unknown, callback: (user: unknown) => void) => {
+    // Simulate Firebase: call back with currentUser on next tick
+    Promise.resolve().then(() => callback(mockAuth.currentUser));
+    return () => {};
+  },
   signInAnonymously: (...args: unknown[]) => mockSignInAnonymously(...args),
   signOut: vi.fn()
 }));
@@ -21,7 +25,7 @@ describe("ensureAnonymousAuth", () => {
     mockAuth.currentUser = null;
   });
 
-  it("returns currentUser immediately when already signed in", async () => {
+  it("returns existing user when session is restored", async () => {
     const fakeUser = { uid: "existing-user-123" };
     mockAuth.currentUser = fakeUser;
 
@@ -30,7 +34,7 @@ describe("ensureAnonymousAuth", () => {
     expect(mockSignInAnonymously).not.toHaveBeenCalled();
   });
 
-  it("calls signInAnonymously when no currentUser", async () => {
+  it("calls signInAnonymously when no session exists", async () => {
     const fakeUser = { uid: "anon-user-456" };
     mockSignInAnonymously.mockResolvedValue({ user: fakeUser });
 
