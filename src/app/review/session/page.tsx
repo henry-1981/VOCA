@@ -1,7 +1,7 @@
 import { LearningTestScreen } from "@/components/test/learning-test-screen";
 import { getBridgeVocaBasicDays } from "@/lib/content/load-day";
 import { getChildDashboardRepository } from "@/lib/data/child-dashboard-repository";
-import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
+import { resolveChildDashboard, resolveChildSelector } from "@/lib/mock/resolve-child-dashboard";
 import { buildReviewBatch } from "@/lib/review/build-review-batch";
 import { generateLearningTestQuestions } from "@/lib/test/generate-learning-test";
 
@@ -15,12 +15,10 @@ export default async function ReviewSessionPage({
   searchParams
 }: ReviewSessionPageProps) {
   const params = (await searchParams) ?? {};
+  const selector = resolveChildSelector(params.child);
   const dashboard = await resolveChildDashboard(params.child);
   const reviewWordsFromRepository = await getChildDashboardRepository().getReviewWords(
-    {
-      familyId: "mock-family",
-      childId: dashboard.childId
-    },
+    selector,
     dashboard.reviewBatchSize
   );
   const days = getBridgeVocaBasicDays();

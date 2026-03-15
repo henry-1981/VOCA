@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { DayHistoryDetailScreen } from "@/components/history/day-history-detail-screen";
 import { getChildDashboardRepository } from "@/lib/data/child-dashboard-repository";
-import { resolveChildDashboard } from "@/lib/mock/resolve-child-dashboard";
+import { resolveChildDashboard, resolveChildSelector } from "@/lib/mock/resolve-child-dashboard";
 
 type HistoryDetailPageProps = {
   params: Promise<{
@@ -18,12 +18,10 @@ export default async function HistoryDetailPage({
 }: HistoryDetailPageProps) {
   const { dayId } = await params;
   const query = (await searchParams) ?? {};
+  const selector = resolveChildSelector(query.child);
   const dashboard = await resolveChildDashboard(query.child);
   const entry = await getChildDashboardRepository().getHistoryEntry(
-    {
-      familyId: "mock-family",
-      childId: dashboard.childId
-    },
+    selector,
     dayId
   );
 

@@ -11,6 +11,29 @@ function createMockSelector(childId: string): ChildSelector {
   };
 }
 
+export function resolveChildSelector(
+  childIdFromQuery?: string | null
+): ChildSelector {
+  const explicitChildId = childIdFromQuery?.trim();
+  const binding = loadDeviceBinding();
+
+  if (explicitChildId) {
+    return {
+      familyId: binding?.familyId ?? "mock-family",
+      childId: explicitChildId
+    };
+  }
+
+  if (binding?.childId) {
+    return {
+      familyId: binding.familyId,
+      childId: binding.childId
+    };
+  }
+
+  return createMockSelector("다온");
+}
+
 export async function resolveChildDashboard(
   childIdFromQuery?: string | null
 ) {
