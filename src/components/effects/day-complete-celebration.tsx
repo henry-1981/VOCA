@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { playSfx } from "@/lib/audio/sfx";
 
 type DayCompleteCelebrationProps = {
   dayTitle: string;
@@ -18,6 +19,7 @@ export function DayCompleteCelebration({
   const closedRef = useRef(false);
 
   useEffect(() => {
+    playSfx("day-complete");
     const timer = setTimeout(() => {
       if (!closedRef.current) {
         closedRef.current = true;

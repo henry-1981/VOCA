@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { isSfxEnabled, setSfxEnabled, playSfx } from "@/lib/audio/sfx";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import { loadDeviceBinding, saveDeviceBinding } from "@/lib/device/device-binding";
 import { getScreenBackground, getProfileAccent, PROFILE_AVATARS } from "@/lib/theme/profile-themes";
@@ -85,9 +86,13 @@ export function MainHub({
   const theme = getProfileTheme(childId);
   const [timeTheme] = useState<TimeTheme>(getTimeTheme);
   const [showStreakToast, setShowStreakToast] = useState(streak > 0);
+  const [sfxOn, setSfxOn] = useState(() =>
+    typeof window !== "undefined" ? isSfxEnabled() : true
+  );
 
   useEffect(() => {
     if (!showStreakToast) return;
+    playSfx("streak");
     const timer = setTimeout(() => setShowStreakToast(false), 800);
     return () => clearTimeout(timer);
   }, [showStreakToast]);
@@ -196,6 +201,7 @@ export function MainHub({
             <ProfileSwitcher
               currentChildName={childName}
               onSwitch={() => {
+                playSfx("profile-switch");
                 const binding = loadDeviceBinding();
                 if (!binding) return;
                 const nextChildId = binding.childId === "다온" ? "지온" : "다온";
@@ -203,6 +209,19 @@ export function MainHub({
                 window.location.href = "/";
               }}
             />
+            <button
+              type="button"
+              className="rounded-full border border-white/15 bg-black/40 px-3 py-2 text-xs font-bold text-white/70 backdrop-blur-sm transition hover:bg-white/18"
+              onClick={() => {
+                const next = !sfxOn;
+                setSfxOn(next);
+                setSfxEnabled(next);
+                if (next) playSfx("tap");
+              }}
+              aria-label={sfxOn ? "효과음 끄기" : "효과음 켜기"}
+            >
+              {sfxOn ? "\uD83D\uDD0A" : "\uD83D\uDD07"}
+            </button>
             <Link
               href="/provision"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/50 backdrop-blur-sm transition hover:text-white/80 md:h-11 md:w-11"

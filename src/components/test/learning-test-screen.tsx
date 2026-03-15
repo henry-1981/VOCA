@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { DayCompleteCelebration } from "@/components/effects/day-complete-celebration";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
+import { playSfx } from "@/lib/audio/sfx";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import { syncTestCompletion } from "@/lib/sync/sync-day-completion";
@@ -124,6 +125,7 @@ export function LearningTestScreen({
 
     setSelectedChoice(choice);
     const isCorrect = choice === question.answer;
+    playSfx(isCorrect ? "correct" : "wrong");
 
     if (isCorrect) {
       setScore((value) => value + 1);

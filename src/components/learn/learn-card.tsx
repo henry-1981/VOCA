@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { playWordAudio } from "@/lib/audio/play-word-audio";
+import { playSfx } from "@/lib/audio/sfx";
 import { setMockDayStage } from "@/lib/mock/day-stage";
 import { buildChildHref } from "@/lib/navigation/child-href";
 import { syncLearnCompletion } from "@/lib/sync/sync-day-completion";
@@ -183,6 +184,7 @@ export function LearnCard({
                     index: currentIndex
                   }
                 })}
+                onClick={() => playSfx("card-flip")}
               >
                 다음 단어 · {remainingCount}개 남음
               </Link>

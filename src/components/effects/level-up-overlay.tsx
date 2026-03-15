@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { playSfx } from "@/lib/audio/sfx";
 
 type LevelUpOverlayProps = {
   newLevel: number;
@@ -11,6 +12,7 @@ export function LevelUpOverlay({ newLevel, onClose }: LevelUpOverlayProps) {
   const closedRef = useRef(false);
 
   useEffect(() => {
+    playSfx("level-up");
     const timer = setTimeout(() => {
       if (!closedRef.current) {
         closedRef.current = true;

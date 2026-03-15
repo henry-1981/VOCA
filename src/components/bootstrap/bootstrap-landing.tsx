@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { preloadSfx, unlockAudioContext } from "@/lib/audio/sfx";
 import {
   loadAppContext,
   type AppBootstrapState
@@ -48,6 +49,18 @@ function HubSkeleton() {
 export function BootstrapLanding() {
   const [state, setState] = useState<AppBootstrapState>(initialState);
   const [dashboard, setDashboard] = useState<ChildDashboardState | null>(null);
+
+  useEffect(() => {
+    preloadSfx();
+
+    const handleFirstInteraction = () => {
+      unlockAudioContext();
+      window.removeEventListener("touchstart", handleFirstInteraction);
+      window.removeEventListener("click", handleFirstInteraction);
+    };
+    window.addEventListener("touchstart", handleFirstInteraction, { once: true });
+    window.addEventListener("click", handleFirstInteraction, { once: true });
+  }, []);
 
   useEffect(() => {
     let active = true;

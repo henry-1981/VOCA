@@ -17,6 +17,7 @@ import {
   signOutFirebaseUser,
   watchFirebaseUser
 } from "@/lib/firebase/auth";
+import { isSfxEnabled, setSfxEnabled } from "@/lib/audio/sfx";
 import { buildChildHref } from "@/lib/navigation/child-href";
 
 type AuthSummary = {
@@ -108,6 +109,17 @@ export function TestLabPanel() {
                 type="button"
               >
                 익명 로그인
+              </button>
+              <button
+                className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white"
+                onClick={() => {
+                  const next = !isSfxEnabled();
+                  setSfxEnabled(next);
+                  window.dispatchEvent(new Event("lab-binding-change"));
+                }}
+                type="button"
+              >
+                SFX {isSfxEnabled() ? "ON" : "OFF"}
               </button>
               <button
                 className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 ring-1 ring-slate-200"
