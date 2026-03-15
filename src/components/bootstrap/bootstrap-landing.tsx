@@ -53,20 +53,29 @@ export function BootstrapLanding() {
 
     let active = true;
 
+    const timeout = setTimeout(() => {
+      if (active) {
+        setDashboard(getMockChildDashboard(state.binding.childId));
+      }
+    }, 5000);
+
     void resolveChildDashboard(state.binding.childId)
       .then((result) => {
         if (active) {
+          clearTimeout(timeout);
           setDashboard(result);
         }
       })
       .catch(() => {
         if (active) {
+          clearTimeout(timeout);
           setDashboard(getMockChildDashboard(state.binding.childId));
         }
       });
 
     return () => {
       active = false;
+      clearTimeout(timeout);
     };
   }, [state]);
 

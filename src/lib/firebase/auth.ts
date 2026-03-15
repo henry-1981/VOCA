@@ -1,27 +1,19 @@
 import {
-  getRedirectResult,
-  GoogleAuthProvider,
   onAuthStateChanged,
-  signInWithPopup,
-  signInWithRedirect,
+  signInAnonymously,
   signOut,
   type Auth,
   type User
 } from "firebase/auth";
 import { getFirebaseAuth } from "./client";
 
-const provider = new GoogleAuthProvider();
+export async function ensureAnonymousAuth(): Promise<User> {
+  const auth = getFirebaseAuth();
+  const current = auth.currentUser;
+  if (current) return current;
 
-export function signInWithGoogleRedirect() {
-  return signInWithRedirect(getFirebaseAuth(), provider);
-}
-
-export function signInWithGooglePopup() {
-  return signInWithPopup(getFirebaseAuth(), provider);
-}
-
-export function resolveGoogleRedirectResult() {
-  return getRedirectResult(getFirebaseAuth());
+  const credential = await signInAnonymously(auth);
+  return credential.user;
 }
 
 export function watchFirebaseUser(callback: (user: User | null) => void) {

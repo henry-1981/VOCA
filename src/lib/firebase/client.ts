@@ -3,6 +3,7 @@ import { getAuth } from "firebase/auth";
 import {
   getFirestore,
   initializeFirestore,
+  memoryLocalCache,
   persistentLocalCache,
   persistentSingleTabManager
 } from "firebase/firestore";
@@ -55,10 +56,16 @@ export function getFirebaseDb() {
 
   if (!dbInitialized) {
     try {
+      const isPwaStandalone =
+        typeof window !== "undefined" &&
+        window.matchMedia("(display-mode: standalone)").matches;
+
       initializeFirestore(app, {
-        localCache: persistentLocalCache({
-          tabManager: persistentSingleTabManager({ forceOwnership: true })
-        })
+        localCache: isPwaStandalone
+          ? memoryLocalCache()
+          : persistentLocalCache({
+              tabManager: persistentSingleTabManager({ forceOwnership: true })
+            })
       });
     } catch {
       // Already initialized — fall through to getFirestore()

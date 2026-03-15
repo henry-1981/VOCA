@@ -7,7 +7,7 @@ vi.mock("@/lib/firebase/client", () => ({
 }));
 
 vi.mock("@/lib/firebase/auth", () => ({
-  signInWithGoogleRedirect: vi.fn(),
+  ensureAnonymousAuth: vi.fn(),
   signOutFirebaseUser: vi.fn(),
   watchFirebaseUser: (callback: (user: null) => void) => {
     callback(null);

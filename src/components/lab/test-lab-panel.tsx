@@ -13,7 +13,7 @@ import {
   hasFirebaseEnv
 } from "@/lib/firebase/client";
 import {
-  signInWithGoogleRedirect,
+  ensureAnonymousAuth,
   signOutFirebaseUser,
   watchFirebaseUser
 } from "@/lib/firebase/auth";
@@ -104,10 +104,10 @@ export function TestLabPanel() {
               <button
                 className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white"
                 disabled={!firebaseReady}
-                onClick={() => void signInWithGoogleRedirect()}
+                onClick={() => void ensureAnonymousAuth()}
                 type="button"
               >
-                Google 로그인
+                익명 로그인
               </button>
               <button
                 className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 ring-1 ring-slate-200"

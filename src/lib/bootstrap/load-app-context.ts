@@ -1,7 +1,7 @@
 import { getDoc } from "firebase/firestore";
 import { getRegisteredDeviceBinding, registerDeviceBinding } from "@/lib/firebase/device-registry";
 import { getFirebaseDb, hasFirebaseEnv } from "@/lib/firebase/client";
-import { resolveFirebaseUserAfterRedirect } from "@/lib/firebase/auth";
+import { ensureAnonymousAuth } from "@/lib/firebase/auth";
 import { loadDeviceBinding } from "@/lib/device/device-binding";
 import { childDocRef } from "@/lib/firebase/firestore";
 
@@ -65,7 +65,7 @@ export async function loadAppContext(): Promise<AppBootstrapState> {
   // The hub uses local mock data regardless, so auth/Firestore checks
   // are a nice-to-have, not a gate.
   try {
-    const user = await withTimeout(resolveFirebaseUserAfterRedirect(), 2000);
+    const user = await withTimeout(ensureAnonymousAuth(), 3000);
 
     if (!user) {
       // Auth not available (iPad Safari PWA, session expired, etc.)

@@ -4,14 +4,9 @@ import { useState } from "react";
 import { getOrCreateDeviceId } from "@/lib/device/device-binding";
 import { saveDeviceBinding } from "@/lib/device/device-binding";
 import { getMissingFirebaseEnvKeys, hasFirebaseEnv } from "@/lib/firebase/client";
-import {
-  signInWithGooglePopup,
-  signInWithGoogleRedirect,
-  resolveGoogleRedirectResult,
-  resolveFirebaseUserAfterRedirect
-} from "@/lib/firebase/auth";
+import { ensureAnonymousAuth } from "@/lib/firebase/auth";
 import { provisionFamily } from "@/lib/firebase/provision-family";
-import { saveProvisioningDraft, loadProvisioningDraft, clearProvisioningDraft } from "@/lib/firebase/provisioning-draft";
+import { clearProvisioningDraft } from "@/lib/firebase/provisioning-draft";
 
 type FamilyProvisionFormProps = {
   defaultDeviceId?: string;
@@ -65,72 +60,23 @@ export function FamilyProvisionForm({
     }, 800);
   }
 
-  async function tryPopup() {
+  async function handleStart() {
+    if (!firebaseReady || busy) return;
+    setBusy(true);
+    setLogs([]);
     const deviceId = getOrCreateDeviceId() || defaultDeviceId;
-    log("[popup] signInWithGooglePopup() 호출...");
     try {
-      const result = await signInWithGooglePopup();
-      log(`[popup] 성공: ${result.user.email}`);
-      await completeProvision(result.user.uid, deviceId);
+      log("[auth] 익명 인증 시도...");
+      const user = await ensureAnonymousAuth();
+      log(`[auth] 성공: uid=${user.uid.slice(0, 8)}…`);
+      await completeProvision(user.uid, deviceId);
     } catch (error) {
-      const code = (error as { code?: string })?.code ?? "";
       const msg = error instanceof Error ? error.message : String(error);
-      log(`[popup] 실패: code=${code} msg=${msg}`);
-      throw error;
+      log(`[auth] 실패: ${msg}`);
+    } finally {
+      setBusy(false);
     }
   }
-
-  async function tryRedirect() {
-    const deviceId = getOrCreateDeviceId() || defaultDeviceId;
-    log("[redirect] draft 저장 + signInWithGoogleRedirect() 호출...");
-    saveProvisioningDraft({
-      familyName,
-      children: [childAName, childBName],
-      selectedChildIndex,
-      deviceId
-    });
-    await signInWithGoogleRedirect();
-    // page will navigate away here
-  }
-
-  // Check redirect result on mount (handles return from redirect)
-  useState(() => {
-    if (typeof window === "undefined") return;
-    const draft = loadProvisioningDraft();
-    if (!draft) return;
-
-    // We have a draft → might be returning from redirect
-    setBusy(true);
-    const startLog: LogEntry = { time: ts(), msg: "[redirect-return] draft 발견, 결과 확인 중..." };
-    setLogs([startLog]);
-
-    void (async () => {
-      try {
-        const result = await resolveGoogleRedirectResult();
-        if (result?.user) {
-          log(`[redirect-return] getRedirectResult 성공: ${result.user.email}`);
-          await completeProvision(result.user.uid, draft.deviceId);
-          return;
-        }
-        log("[redirect-return] getRedirectResult=null, authStateReady 시도...");
-
-        const user = await resolveFirebaseUserAfterRedirect();
-        if (user) {
-          log(`[redirect-return] authStateReady 성공: ${user.email}`);
-          await completeProvision(user.uid, draft.deviceId);
-          return;
-        }
-        log("[redirect-return] 인증 사용자 없음. 다시 로그인 필요.");
-        clearProvisioningDraft();
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : String(error);
-        log(`[redirect-return] 에러: ${msg}`);
-        clearProvisioningDraft();
-      } finally {
-        setBusy(false);
-      }
-    })();
-  });
 
   return (
     <section className="mx-auto flex max-w-xl flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-sm">
@@ -204,47 +150,14 @@ export function FamilyProvisionForm({
         </div>
       ) : null}
 
-      {/* Login buttons */}
-      <div className="flex flex-col gap-3">
-        <button
-          className="big-button border-0 bg-violet-600 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30 disabled:shadow-none"
-          disabled={!firebaseReady || busy}
-          onClick={async () => {
-            if (!firebaseReady || busy) return;
-            setBusy(true);
-            setLogs([]);
-            try {
-              await tryPopup();
-            } catch {
-              log("[fallback] popup 실패 → redirect 시도 가능");
-            } finally {
-              setBusy(false);
-            }
-          }}
-          type="button"
-        >
-          Google 로그인 (팝업)
-        </button>
-        <button
-          className="big-button border border-white/15 bg-white/5 text-white/80 backdrop-blur-sm disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/20"
-          disabled={!firebaseReady || busy}
-          onClick={async () => {
-            if (!firebaseReady || busy) return;
-            setBusy(true);
-            setLogs([]);
-            try {
-              await tryRedirect();
-            } catch (error) {
-              const msg = error instanceof Error ? error.message : String(error);
-              log(`[redirect] 실패: ${msg}`);
-              setBusy(false);
-            }
-          }}
-          type="button"
-        >
-          Google 로그인 (리디렉트)
-        </button>
-      </div>
+      <button
+        className="big-button border-0 bg-violet-600 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30 disabled:shadow-none"
+        disabled={!firebaseReady || busy}
+        onClick={() => void handleStart()}
+        type="button"
+      >
+        설정 시작
+      </button>
 
       {/* Diagnostic log */}
       {logs.length > 0 && (

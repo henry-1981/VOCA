@@ -6,17 +6,12 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function familyOwner(familyId) {
-      return get(/databases/$(database)/documents/families/$(familyId)).data.ownerUid == request.auth.uid;
-    }
-
     match /families/{familyId} {
-      allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
-      allow read, update, delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
+      allow read, write: if isSignedIn();
     }
 
     match /families/{familyId}/{document=**} {
-      allow read, write: if isSignedIn() && familyOwner(familyId);
+      allow read, write: if isSignedIn();
     }
 
     match /content/{document=**} {
