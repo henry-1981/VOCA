@@ -17,10 +17,16 @@ export default async function ReviewSessionPage({
   const params = (await searchParams) ?? {};
   const selector = resolveChildSelector(params.child);
   const dashboard = await resolveChildDashboard(params.child);
-  const reviewWordsFromRepository = await getChildDashboardRepository().getReviewWords(
-    selector,
-    dashboard.reviewBatchSize
-  );
+
+  let reviewWordsFromRepository: string[] = [];
+  try {
+    reviewWordsFromRepository = await getChildDashboardRepository().getReviewWords(
+      selector,
+      dashboard.reviewBatchSize
+    );
+  } catch {
+    // Firestore may fail on server-side (no auth session)
+  }
   const days = getBridgeVocaBasicDays();
   const allWords = days.flatMap((day) => day.words);
   const reviewIds = buildReviewBatch(

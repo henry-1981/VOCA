@@ -3,6 +3,7 @@ import {
   getChildDashboardRepository,
   type ChildSelector
 } from "@/lib/data/child-dashboard-repository";
+import { getMockChildDashboard } from "@/lib/mock/child-dashboard";
 
 function createMockSelector(childId: string): ChildSelector {
   return {
@@ -40,27 +41,32 @@ export async function resolveChildDashboard(
   const repository = getChildDashboardRepository();
   const explicitChildId = childIdFromQuery?.trim();
 
-  if (explicitChildId) {
+  try {
+    if (explicitChildId) {
+      const binding = loadDeviceBinding();
+
+      if (binding?.familyId) {
+        return await repository.getDashboard({
+          familyId: binding.familyId,
+          childId: explicitChildId
+        });
+      }
+
+      return await repository.getDashboard(createMockSelector(explicitChildId));
+    }
+
     const binding = loadDeviceBinding();
 
-    if (binding?.familyId) {
-      return repository.getDashboard({
+    if (binding?.childId) {
+      return await repository.getDashboard({
         familyId: binding.familyId,
-        childId: explicitChildId
+        childId: binding.childId
       });
     }
 
-    return repository.getDashboard(createMockSelector(explicitChildId));
+    return await repository.getDashboard(createMockSelector("다온"));
+  } catch {
+    // Firestore may fail on server-side (no auth session) or network errors
+    return getMockChildDashboard(explicitChildId ?? "다온");
   }
-
-  const binding = loadDeviceBinding();
-
-  if (binding?.childId) {
-    return repository.getDashboard({
-      familyId: binding.familyId,
-      childId: binding.childId
-    });
-  }
-
-  return repository.getDashboard(createMockSelector("다온"));
 }

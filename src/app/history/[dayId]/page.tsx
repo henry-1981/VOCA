@@ -20,10 +20,17 @@ export default async function HistoryDetailPage({
   const query = (await searchParams) ?? {};
   const selector = resolveChildSelector(query.child);
   const dashboard = await resolveChildDashboard(query.child);
-  const entry = await getChildDashboardRepository().getHistoryEntry(
-    selector,
-    dayId
-  );
+
+  let entry;
+  try {
+    entry = await getChildDashboardRepository().getHistoryEntry(
+      selector,
+      dayId
+    );
+  } catch {
+    // Firestore may fail on server-side (no auth session)
+    entry = null;
+  }
 
   if (!entry) {
     notFound();
