@@ -179,7 +179,9 @@ class FirestoreChildDashboardRepository implements ChildDashboardRepository {
 }
 
 export function getChildDashboardRepository(): ChildDashboardRepository {
-  if (hasFirebaseEnv()) {
+  // Server has no Firebase Auth session, so Firestore queries always fail
+  // with permission denied. Skip the round-trip and use mock on server.
+  if (typeof window !== "undefined" && hasFirebaseEnv()) {
     return new FirestoreChildDashboardRepository();
   }
 
